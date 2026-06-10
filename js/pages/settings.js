@@ -82,6 +82,59 @@ document.addEventListener("appReady", () => {
     }
   });
 
+  // ── Appearance: font picker ──────────────────────────────────────────────
+  const currentFont = s.font || "inter";
+  const fontPicker  = document.getElementById("fontPicker");
+
+  // Pre-load all fonts so swatches render correctly
+  FONTS.forEach(f => { if (f.id !== "inter") loadGoogleFont(f); });
+
+  fontPicker.innerHTML = FONTS.map(f => `
+    <div class="font-swatch${f.id === currentFont ? " active" : ""}"
+         data-font="${f.id}" role="button" tabindex="0"
+         aria-pressed="${f.id === currentFont}" title="${f.name}"
+         style="font-family:${f.stack}">
+      <div class="font-swatch-sample">Aa</div>
+      <div class="font-swatch-sub">0–9 Bb</div>
+      <div class="font-swatch-name">${f.name}</div>
+    </div>
+  `).join("");
+
+  fontPicker.addEventListener("click", e => {
+    const swatch = e.target.closest("[data-font]");
+    if (!swatch) return;
+    const fontId = swatch.dataset.font;
+    fontPicker.querySelectorAll(".font-swatch").forEach(sw => {
+      sw.classList.remove("active");
+      sw.setAttribute("aria-pressed", "false");
+    });
+    swatch.classList.add("active");
+    swatch.setAttribute("aria-pressed", "true");
+    applyFont(fontId);
+    saveSettings({ ...getSettings(), font: fontId });
+  });
+
+  fontPicker.addEventListener("keydown", e => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      e.target.closest("[data-font]")?.click();
+    }
+  });
+
+  // ── Appearance: font size ─────────────────────────────────────────────────
+  const currentSize  = s.fontSize || "md";
+  const sizeBtns     = document.querySelectorAll("#fontSizePicker .toggle-btn");
+  sizeBtns.forEach(btn => {
+    if (btn.dataset.size === currentSize) btn.classList.add("active");
+    btn.addEventListener("click", () => {
+      sizeBtns.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const size = btn.dataset.size;
+      applyFontSize(size);
+      saveSettings({ ...getSettings(), fontSize: size });
+    });
+  });
+
   // ── Appearance: language ──────────────────────────────────────────────────
   const langSelect = document.getElementById("languageSelect");
   langSelect.value = s.language || "en";

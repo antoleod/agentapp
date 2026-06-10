@@ -491,6 +491,45 @@ td .cell-sub {
   flex-shrink: 0;
 }
 
+/* ── Font picker ── */
+.font-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+}
+.font-swatch {
+  border: 2px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px 12px 10px;
+  cursor: pointer;
+  background: var(--bg);
+  text-align: center;
+  user-select: none;
+  transition: border-color .15s, background .15s;
+}
+.font-swatch:hover  { border-color: var(--primary); background: var(--primary-light); }
+.font-swatch.active { border-color: var(--primary); background: var(--primary-light); }
+.font-swatch-sample {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+}
+.font-swatch-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 3px;
+  letter-spacing: .02em;
+}
+.font-swatch-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
 /* ── Compact table ── */
 table[data-compact] td,
 table[data-compact] th { padding: 6px 12px; font-size: 12.5px; }

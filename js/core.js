@@ -90,8 +90,39 @@ function applyTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme || "light");
 }
 
+// ── Typography ────────────────────────────────────────────────────────────────
+const FONTS = [
+  { id: "inter",     name: "Inter",          stack: "'Inter', system-ui, sans-serif",      gf: "Inter:wght@400;500;600;700" },
+  { id: "dmsans",    name: "DM Sans",        stack: "'DM Sans', system-ui, sans-serif",    gf: "DM+Sans:wght@400;500;600;700" },
+  { id: "outfit",    name: "Outfit",         stack: "'Outfit', system-ui, sans-serif",     gf: "Outfit:wght@400;500;600;700" },
+  { id: "jetbrains", name: "JetBrains Mono", stack: "'JetBrains Mono', monospace",         gf: "JetBrains+Mono:wght@400;500;600;700" },
+];
+
+function loadGoogleFont(fontDef) {
+  const id = "gfont-" + fontDef.id;
+  if (document.getElementById(id)) return;
+  const link = document.createElement("link");
+  link.id   = id;
+  link.rel  = "stylesheet";
+  link.href = `https://fonts.googleapis.com/css2?family=${fontDef.gf}&display=swap`;
+  document.head.appendChild(link);
+}
+
+function applyFont(fontId) {
+  const font = FONTS.find(f => f.id === fontId) || FONTS[0];
+  if (fontId && fontId !== "inter") loadGoogleFont(font);
+  document.documentElement.style.setProperty("--font-family", font.stack);
+}
+
+function applyFontSize(size) {
+  const map = { sm: "13px", md: "14px", lg: "15px" };
+  document.documentElement.style.setProperty("--font-size-base", map[size] || "14px");
+}
+
 // Apply immediately on script load (before DOM paint)
 applyTheme(getSettings().theme || "light");
+applyFont(getSettings().font);
+applyFontSize(getSettings().fontSize);
 
 // ── Data layer (Firestore primary, localStorage cache) ────────────────────────
 async function getData() {

@@ -1,6 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* Additional fonts loaded dynamically by applyFont() in core.js */
 
 :root {
+  /* Typography */
+  --font-family:    'Inter', system-ui, sans-serif;
+  --font-size-base: 14px;
+
   /* Brand */
   --primary:        #2563eb;
   --primary-hover:  #1d4ed8;
@@ -167,12 +172,17 @@
 
 body {
   margin: 0;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 14px;
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
   line-height: 1.5;
   background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
+}
+
+input, select, textarea, button {
+  font-family: inherit;
+  font-size: inherit;
 }
 
 h1,h2,h3,h4 { margin: 0; font-weight: 600; line-height: 1.3; }
