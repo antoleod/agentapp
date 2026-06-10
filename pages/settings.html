@@ -45,6 +45,45 @@
             </div>
           </div>
 
+          <!-- Evaluation Defaults -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 style="font-size:15px" data-i18n="set.eval_defaults">Evaluation Defaults</h3>
+                <p style="font-size:12px;color:var(--muted);margin-top:3px" data-i18n="set.eval_defaults_sub">Pre-filled values when you open a new evaluation</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="defaultSla" data-i18n="set.default_sla">Default SLA Breach</label>
+                  <select id="defaultSla">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="defaultScore" data-i18n="set.default_score">Default Score</label>
+                  <select id="defaultScore">
+                    <option value="" data-i18n="set.no_prefill">No pre-fill</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                  </select>
+                </div>
+                <div class="form-group full" style="padding-top:4px">
+                  <label class="settings-switch">
+                    <input type="checkbox" id="requireAllScores">
+                    <span class="switch-track"><span class="switch-thumb"></span></span>
+                    <span data-i18n="set.require_scores">Require all scores before saving</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Appearance -->
           <div class="card">
             <div class="card-header">
@@ -65,6 +104,21 @@
                     <option value="ro">Română</option>
                     <option value="nl">Nederlands</option>
                   </select>
+                </div>
+                <div class="form-group">
+                  <label for="dateFormat" data-i18n="set.date_format">Date Format</label>
+                  <select id="dateFormat">
+                    <option value="iso" data-i18n="set.date_iso">ISO (YYYY-MM-DD)</option>
+                    <option value="dmy" data-i18n="set.date_dmy">European (DD/MM/YYYY)</option>
+                    <option value="mdy" data-i18n="set.date_mdy">US (MM/DD/YYYY)</option>
+                  </select>
+                </div>
+                <div class="form-group full" style="padding-top:4px">
+                  <label class="settings-switch">
+                    <input type="checkbox" id="compactTable">
+                    <span class="switch-track"><span class="switch-thumb"></span></span>
+                    <span data-i18n="set.compact_table">Compact table rows</span>
+                  </label>
                 </div>
               </div>
             </div>
@@ -97,6 +151,23 @@
             </div>
           </div>
 
+          <!-- Agent Roster -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 style="font-size:15px" data-i18n="set.agents">Agent Roster</h3>
+                <p style="font-size:12px;color:var(--muted);margin-top:3px" data-i18n="set.agents_sub">Names available as autocomplete suggestions in the evaluation form</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <div id="agentRosterList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px"></div>
+              <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end">
+                <input id="newAgentName" data-i18n-ph="set.agent_name_ph" placeholder="Full agent name" />
+                <button id="addAgentBtn" class="btn btn-primary" style="height:39px" data-i18n="set.add_agent">Add</button>
+              </div>
+            </div>
+          </div>
+
           <!-- Account -->
           <div class="card" id="userInfoSection">
             <div class="card-header">
@@ -119,6 +190,22 @@
               </div>
               <div style="margin-top:16px">
                 <button id="changePasswordBtn" class="btn btn-secondary" data-i18n="set.reset_pwd">Send Password Reset Email</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Data Behavior -->
+          <div class="card">
+            <div class="card-header">
+              <h3 style="font-size:15px" data-i18n="set.data_behavior">Data Behavior</h3>
+            </div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <label class="settings-switch">
+                  <input type="checkbox" id="confirmDeleteSingle" checked>
+                  <span class="switch-track"><span class="switch-thumb"></span></span>
+                  <span data-i18n="set.confirm_delete">Ask for confirmation before deleting a record</span>
+                </label>
               </div>
             </div>
           </div>

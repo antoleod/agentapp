@@ -30,6 +30,17 @@ function today() {
   return new Date().toISOString().slice(0, 10);
 }
 
+function formatDisplayDate(isoDate) {
+  if (!isoDate) return "—";
+  const fmt = getSettings().dateFormat || "iso";
+  const parts = isoDate.split("-");
+  if (parts.length !== 3) return isoDate;
+  const [y, m, d] = parts;
+  if (fmt === "dmy") return `${d}/${m}/${y}`;
+  if (fmt === "mdy") return `${m}/${d}/${y}`;
+  return isoDate;
+}
+
 // ── Settings ──────────────────────────────────────────────────────────────────
 function getSettings() {
   return JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");

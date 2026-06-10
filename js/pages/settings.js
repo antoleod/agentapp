@@ -4,6 +4,22 @@ document.addEventListener("appReady", () => {
   document.getElementById("defaultEvaluator").value   = s.defaultEvaluator   || "";
   document.getElementById("loginEmail").value         = s.loginEmail         || "";
 
+  // ── Evaluation Defaults ───────────────────────────────────────────────────
+  document.getElementById("defaultSla").value        = s.defaultSla    || "No";
+  document.getElementById("defaultScore").value      = s.defaultScore  !== undefined ? s.defaultScore : "3";
+  document.getElementById("requireAllScores").checked = !!s.requireAllScores;
+
+  ["defaultSla", "defaultScore"].forEach(id => {
+    document.getElementById(id).addEventListener("change", e => {
+      saveSettings({ ...getSettings(), [id]: e.target.value });
+      toast(t("set.save") + " ✓", "success");
+    });
+  });
+  document.getElementById("requireAllScores").addEventListener("change", e => {
+    saveSettings({ ...getSettings(), requireAllScores: e.target.checked });
+    toast(t("set.save") + " ✓", "success");
+  });
+
   // User info
   const user = window.currentUser;
   if (user && !user.isAnonymous) {
@@ -72,7 +88,34 @@ document.addEventListener("appReady", () => {
   langSelect.addEventListener("change", () => {
     saveSettings({ ...getSettings(), language: langSelect.value });
     applyI18n();
-    renderAllCriteriaList(); // re-render with new language
+    renderAllCriteriaList();
+  });
+
+  // ── Appearance: date format + compact table ───────────────────────────────
+  document.getElementById("dateFormat").value      = s.dateFormat || "iso";
+  document.getElementById("compactTable").checked  = !!s.compactTable;
+
+  document.getElementById("dateFormat").addEventListener("change", e => {
+    saveSettings({ ...getSettings(), dateFormat: e.target.value });
+    toast(t("set.save") + " ✓", "success");
+  });
+  document.getElementById("compactTable").addEventListener("change", e => {
+    saveSettings({ ...getSettings(), compactTable: e.target.checked });
+    toast(t("set.save") + " ✓", "success");
+  });
+
+  // ── Data Behavior ────────────────────────────────────────────────────────
+  document.getElementById("confirmDeleteSingle").checked = s.confirmDeleteSingle !== false;
+  document.getElementById("confirmDeleteSingle").addEventListener("change", e => {
+    saveSettings({ ...getSettings(), confirmDeleteSingle: e.target.checked });
+    toast(t("set.save") + " ✓", "success");
+  });
+
+  // ── Agent Roster ─────────────────────────────────────────────────────────
+  renderAgentRoster();
+  document.getElementById("addAgentBtn").addEventListener("click", addAgentToRoster);
+  document.getElementById("newAgentName").addEventListener("keydown", e => {
+    if (e.key === "Enter") addAgentToRoster();
   });
 
   // ── Criteria list ─────────────────────────────────────────────────────────
@@ -104,6 +147,59 @@ document.addEventListener("appReady", () => {
     }
   });
 });
+
+// ── Agent roster ─────────────────────────────────────────────────────────────
+function renderAgentRoster() {
+  const roster  = getSettings().agentRoster || [];
+  const listEl  = document.getElementById("agentRosterList");
+
+  if (!roster.length) {
+    listEl.innerHTML = `<p style="font-size:12px;color:var(--muted);padding:4px 0">${t("set.no_agents")}</p>`;
+    return;
+  }
+
+  listEl.innerHTML = roster.map((name, idx) => `
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;
+                background:var(--bg);border:1px solid var(--border);border-radius:var(--r-md)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0">
+        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+      </svg>
+      <span style="flex:1;font-size:13.5px;font-weight:500">${escapeHtml(name)}</span>
+      <button class="btn btn-ghost btn-sm" data-remove-agent="${idx}" aria-label="${t("set.remove")}">
+        ${trashIcon()}
+        <span style="font-size:12px">${t("set.remove")}</span>
+      </button>
+    </div>
+  `).join("");
+
+  listEl.querySelectorAll("[data-remove-agent]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const i        = parseInt(btn.dataset.removeAgent, 10);
+      const settings = getSettings();
+      const updated  = (settings.agentRoster || []).filter((_, j) => j !== i);
+      saveSettings({ ...settings, agentRoster: updated });
+      renderAgentRoster();
+      toast(t("set.remove") + " ✓", "info");
+    });
+  });
+}
+
+function addAgentToRoster() {
+  const input   = document.getElementById("newAgentName");
+  const name    = input.value.trim();
+  if (!name) { input.focus(); toast(t("set.agent_name_ph") + "?", "warning"); return; }
+
+  const settings = getSettings();
+  const roster   = settings.agentRoster || [];
+  if (roster.some(n => n.toLowerCase() === name.toLowerCase())) {
+    toast("Already in roster.", "warning"); return;
+  }
+
+  saveSettings({ ...settings, agentRoster: [...roster, name] });
+  input.value = "";
+  renderAgentRoster();
+  toast(`"${name}" added to roster.`, "success");
+}
 
 // ── Unified criteria list (built-ins toggleable + custom removable) ───────────
 function renderAllCriteriaList() {

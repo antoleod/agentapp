@@ -3,6 +3,8 @@ let _importParsed   = [];  // rows from last parsed import file
 let _auditAllEntries = []; // full audit log loaded into viewer
 
 document.addEventListener("appReady", async () => {
+  if (getSettings().compactTable) document.querySelector(".table-wrap table")?.setAttribute("data-compact", "");
+
   setTableLoading(true);
   try {
     allData = await getData();
@@ -55,7 +57,7 @@ function renderTable(data) {
       <tr>
         <td><strong>${ticket}</strong></td>
         <td>${escapeHtml(item.agentName)}</td>
-        <td>${escapeHtml(item.evaluationDate)}</td>
+        <td>${escapeHtml(formatDisplayDate(item.evaluationDate))}</td>
         <td>${slaBadge(item.slaBreach)}</td>
         <td>${escapeHtml(item.lsa || "—")}</td>
         <td>${escapeHtml(item.assignedTo || "—")}</td>
@@ -74,7 +76,9 @@ function renderTable(data) {
 }
 
 async function confirmDelete(ticketNumber) {
-  if (!confirm(`Delete evaluation ${ticketNumber}? This cannot be undone.`)) return;
+  if (getSettings().confirmDeleteSingle !== false) {
+    if (!confirm(`Delete evaluation ${ticketNumber}? This cannot be undone.`)) return;
+  }
   const snapshot = allData.find(x => x.ticketNumber === ticketNumber) || null;
   try {
     await deleteEvaluation(ticketNumber, snapshot);

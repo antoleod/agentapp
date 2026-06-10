@@ -6,6 +6,7 @@ document.addEventListener("appReady", async () => {
   initSlaToggle();
   initProgress();
   clearForm();
+  populateAgentRoster();
   bindEvents();
 
   // Edit mode: form.html?edit=INC001
@@ -227,14 +228,23 @@ function resolveEvaluatorName() {
   return user.displayName || user.email?.split("@")[0] || getSettings().defaultEvaluator || "";
 }
 
+function populateAgentRoster() {
+  const list   = document.getElementById("agentRosterList");
+  if (!list) return;
+  const roster = getSettings().agentRoster || [];
+  list.innerHTML = roster.map(n => `<option value="${escapeHtml(n)}">`).join("");
+}
+
 function clearForm() {
   document.getElementById("evaluationForm").reset();
   document.getElementById("evaluationDate").value = today();
   document.getElementById("evaluatedBy").value    = resolveEvaluatorName();
   document.getElementById("ticketBadge").hidden   = true;
 
-  setSlaValue("No");
-  getActiveCriteria().forEach(({ id }) => setPickerValue(id, "3"));
+  const s = getSettings();
+  setSlaValue(s.defaultSla || "No");
+  const defScore = s.defaultScore !== undefined ? s.defaultScore : "3";
+  getActiveCriteria().forEach(({ id }) => setPickerValue(id, defScore));
 
   updateAvgBadge();
   updateProgress();
@@ -369,6 +379,17 @@ async function handleSave(e) {
       !item.ticketNumber ? "ticketNumber" : !item.agentName ? "agentName" : "evaluationDate"
     ).focus();
     return;
+  }
+
+  if (getSettings().requireAllScores) {
+    const missing = getActiveCriteria().filter(c => !item[c.id] && item[c.id] !== 0);
+    if (missing.length) {
+      const labels = missing.map(c => c.builtin ? t(c.labelKey) : c.label);
+      toast(`Score required: ${labels.join(", ")}`, "warning");
+      document.querySelector(`.score-picker[data-field="${missing[0].id}"]`)
+        ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      return;
+    }
   }
 
   const btn = document.getElementById("saveBtn");
