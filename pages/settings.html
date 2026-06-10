@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="../css/toast.css" />
 </head>
 <body>
-  <div id="loadingOverlay" class="loading-overlay">
+  <div id="loadingOverlay" class="loading-overlay" role="status" aria-live="polite" aria-label="Loading application">
     <div class="spinner"></div>
   </div>
 
@@ -19,27 +19,79 @@
       <div class="page">
         <div class="topbar">
           <div>
-            <h2>Settings</h2>
-            <p style="color:var(--muted);font-size:13px;margin-top:3px">Configure application preferences</p>
+            <h2 data-i18n="set.title">Settings</h2>
+            <p style="color:var(--muted);font-size:13px;margin-top:3px" data-i18n="set.subtitle">Configure application preferences</p>
           </div>
         </div>
 
         <div style="display:grid;gap:20px;max-width:700px">
 
-          <!-- App settings -->
+          <!-- Application -->
           <div class="card">
             <div class="card-header">
-              <h3 style="font-size:15px">Application</h3>
+              <h3 style="font-size:15px" data-i18n="set.app">Application</h3>
             </div>
             <div class="card-body">
               <div class="form-grid">
                 <div class="form-group full">
-                  <label for="serviceNowInstance">ServiceNow Instance URL</label>
+                  <label for="serviceNowInstance" data-i18n="set.sn_url">ServiceNow Instance URL</label>
                   <input id="serviceNowInstance" placeholder="e.g. yourinstance.service-now.com" />
                 </div>
                 <div class="form-group full">
-                  <label for="defaultEvaluator">Default Evaluated By</label>
+                  <label for="defaultEvaluator" data-i18n="set.default_eval">Default Evaluated By</label>
                   <input id="defaultEvaluator" placeholder="Your name (pre-fills the form)" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Appearance -->
+          <div class="card">
+            <div class="card-header">
+              <h3 style="font-size:15px" data-i18n="set.appearance">Appearance</h3>
+            </div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label data-i18n="set.theme">Theme</label>
+                  <div class="toggle-group" id="themeToggle" style="height:auto">
+                    <button type="button" class="toggle-btn" data-theme="light" style="padding:9px 16px" data-i18n="set.theme_light">Light</button>
+                    <button type="button" class="toggle-btn" data-theme="dark"  style="padding:9px 16px" data-i18n="set.theme_dark">Dark</button>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="languageSelect" data-i18n="set.language">Language</label>
+                  <select id="languageSelect">
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Score Criteria -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 style="font-size:15px" data-i18n="set.criteria">Score Criteria</h3>
+                <p style="font-size:12px;color:var(--muted);margin-top:3px" data-i18n="set.criteria_sub">Show or hide criteria on the evaluation form</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <div id="allCriteriaList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px"></div>
+              <div style="border-top:1px solid var(--border);padding-top:16px">
+                <p style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px" data-i18n="set.custom">Custom</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end">
+                  <div>
+                    <label style="font-size:12px" data-i18n="set.crit_name">Criterion name</label>
+                    <input id="newCriterionLabel" style="margin-top:4px" />
+                  </div>
+                  <div>
+                    <label style="font-size:12px" data-i18n="set.crit_hint">Short description (optional)</label>
+                    <input id="newCriterionHint" style="margin-top:4px" />
+                  </div>
+                  <button id="addCriterionBtn" class="btn btn-primary" style="height:39px" data-i18n="set.add_criterion">Add</button>
                 </div>
               </div>
             </div>
@@ -48,32 +100,32 @@
           <!-- Account -->
           <div class="card" id="userInfoSection">
             <div class="card-header">
-              <h3 style="font-size:15px">Account</h3>
+              <h3 style="font-size:15px" data-i18n="set.account">Account</h3>
             </div>
             <div class="card-body">
               <div class="form-grid">
                 <div class="form-group">
-                  <label>Email</label>
+                  <label data-i18n="set.email">Email</label>
                   <input id="currentUserEmail" readonly style="background:var(--bg);color:var(--text-secondary)" />
                 </div>
                 <div class="form-group">
-                  <label>User ID</label>
+                  <label data-i18n="set.uid">User ID</label>
                   <input id="currentUid" readonly style="background:var(--bg);color:var(--muted);font-size:12px" />
                 </div>
                 <div class="form-group">
-                  <label>Default Login Email</label>
+                  <label data-i18n="set.login_email">Default Login Email</label>
                   <input id="loginEmail" placeholder="Stored locally" />
                 </div>
               </div>
               <div style="margin-top:16px">
-                <button id="changePasswordBtn" class="btn btn-secondary">Send Password Reset Email</button>
+                <button id="changePasswordBtn" class="btn btn-secondary" data-i18n="set.reset_pwd">Send Password Reset Email</button>
               </div>
             </div>
           </div>
 
           <!-- Save -->
           <div style="display:flex;gap:10px">
-            <button id="saveSettingsBtn" class="btn btn-primary">Save Settings</button>
+            <button id="saveSettingsBtn" class="btn btn-primary" data-i18n="set.save">Save Settings</button>
           </div>
         </div>
       </div>
@@ -83,10 +135,10 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
   <script src="../js/firebase-config.js"></script>
   <script src="../js/toast.js"></script>
   <script src="../js/core.js"></script>
+  <script src="../js/i18n.js"></script>
   <script src="../js/sidebar.js"></script>
   <script src="../js/pages/settings.js"></script>
 </body>

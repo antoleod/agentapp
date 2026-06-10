@@ -240,11 +240,14 @@
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── Responsive ── */
+.mobile-logout-btn { display: none; }
+
 @media (max-width: 900px) {
   .shell    { flex-direction: column; }
-  .sidebar  { width: 100%; height: auto; position: static; flex-direction: row; flex-wrap: wrap; padding: 12px; }
-  .sidebar-brand { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .sidebar  { width: 100%; height: auto; position: static; flex-direction: row; flex-wrap: wrap; align-items: center; padding: 8px 12px; gap: 4px; }
+  .sidebar-brand { border-bottom: none; margin-bottom: 0; padding-bottom: 0; margin-right: auto; }
   .sidebar-nav { flex-direction: row; flex: none; }
   .nav-label, .sidebar-footer { display: none; }
+  .mobile-logout-btn { display: flex; margin-left: auto; padding: 6px 10px; white-space: nowrap; }
   .page { padding: 20px 16px; }
 }

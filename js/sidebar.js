@@ -47,8 +47,11 @@ function buildSidebar(user) {
   const name     = userDisplayName(user);
   const role     = user.isAnonymous ? "Guest access" : (user.email || "Authenticated");
 
+  const logoutSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>`;
+
   const sidebar = document.createElement("aside");
   sidebar.className = "sidebar";
+  sidebar.setAttribute("aria-label", "Main navigation");
   sidebar.innerHTML = `
     <div class="sidebar-brand">
       <div class="sidebar-logo">AE</div>
@@ -58,7 +61,7 @@ function buildSidebar(user) {
       </div>
     </div>
 
-    <nav class="sidebar-nav">
+    <nav class="sidebar-nav" aria-label="Pages">
       <span class="nav-label">Navigation</span>
       ${navLinks}
     </nav>
@@ -71,24 +74,27 @@ function buildSidebar(user) {
           <div class="user-role">${role}</div>
         </div>
       </div>
-      <button class="logout-btn" id="logoutBtn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
-        </svg>
-        Sign out
+      <button class="logout-btn" id="logoutBtn" aria-label="Sign out">
+        ${logoutSvg} Sign out
       </button>
     </div>
+
+    <button class="logout-btn mobile-logout-btn" id="mobileLogoutBtn" aria-label="Sign out">
+      ${logoutSvg} Sign out
+    </button>
   `;
 
   const shell = document.querySelector(".shell");
   shell.insertBefore(sidebar, shell.firstChild);
 
-  document.getElementById("logoutBtn").addEventListener("click", () => {
-    sessionStorage.removeItem("guestSession");
+  function doSignOut() {
     window.auth.signOut().catch(() => {}).finally(() => {
       window.location.href = "../login.html";
     });
-  });
+  }
+
+  document.getElementById("logoutBtn").addEventListener("click", doSignOut);
+  document.getElementById("mobileLogoutBtn").addEventListener("click", doSignOut);
 }
 
 // Auth guard — supports Firebase Auth and temporary guest session
@@ -96,7 +102,6 @@ if (sessionStorage.getItem("guestSession")) {
   window.currentUser = { isAnonymous: true, email: null, displayName: "Guest" };
   buildSidebar(window.currentUser);
   hideLoading();
-  // Defer so page-specific scripts loaded after sidebar.js can register their appReady listeners first
   setTimeout(() => document.dispatchEvent(new Event("appReady")), 0);
 } else {
   window.auth.onAuthStateChanged(user => {

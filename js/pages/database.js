@@ -45,25 +45,24 @@ function renderTable(data) {
     return;
   }
   body.innerHTML = data.map(item => {
-    const avg = calculateAverage(item);
+    const avg    = calculateAverage(item);
+    const ticket = escapeHtml(item.ticketNumber);
     return `
       <tr>
-        <td><strong>${item.ticketNumber}</strong></td>
-        <td>${item.agentName}</td>
-        <td>${item.evaluationDate}</td>
+        <td><strong>${ticket}</strong></td>
+        <td>${escapeHtml(item.agentName)}</td>
+        <td>${escapeHtml(item.evaluationDate)}</td>
         <td>${slaBadge(item.slaBreach)}</td>
-        <td>${item.lsa || "—"}</td>
-        <td>${item.assignedTo || "—"}</td>
+        <td>${escapeHtml(item.lsa || "—")}</td>
+        <td>${escapeHtml(item.assignedTo || "—")}</td>
         <td>${scoreBadge(avg)}</td>
-        <td>${item.evaluatedBy || "—"}</td>
+        <td>${escapeHtml(item.evaluatedBy || "—")}</td>
         <td>
           <div class="td-actions">
             <a class="btn btn-secondary btn-sm"
-               href="form.html?edit=${encodeURIComponent(item.ticketNumber)}">Edit</a>
-            <button class="btn btn-ghost btn-sm"
-                    onclick="openServiceNow('${item.ticketNumber}')">Open</button>
-            <button class="btn btn-danger btn-sm"
-                    onclick="confirmDelete('${item.ticketNumber}')">Delete</button>
+               href="form.html?edit=${encodeURIComponent(item.ticketNumber)}">${t("db.edit")}</a>
+            <button class="btn btn-ghost btn-sm" data-action="open" data-ticket="${ticket}">${t("db.open")}</button>
+            <button class="btn btn-danger btn-sm" data-action="delete" data-ticket="${ticket}">${t("db.delete")}</button>
           </div>
         </td>
       </tr>`;
@@ -92,11 +91,41 @@ function filterData(q) {
   );
 }
 
+function exportCsv(data) {
+  const scoreKeys = Object.keys(scoreLabels);
+  const headers = [
+    "Ticket Number", "Agent Name", "Evaluation Date", "SLA Breach",
+    "LSA", "Assigned To", "Evaluated By",
+    ...scoreKeys.map(k => scoreLabels[k]),
+    "Average Score", "Comments", "Created At",
+  ];
+  const rows = data.map(item => {
+    const avg = calculateAverage(item);
+    const esc = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    return [
+      esc(item.ticketNumber), esc(item.agentName), esc(item.evaluationDate),
+      esc(item.slaBreach), esc(item.lsa), esc(item.assignedTo), esc(item.evaluatedBy),
+      ...scoreKeys.map(k => esc(item[k] ?? "")),
+      esc(avg), esc(item.comments), esc(item.createdAt),
+    ].join(",");
+  });
+  return [headers.join(","), ...rows].join("\r\n");
+}
+
 function bindEvents() {
   let debounce;
   document.getElementById("searchInput").addEventListener("input", e => {
     clearTimeout(debounce);
     debounce = setTimeout(() => renderTable(filterData(e.target.value)), 200);
+  });
+
+  // Delegated click handler for action buttons (replaces inline onclick — prevents XSS)
+  document.getElementById("databaseBody").addEventListener("click", e => {
+    const btn = e.target.closest("[data-action]");
+    if (!btn) return;
+    const ticket = btn.dataset.ticket;
+    if (btn.dataset.action === "open")   openServiceNow(ticket);
+    if (btn.dataset.action === "delete") confirmDelete(ticket);
   });
 
   document.getElementById("exportJsonBtn").addEventListener("click", () => {
@@ -106,29 +135,51 @@ function bindEvents() {
       download: `agent-evaluations-${today()}.json`,
     });
     a.click();
-    toast("Export downloaded.", "success");
+    toast("JSON export downloaded.", "success");
+  });
+
+  document.getElementById("exportCsvBtn")?.addEventListener("click", () => {
+    const blob = new Blob([exportCsv(allData)], { type: "text/csv;charset=utf-8;" });
+    const a    = Object.assign(document.createElement("a"), {
+      href:     URL.createObjectURL(blob),
+      download: `agent-evaluations-${today()}.csv`,
+    });
+    a.click();
+    toast("CSV export downloaded.", "success");
   });
 
   document.getElementById("importJsonInput").addEventListener("change", async e => {
     const file = e.target.files[0];
     if (!file) return;
+    const importBtn = document.getElementById("importJsonBtn");
+    if (importBtn) { importBtn.disabled = true; importBtn.textContent = "Importing…"; }
     const reader = new FileReader();
     reader.onload = async () => {
       try {
         const imported = JSON.parse(reader.result);
         if (!Array.isArray(imported)) throw new Error("Expected a JSON array.");
-        // Upload each to Firestore
+
+        const valid = imported.filter(item => item && typeof item.ticketNumber === "string" && item.ticketNumber.trim());
+        const skipped = imported.length - valid.length;
+        if (!valid.length) throw new Error("No valid records found (all missing ticketNumber).");
+
         const batch = window.db.batch();
-        imported.forEach(item => {
-          const ref = window.db.collection("evaluations").doc(item.ticketNumber);
+        valid.forEach(item => {
+          const ref = window.db.collection(COLLECTION).doc(item.ticketNumber.trim());
           batch.set(ref, { ...item, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
         });
         await batch.commit();
         allData = await getData();
         renderTable(allData);
-        toast(`${imported.length} evaluations imported.`, "success");
+        const msg = skipped
+          ? `${valid.length} imported, ${skipped} skipped (missing ticket number).`
+          : `${valid.length} evaluations imported.`;
+        toast(msg, "success");
       } catch (err) {
         toast("Import failed: " + err.message, "error");
+      } finally {
+        e.target.value = "";
+        if (importBtn) { importBtn.disabled = false; importBtn.textContent = "Import JSON"; }
       }
     };
     reader.readAsText(file);
@@ -136,18 +187,24 @@ function bindEvents() {
 
   document.getElementById("deleteAllBtn").addEventListener("click", async () => {
     if (!confirm(`Delete ALL ${allData.length} evaluations? This cannot be undone.`)) return;
+    const btn = document.getElementById("deleteAllBtn");
+    btn.disabled    = true;
+    btn.textContent = "Deleting…";
     try {
       const batch = window.db.batch();
       allData.forEach(item => {
-        batch.delete(window.db.collection("evaluations").doc(item.ticketNumber));
+        batch.delete(window.db.collection(COLLECTION).doc(item.ticketNumber));
       });
       await batch.commit();
-      localStorage.removeItem("agentEvaluationsV2");
+      localStorage.removeItem(STORAGE_KEY);
       allData = [];
       renderTable([]);
       toast("All evaluations deleted.", "success");
     } catch (err) {
       toast("Delete failed: " + err.message, "error");
+    } finally {
+      btn.disabled    = false;
+      btn.textContent = "Delete All";
     }
   });
 }

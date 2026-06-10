@@ -1,5 +1,7 @@
-document.addEventListener("appReady", () => {
-  initScorePickers();
+let _editCreatedAt = null; // preserved when editing an existing record
+
+document.addEventListener("appReady", async () => {
+  renderAllCriteria();
   initSlaToggle();
   initProgress();
   clearForm();
@@ -8,9 +10,31 @@ document.addEventListener("appReady", () => {
   // Edit mode: form.html?edit=INC001
   const ticket = new URLSearchParams(location.search).get("edit");
   if (ticket) {
-    const cached = JSON.parse(localStorage.getItem("agentEvaluationsV2") || "[]");
+    const cached = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
     const item   = cached.find(x => x.ticketNumber === ticket);
-    if (item) { loadIntoForm(item); updateProgress(); updateAvgBadge(); }
+    if (item) {
+      _editCreatedAt = item.createdAt || null;
+      loadIntoForm(item);
+      updateProgress();
+      updateAvgBadge();
+    } else {
+      // Firestore fallback on cache miss
+      try {
+        const doc = await window.db.collection(COLLECTION).doc(ticket).get();
+        if (doc.exists) {
+          const data = doc.data();
+          _editCreatedAt = data.createdAt || null;
+          loadIntoForm(data);
+          updateProgress();
+          updateAvgBadge();
+          toast("Evaluation loaded from database.", "info");
+        } else {
+          toast(`No saved evaluation found for "${ticket}".`, "warning");
+        }
+      } catch (err) {
+        toast("Failed to load evaluation: " + err.message, "error");
+      }
+    }
   }
 
   // Auto-focus
@@ -19,11 +43,7 @@ document.addEventListener("appReady", () => {
 
 // ── Score pickers ─────────────────────────────────────────────────────────────
 function initScorePickers() {
-  document.querySelectorAll(".score-picker").forEach(picker => {
-    picker.querySelectorAll(".sp-btn").forEach(btn => {
-      btn.addEventListener("click", () => selectScore(picker, btn.dataset.v));
-    });
-  });
+  // No-op: all criteria rendered dynamically by renderAllCriteria()
 }
 
 function selectScore(picker, value) {
@@ -90,25 +110,64 @@ function updateProgress() {
 
   if (reqFilled < REQUIRED_FIELDS.length) {
     const missing = REQUIRED_FIELDS.length - reqFilled;
-    label.textContent = `${missing} required field${missing > 1 ? "s" : ""} missing`;
+    const word = missing > 1 ? t("form.req_missing_pl") : t("form.req_missing");
+    label.textContent = `${missing} ${word}`;
     bar.classList.remove("done");
   } else if (pct === 100) {
-    label.textContent = "All fields complete — ready to save";
+    label.textContent = t("form.all_complete");
     bar.classList.add("done");
   } else {
-    label.textContent = `${filled} of ${total} fields filled`;
+    label.textContent = `${filled} ${t("form.of_fields")} ${total} ${t("form.fields_filled")}`;
     bar.classList.remove("done");
   }
 }
 
 // ── Average badge ─────────────────────────────────────────────────────────────
 function updateAvgBadge() {
-  const values = scoreFields.map(id => Number(document.getElementById(id)?.value || 0));
-  const avg    = values.reduce((s, v) => s + v, 0) / values.length;
-  const badge  = document.getElementById("avgBadge");
+  const allFields = getAllScoreFields();
+  const values    = allFields.map(id => Number(document.getElementById(id)?.value || 0));
+  const avg       = values.reduce((s, v) => s + v, 0) / (values.length || 1);
+  const badge     = document.getElementById("avgBadge");
 
   badge.textContent = `Avg ${avg.toFixed(2)}`;
   badge.className   = "avg-badge " + (avg >= 4 ? "avg-high" : avg >= 3 ? "avg-mid" : "avg-low");
+}
+
+// ── Criteria rendering (built-ins + custom, all dynamic) ─────────────────────
+function buildCriterionHtml(id, label, hint) {
+  return `
+    <div class="criterion" id="criterion-${id}">
+      <div class="criterion-label">
+        <span>${escapeHtml(label)}</span>
+        <span class="criterion-hint">${escapeHtml(hint)}</span>
+      </div>
+      <div class="score-picker" data-field="${id}" data-value="3">
+        <button type="button" class="sp-btn" data-v="1">1</button>
+        <button type="button" class="sp-btn" data-v="2">2</button>
+        <button type="button" class="sp-btn sp-active" data-v="3">3</button>
+        <button type="button" class="sp-btn" data-v="4">4</button>
+        <button type="button" class="sp-btn" data-v="5">5</button>
+      </div>
+      <input type="hidden" id="${id}" value="3" />
+    </div>`;
+}
+
+function renderAllCriteria() {
+  const container = document.getElementById("scoreCriteria");
+  if (!container) return;
+  container.innerHTML = "";
+
+  getActiveCriteria().forEach(c => {
+    const label = c.builtin ? t(c.labelKey) : c.label;
+    const hint  = c.builtin ? t(c.hintKey)  : (c.hint || t("crit.custom_hint"));
+    container.insertAdjacentHTML("beforeend", buildCriterionHtml(c.id, label, hint));
+  });
+
+  container.querySelectorAll(".score-picker").forEach(picker => {
+    picker.querySelectorAll(".sp-btn").forEach(btn => {
+      btn.addEventListener("click", () => selectScore(picker, btn.dataset.v));
+    });
+  });
 }
 
 // ── Ticket type badge ─────────────────────────────────────────────────────────
@@ -134,15 +193,10 @@ function readForm() {
     slaBreach:          v("slaBreach"),
     lsa:                v("lsa").trim(),
     assignedTo:         v("assignedTo").trim(),
-    assetTracking:      v("assetTracking"),
-    planningCompliance: v("planningCompliance"),
-    kbCompliance:       v("kbCompliance"),
-    teamSpirit:         v("teamSpirit"),
-    dressCode:          v("dressCode"),
-    customerOriented:   v("customerOriented"),
+    ...Object.fromEntries(getActiveCriteria().map(c => [c.id, v(c.id)])),
     comments:           v("comments").trim(),
     evaluatedBy:        v("evaluatedBy").trim(),
-    createdAt:          new Date().toISOString(),
+    createdAt:          _editCreatedAt || new Date().toISOString(),
     createdBy:          window.currentUser?.email || "guest",
   };
 }
@@ -159,7 +213,7 @@ function loadIntoForm(item) {
   set("evaluatedBy", item.evaluatedBy || resolveEvaluatorName());
 
   setSlaValue(item.slaBreach || "No");
-  scoreFields.forEach(id => setPickerValue(id, item[id] || "3"));
+  getActiveCriteria().forEach(({ id }) => setPickerValue(id, item[id] || "3"));
 
   updateTicketBadge(item.ticketNumber || "");
 }
@@ -177,7 +231,7 @@ function clearForm() {
   document.getElementById("ticketBadge").hidden   = true;
 
   setSlaValue("No");
-  scoreFields.forEach(id => setPickerValue(id, "3"));
+  getActiveCriteria().forEach(({ id }) => setPickerValue(id, "3"));
 
   updateAvgBadge();
   updateProgress();
@@ -260,7 +314,11 @@ function showAuditPanel(data, filled) {
   if (!document.getElementById("agentName").value.trim()) remaining.push("Agent Name");
   if (!document.getElementById("evaluationDate").value)   remaining.push("Evaluation Date");
   if (!data.slaBreach)                                    remaining.push("SLA Breach");
-  remaining.push("Scores (6 criteria)");
+  const allScoresDefault = scoreFields.every(id => {
+    const v = document.getElementById(id)?.value;
+    return !v || v === "3";
+  });
+  if (allScoresDefault) remaining.push("Scores (6 criteria) — all at default 3");
 
   const panel = document.createElement("div");
   panel.id = "auditPanel";
@@ -317,6 +375,7 @@ async function handleSave(e) {
   try {
     await saveEvaluation(item);
     toast("Evaluation saved successfully.", "success");
+    _editCreatedAt = null;
     clearForm();
     document.getElementById("ticketNumber").focus();
   } catch (err) {
@@ -350,17 +409,38 @@ function bindEvents() {
     else toast("Enter a ticket number first.", "warning");
   }, true); // capture phase — runs before form's submit listener
 
-  document.getElementById("searchLocalBtn").addEventListener("click", () => {
+  document.getElementById("searchLocalBtn").addEventListener("click", async () => {
     const ticket = document.getElementById("ticketNumber").value.trim().toUpperCase();
-    const cached = JSON.parse(localStorage.getItem("agentEvaluationsV2") || "[]");
+    if (!ticket) { toast("Enter a ticket number first.", "warning"); return; }
+    const cached = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
     const item   = cached.find(x => x.ticketNumber === ticket);
-    if (!item) { toast("No saved evaluation for this ticket.", "warning"); return; }
-    loadIntoForm(item);
-    updateProgress();
-    toast("Evaluation loaded.", "info");
+    if (item) {
+      _editCreatedAt = item.createdAt || null;
+      loadIntoForm(item);
+      updateProgress();
+      toast("Evaluation loaded.", "info");
+      return;
+    }
+    // Firestore fallback
+    try {
+      const doc = await window.db.collection(COLLECTION).doc(ticket).get();
+      if (doc.exists) {
+        const data = doc.data();
+        _editCreatedAt = data.createdAt || null;
+        loadIntoForm(data);
+        updateProgress();
+        toast("Evaluation loaded from database.", "info");
+      } else {
+        toast("No saved evaluation for this ticket.", "warning");
+      }
+    } catch (err) {
+      toast("Failed to load: " + err.message, "error");
+    }
   });
 
   document.getElementById("clearBtn").addEventListener("click", () => {
+    if (!confirm("Clear the form? Unsaved changes will be lost.")) return;
+    _editCreatedAt = null;
     clearForm();
     document.getElementById("ticketNumber").focus();
   });

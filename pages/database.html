@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="../css/toast.css" />
 </head>
 <body>
-  <div id="loadingOverlay" class="loading-overlay">
+  <div id="loadingOverlay" class="loading-overlay" role="status" aria-live="polite" aria-label="Loading application">
     <div class="spinner"></div>
   </div>
 
@@ -19,39 +19,40 @@
       <div class="page">
         <div class="topbar">
           <div>
-            <h2>Database</h2>
-            <p style="color:var(--muted);font-size:13px;margin-top:3px">All saved evaluations</p>
+            <h2 data-i18n="db.title">Database</h2>
+            <p style="color:var(--muted);font-size:13px;margin-top:3px" data-i18n="db.subtitle">All saved evaluations</p>
           </div>
           <div class="topbar-actions">
             <div class="search-wrap">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
               </svg>
-              <input id="searchInput" class="search-input" placeholder="Search ticket, agent, LSA…" />
+              <input id="searchInput" class="search-input" data-i18n-ph="db.search_ph" placeholder="Search ticket, agent, LSA…" />
             </div>
-            <button id="exportJsonBtn" class="btn btn-secondary">Export JSON</button>
-            <label class="btn btn-secondary" style="cursor:pointer">
-              Import JSON
+            <button id="exportJsonBtn" class="btn btn-secondary" data-i18n="db.export_json">Export JSON</button>
+            <button id="exportCsvBtn" class="btn btn-secondary" data-i18n="db.export_csv">Export CSV</button>
+            <label class="btn btn-secondary" id="importJsonBtn" style="cursor:pointer">
+              <span data-i18n="db.import_json">Import JSON</span>
               <input id="importJsonInput" type="file" accept=".json" hidden />
             </label>
-            <button id="deleteAllBtn" class="btn btn-danger">Delete All</button>
+            <button id="deleteAllBtn" class="btn btn-danger" data-i18n="db.delete_all">Delete All</button>
           </div>
         </div>
 
         <div class="card">
           <div class="table-wrap">
-            <table>
+            <table aria-label="Saved evaluations">
               <thead>
                 <tr>
-                  <th>Ticket</th>
-                  <th>Agent</th>
-                  <th>Date</th>
-                  <th>SLA</th>
-                  <th>LSA</th>
-                  <th>Assigned To</th>
-                  <th>Score</th>
-                  <th>Evaluated By</th>
-                  <th>Actions</th>
+                  <th data-i18n="db.col_ticket">Ticket</th>
+                  <th data-i18n="db.col_agent">Agent</th>
+                  <th data-i18n="db.col_date">Date</th>
+                  <th data-i18n="db.col_sla">SLA</th>
+                  <th data-i18n="db.col_lsa">LSA</th>
+                  <th data-i18n="db.col_assigned">Assigned To</th>
+                  <th data-i18n="db.col_score">Score</th>
+                  <th data-i18n="db.col_evaluated">Evaluated By</th>
+                  <th data-i18n="db.col_actions">Actions</th>
                 </tr>
               </thead>
               <tbody id="databaseBody"></tbody>
@@ -69,6 +70,7 @@
   <script src="../js/firebase-config.js"></script>
   <script src="../js/toast.js"></script>
   <script src="../js/core.js"></script>
+  <script src="../js/i18n.js"></script>
   <script src="../js/sidebar.js"></script>
   <script src="../js/pages/database.js"></script>
 </body>

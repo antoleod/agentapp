@@ -6,10 +6,12 @@ document.addEventListener("appReady", async () => {
     toast("Failed to load reports: " + err.message, "error");
   }
   document.getElementById("refreshBtn").addEventListener("click", async () => {
-    document.getElementById("refreshBtn").textContent = "Refreshing…";
+    const btn      = document.getElementById("refreshBtn");
+    const labelEl  = btn.querySelector(".refresh-label");
+    if (labelEl) labelEl.textContent = "Refreshing…";
     const data = await getData();
     renderReports(data);
-    document.getElementById("refreshBtn").textContent = "Refresh";
+    if (labelEl) labelEl.textContent = "Refresh";
     toast("Reports updated.", "info");
   });
 });
@@ -65,8 +67,8 @@ function renderAgentChart(data) {
     return `
       <div class="agent-row">
         <div>
-          <div class="agent-name">${agent}</div>
-          <div style="font-size:11px;color:var(--muted)">${count} eval${count !== 1 ? "s" : ""}</div>
+          <div class="agent-name">${escapeHtml(agent)}</div>
+          <div style="font-size:11px;color:var(--muted)">${count} ${count !== 1 ? t("common.eval_label") : t("common.eval_label1")}</div>
         </div>
         <div class="bar-track">
           <div class="bar-fill ${cls}" style="width:${pct}%"></div>

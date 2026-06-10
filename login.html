@@ -21,31 +21,31 @@
             <p>ServiceNow Evaluation Helper</p>
           </div>
         </div>
-        <h2>Welcome back</h2>
-        <p>Sign in to your account to continue</p>
+        <h2 data-i18n="login.title">Welcome back</h2>
+        <p data-i18n="login.subtitle">Sign in to your account to continue</p>
       </div>
 
       <div class="login-body">
         <div id="loginError" class="login-error"></div>
 
-        <label for="loginEmail">Email address
+        <label for="loginEmail"><span data-i18n="login.email">Email address</span>
           <input id="loginEmail" type="email" autocomplete="email"
                  placeholder="you@example.com" required />
         </label>
 
-        <label for="loginPass">Password
+        <label for="loginPass"><span data-i18n="login.password">Password</span>
           <input id="loginPass" type="password" autocomplete="current-password"
                  placeholder="••••••••" required />
         </label>
 
-        <button type="button" id="loginBtn" class="login-btn">Sign In</button>
+        <button type="button" id="loginBtn" class="login-btn" data-i18n="login.signin">Sign In</button>
 
         <div class="login-divider">or</div>
 
-        <button type="button" id="guestBtn" class="guest-btn">Continue as Guest</button>
+        <button type="button" id="guestBtn" class="guest-btn" data-i18n="login.guest">Continue as Guest</button>
       </div>
 
-      <div class="login-footer">
+      <div class="login-footer" data-i18n="login.secured">
         Secured by Firebase Authentication
       </div>
     </div>
@@ -58,8 +58,16 @@
 
   <script src="js/firebase-config.js"></script>
   <script src="js/toast.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/i18n.js"></script>
   <script>
     const auth = firebase.auth();
+
+    // Apply saved theme and pre-fill login email
+    (function() {
+      const s = getSettings();
+      if (s.loginEmail) document.getElementById("loginEmail").value = s.loginEmail;
+    })();
 
     // If already signed in, skip login
     auth.onAuthStateChanged(user => {
@@ -93,10 +101,11 @@
         window.location.href = "pages/form.html";
       } catch (err) {
         const msgs = {
-          "auth/user-not-found":  "No account found with this email.",
-          "auth/wrong-password":  "Incorrect password.",
-          "auth/invalid-email":   "Invalid email address.",
-          "auth/too-many-requests": "Too many attempts. Try again later.",
+          "auth/user-not-found":       "No account found with this email.",
+          "auth/wrong-password":       "Incorrect password.",
+          "auth/invalid-credential":   "Incorrect email or password.",
+          "auth/invalid-email":        "Invalid email address.",
+          "auth/too-many-requests":    "Too many attempts. Try again later.",
         };
         showError(msgs[err.code] || err.message);
         setLoading(false);
