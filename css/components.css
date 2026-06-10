@@ -202,7 +202,7 @@ table {
 }
 
 thead th {
-  background: #f8fafc;
+  background: var(--bg);
   padding: 11px 14px;
   text-align: left;
   font-size: 12px;
@@ -220,7 +220,7 @@ tbody tr {
 }
 
 tbody tr:last-child { border-bottom: none; }
-tbody tr:hover      { background: #f8fafc; }
+tbody tr:hover      { background: var(--bg); }
 
 td {
   padding: 12px 14px;
@@ -300,4 +300,219 @@ td .cell-sub {
 @media (max-width: 900px) {
   .form-grid   { grid-template-columns: 1fr; }
   .score-grid  { grid-template-columns: repeat(2,1fr); }
+}
+
+/* ── Theme picker ── */
+.theme-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.theme-swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  outline: none;
+  border-radius: var(--r-md);
+  padding: 6px;
+  transition: background var(--ease);
+}
+
+.theme-swatch:hover   { background: var(--bg); }
+.theme-swatch:focus-visible { box-shadow: 0 0 0 2px var(--primary); }
+
+.swatch-preview {
+  width: 72px;
+  height: 48px;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  display: flex;
+  border: 2px solid var(--border);
+  transition: border-color var(--ease);
+}
+
+.theme-swatch.active .swatch-preview,
+.theme-swatch:hover  .swatch-preview { border-color: var(--primary); }
+
+.swatch-sidebar {
+  width: 22px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 4px;
+}
+
+.swatch-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.swatch-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 5px 5px;
+}
+
+.swatch-bar {
+  height: 5px;
+  border-radius: 3px;
+  width: 90%;
+}
+
+.swatch-panel {
+  flex: 1;
+  border-radius: 3px;
+  opacity: .8;
+}
+
+.swatch-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.theme-swatch.active .swatch-name { color: var(--primary); font-weight: 700; }
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn .15s ease;
+}
+
+.modal-overlay[hidden] { display: none; }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 460px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  animation: modalIn .18s cubic-bezier(.4,0,.2,1);
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(10px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-header h3 { font-size: 15px; font-weight: 700; }
+
+.modal-body { padding: 22px; }
+
+.modal-footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding: 16px 22px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  border-radius: 0 0 var(--r-xl) var(--r-xl);
+}
+
+/* ── Check row (section checkboxes) ── */
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+}
+
+.check-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* ── Check tag (column pills) ── */
+.check-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-full);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--ease), border-color var(--ease), color var(--ease);
+}
+
+.check-tag:hover {
+  background: var(--primary-light);
+  border-color: var(--primary-border);
+  color: var(--text);
+}
+
+.check-tag input[type="checkbox"] {
+  width: 13px;
+  height: 13px;
+  cursor: pointer;
+  accent-color: var(--primary);
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .search-input  { min-width: 0; }
+  .search-wrap   { flex: 1 1 100%; }
+  .topbar-actions { flex-wrap: wrap; }
+  .topbar-actions > .btn,
+  .topbar-actions > label.btn { flex: 1 1 auto; justify-content: center; min-width: 0; }
+
+  /* hide less-critical table columns: LSA(5), Assigned To(6), Evaluated By(8) */
+  table th:nth-child(5), table td:nth-child(5),
+  table th:nth-child(6), table td:nth-child(6),
+  table th:nth-child(8), table td:nth-child(8) { display: none; }
+
+  td { white-space: normal; word-break: break-word; }
+  .td-actions { flex-wrap: wrap; gap: 4px; }
+  .td-actions .btn-sm { flex: 1 1 auto; justify-content: center; }
+
+  /* settings custom-criteria add form: single column */
+  .criteria-add-form { grid-template-columns: 1fr !important; }
+  .criteria-add-form button { width: 100%; height: auto !important; }
+
+  .card-body { padding: 16px; }
+  .card-header { padding: 14px 16px; }
+  .form-section { padding: 16px; }
+  .form-actions { padding: 14px 16px; }
 }

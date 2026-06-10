@@ -52,18 +52,18 @@
             </div>
             <div class="card-body">
               <div class="form-grid">
-                <div class="form-group">
+                <div class="form-group full">
                   <label data-i18n="set.theme">Theme</label>
-                  <div class="toggle-group" id="themeToggle" style="height:auto">
-                    <button type="button" class="toggle-btn" data-theme="light" style="padding:9px 16px" data-i18n="set.theme_light">Light</button>
-                    <button type="button" class="toggle-btn" data-theme="dark"  style="padding:9px 16px" data-i18n="set.theme_dark">Dark</button>
-                  </div>
+                  <div id="themePicker" class="theme-picker"></div>
                 </div>
                 <div class="form-group">
                   <label for="languageSelect" data-i18n="set.language">Language</label>
                   <select id="languageSelect">
                     <option value="en">English</option>
                     <option value="es">Español</option>
+                    <option value="fr">Français</option>
+                    <option value="ro">Română</option>
+                    <option value="nl">Nederlands</option>
                   </select>
                 </div>
               </div>
@@ -82,7 +82,7 @@
               <div id="allCriteriaList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px"></div>
               <div style="border-top:1px solid var(--border);padding-top:16px">
                 <p style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px" data-i18n="set.custom">Custom</p>
-                <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end">
+                <div class="criteria-add-form" style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end">
                   <div>
                     <label style="font-size:12px" data-i18n="set.crit_name">Criterion name</label>
                     <input id="newCriterionLabel" style="margin-top:4px" />

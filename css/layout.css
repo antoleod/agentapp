@@ -251,3 +251,12 @@
   .mobile-logout-btn { display: flex; margin-left: auto; padding: 6px 10px; white-space: nowrap; }
   .page { padding: 20px 16px; }
 }
+
+@media (max-width: 640px) {
+  .page { padding: 16px 12px; }
+  /* compact nav: icon only, no text */
+  .sidebar-nav .nav { padding: 8px; flex-direction: column; gap: 2px; font-size: 10px; }
+  .sidebar-brand p { display: none; }
+  .topbar { gap: 10px; margin-bottom: 16px; }
+  .topbar h2 { font-size: 17px; }
+}

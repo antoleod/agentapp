@@ -23,12 +23,20 @@
             <h2 data-i18n="rep.title">Reports</h2>
             <p style="color:var(--muted);font-size:13px;margin-top:3px" data-i18n="rep.subtitle">Performance overview</p>
           </div>
-          <button id="refreshBtn" class="btn btn-secondary">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px">
-              <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
-            </svg>
-            <span class="refresh-label" data-i18n="rep.refresh">Refresh</span>
-          </button>
+          <div class="topbar-actions">
+            <button id="exportReportBtn" class="btn btn-secondary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              <span data-i18n="rep.export">Export</span>
+            </button>
+            <button id="refreshBtn" class="btn btn-secondary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px">
+                <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+              </svg>
+              <span class="refresh-label" data-i18n="rep.refresh">Refresh</span>
+            </button>
+          </div>
         </div>
 
         <!-- Stats -->
@@ -60,6 +68,96 @@
             <div id="agentReport"></div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Report Modal -->
+  <div id="exportModal" class="modal-overlay" hidden aria-modal="true" role="dialog">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 data-i18n="rep.export_title">Export Report</h3>
+        <button class="btn btn-ghost btn-icon" id="exportModalClose" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)" data-i18n="rep.export_format">Format</label>
+          <div class="toggle-group" id="exportFormat" style="margin-top:8px;height:auto">
+            <button type="button" class="toggle-btn toggle-primary active" data-fmt="csv" style="padding:8px 16px">CSV</button>
+            <button type="button" class="toggle-btn toggle-primary" data-fmt="json" style="padding:8px 16px">JSON</button>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:20px">
+          <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)" data-i18n="rep.export_sections">Sections</label>
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:10px">
+            <label class="check-row"><input type="checkbox" id="expSummary" checked> <span data-i18n="rep.section_summary">Summary stats</span></label>
+            <label class="check-row"><input type="checkbox" id="expAgents"  checked> <span data-i18n="rep.section_agents">Agent performance</span></label>
+            <label class="check-row"><input type="checkbox" id="expRecords">          <span data-i18n="rep.section_records">Full evaluations</span></label>
+          </div>
+        </div>
+        <!-- Filters -->
+        <div style="margin-top:20px;border-top:1px solid var(--border);padding-top:20px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+            <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)" data-i18n="rep.filter_title">Filters</label>
+            <span style="font-size:11px;padding:2px 7px;border-radius:var(--r-full);background:var(--bg);border:1px solid var(--border);color:var(--muted)" data-i18n="rep.filter_optional">optional</span>
+            <span id="matchBadge" style="margin-left:auto;font-size:12px;font-weight:600;padding:2px 8px;border-radius:var(--r-full);background:var(--primary-light);color:var(--primary);display:none"></span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div>
+              <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px" data-i18n="rep.filter_from">From date</label>
+              <input type="date" id="filterDateFrom">
+            </div>
+            <div>
+              <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px" data-i18n="rep.filter_to">To date</label>
+              <input type="date" id="filterDateTo">
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+            <div>
+              <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px" data-i18n="rep.filter_sla">SLA</label>
+              <select id="filterSLA">
+                <option value="" data-i18n="rep.filter_all">All</option>
+                <option value="Yes" data-i18n="rep.filter_breached">Breached only</option>
+                <option value="No"  data-i18n="rep.filter_within">Within SLA</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px" data-i18n="rep.filter_agent">Agent</label>
+              <input type="text" id="filterAgent" data-i18n-ph="rep.filter_agent_ph">
+            </div>
+          </div>
+          <div style="margin-top:10px">
+            <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px" data-i18n="rep.filter_score">Score filter</label>
+            <div style="display:grid;grid-template-columns:1fr 56px 64px;gap:8px;align-items:center">
+              <select id="filterCritField">
+                <option value="" data-i18n="rep.filter_any_crit">Any criterion</option>
+              </select>
+              <select id="filterCritOp" style="padding:9px 6px;text-align:center">
+                <option value="lte">≤</option>
+                <option value="gte">≥</option>
+                <option value="eq">=</option>
+              </select>
+              <input type="number" id="filterCritValue" min="1" max="5" placeholder="1–5" style="text-align:center">
+            </div>
+          </div>
+        </div>
+
+        <!-- Column picker -->
+        <div id="columnPicker" style="margin-top:20px;display:none;border-top:1px solid var(--border);padding-top:20px">
+          <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:block;margin-bottom:10px" data-i18n="rep.export_columns">Columns</label>
+          <div id="columnList" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="exportCancel" data-i18n="common.cancel">Cancel</button>
+        <button class="btn btn-primary"   id="exportDownloadBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span data-i18n="rep.export_download">Download</span>
+        </button>
       </div>
     </div>
   </div>

@@ -166,6 +166,11 @@
   color: var(--danger);
 }
 
+.toggle-btn.toggle-primary.active {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
 /* ── Score picker ── */
 .score-criteria {
   display: flex;
