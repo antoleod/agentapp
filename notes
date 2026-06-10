@@ -1,56 +1,96 @@
-{
-  "number": "INC0441139",
-  "shortDescription": "[CASP] computer is on german by default",
-  "assignedTo": "Juan Carlos DIOSES",
-  "assignmentGroup": "ITEC-SUP-Desk Side",
-  "state": "On Hold"
-}
-
 (function () {
-    const gf = gsft_main.g_form;
-  
-    const oldBtn = document.getElementById("exportAgentEvaluationBtn");
-    if (oldBtn) oldBtn.remove();
-  
-    const btn = document.createElement("button");
-    btn.id = "exportAgentEvaluationBtn";
-    btn.textContent = "📤 Export Ticket";
-  
-    Object.assign(btn.style, {
-      position: "fixed",
-      top: "20px",
-      right: "20px",
-      zIndex: "999999",
-      padding: "10px 15px",
-      background: "#0070d2",
-      color: "white",
-      border: "none",
-      borderRadius: "6px",
-      cursor: "pointer",
-      fontWeight: "bold"
-    });
-  
-    btn.onclick = async () => {
-      const data = {
-        number: gf.getValue("number"),
-        shortDescription: gf.getValue("short_description"),
-        assignedTo: gf.getDisplayValue("assigned_to"),
-        assignmentGroup: gf.getDisplayValue("assignment_group"),
-        state: gf.getDisplayValue("state")
-      };
-  
-      const json = JSON.stringify(data, null, 2);
-      console.table(data);
-  
-      try {
-        await navigator.clipboard.writeText(json);
-        alert("Ticket copied to clipboard");
-      } catch (e) {
-        prompt("Copy manually:", json);
-      }
-    };
-  
-    document.body.appendChild(btn);
-  })();
+  if (typeof g_form === "undefined") {
+    alert("g_form no disponible. Abre el ticket y vuelve a intentarlo.");
+    return;
+  }
 
-  
+  var old = document.getElementById("exportAgentEvaluationBtn");
+  if (old) old.remove();
+
+  function getSLA() {
+    var TARGET = "ITEC-SUP PS";
+
+    // Find the SLA table
+    var tbl = null;
+    var ids = ["task_sla_table", "task_sla_list", "sc_task_sla_table"];
+    for (var i = 0; i < ids.length; i++) {
+      var el = document.getElementById(ids[i]);
+      if (el) { tbl = el; break; }
+    }
+    if (!tbl) {
+      var tables = document.querySelectorAll("table");
+      for (var i = 0; i < tables.length; i++) {
+        if (tables[i].textContent.indexOf(TARGET) > -1) { tbl = tables[i]; break; }
+      }
+    }
+    if (!tbl) return null;
+
+    // Data rows have exactly 13 cells. Column layout (confirmed via diagnostic):
+    //   0: action cell  1: empty  2: SLA name  3: elapsed time  4: pause
+    //   5: Business elapsed %  6: time left  7: actual elapsed  ...
+    var NAME_IDX = 2;
+    var PCT_IDX  = 5;
+
+    var rows = Array.from(tbl.querySelectorAll("tr"));
+    var best = null; // pick the ITEC-SUP PS row with highest %
+
+    rows.forEach(function (row) {
+      var cells = Array.from(row.querySelectorAll("td"));
+      if (cells.length < 6) return;
+
+      var nameCell = cells[NAME_IDX] ? cells[NAME_IDX].textContent.trim() : "";
+      if (nameCell.indexOf(TARGET) < 0) return;
+      // Exclude helper SLAs
+      if (nameCell.indexOf("Time to Transfer") > -1) return;
+      if (nameCell.indexOf("Incident Age") > -1) return;
+      if (nameCell.indexOf("Retention") > -1) return;
+
+      var pctRaw = cells[PCT_IDX] ? cells[PCT_IDX].textContent.trim().replace(/,/g, "").replace("%", "") : "";
+      var pct = parseFloat(pctRaw);
+      if (isNaN(pct)) return;
+
+      if (!best || pct > best.pct) {
+        best = { name: nameCell, pct: pct };
+      }
+    });
+
+    if (!best) return null;
+    return {
+      slaName:       best.name,
+      slaPercentage: Math.round(best.pct * 10) / 10,
+      slaBreach:     best.pct > 100 ? "Yes" : "No",
+    };
+  }
+
+  var btn = document.createElement("button");
+  btn.id = "exportAgentEvaluationBtn";
+  btn.textContent = "Export Ticket";
+  btn.style.cssText = "position:fixed;top:20px;right:20px;z-index:999999;padding:10px 15px;background:#0070d2;color:white;border:none;border-radius:6px;cursor:pointer;font-weight:bold;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,.25)";
+
+  btn.onclick = function () {
+    var sla = getSLA();
+    var data = {
+      number:           g_form.getValue("number"),
+      shortDescription: g_form.getValue("short_description"),
+      assignedTo:       g_form.getDisplayValue("assigned_to"),
+      assignmentGroup:  g_form.getDisplayValue("assignment_group"),
+      state:            g_form.getDisplayValue("state"),
+      slaBreach:        sla ? sla.slaBreach     : null,
+      slaPercentage:    sla ? sla.slaPercentage  : null,
+      slaName:          sla ? sla.slaName        : null,
+    };
+
+    var json = JSON.stringify(data, null, 2);
+    console.table(data);
+
+    var msg = !sla
+      ? "SLA no encontrado - expande la related list SLAs."
+      : sla.slaName + " - " + sla.slaPercentage + "% - " + (sla.slaBreach === "Yes" ? "BREACHED" : "Within SLA");
+
+    navigator.clipboard.writeText(json)
+      .then(function () { alert("Copiado!\n\n" + msg + "\n\nPega en Agent Eval > Paste ServiceNow."); })
+      .catch(function () { prompt("Copia:", json); });
+  };
+
+  document.body.appendChild(btn);
+})();

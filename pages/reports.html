@@ -8,37 +8,70 @@
   <link rel="stylesheet" href="../css/layout.css" />
   <link rel="stylesheet" href="../css/components.css" />
   <link rel="stylesheet" href="../css/reports.css" />
+  <link rel="stylesheet" href="../css/toast.css" />
 </head>
 <body>
-  <main class="app">
-    <div class="topbar">
-      <h2>Reports</h2>
-      <button id="refreshReportsBtn" class="secondary">Refresh</button>
-    </div>
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner"></div>
+  </div>
 
-    <div class="report-grid">
-      <div class="metric card">
-        <span>Total Evaluations</span>
-        <strong id="totalEvaluations">0</strong>
-      </div>
-      <div class="metric card">
-        <span>SLA Breaches</span>
-        <strong id="totalBreaches">0</strong>
-      </div>
-      <div class="metric card">
-        <span>Average Score</span>
-        <strong id="averageScore">0</strong>
+  <div class="shell">
+    <div class="app">
+      <div class="page">
+        <div class="topbar">
+          <div>
+            <h2>Reports</h2>
+            <p style="color:var(--muted);font-size:13px;margin-top:3px">Performance overview</p>
+          </div>
+          <button id="refreshBtn" class="btn btn-secondary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px">
+              <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+            </svg>
+            Refresh
+          </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card accent-blue">
+            <div class="stat-label">Total Evaluations</div>
+            <div class="stat-value" id="statTotal">—</div>
+            <div class="stat-sub">All time</div>
+          </div>
+          <div class="stat-card accent-red">
+            <div class="stat-label">SLA Breaches</div>
+            <div class="stat-value" id="statBreaches">—</div>
+            <div class="stat-sub" id="statBreach%">—</div>
+          </div>
+          <div class="stat-card accent-green">
+            <div class="stat-label">Average Score</div>
+            <div class="stat-value" id="statAvg">—</div>
+            <div class="stat-sub">Out of 5.00</div>
+          </div>
+        </div>
+
+        <!-- Agent chart -->
+        <div class="card">
+          <div class="card-header">
+            <h3 style="font-size:15px">Agent Performance</h3>
+            <span style="font-size:12px;color:var(--muted)">Sorted by average score</span>
+          </div>
+          <div class="card-body">
+            <div id="agentReport"></div>
+          </div>
+        </div>
       </div>
     </div>
+  </div>
 
-    <div class="card">
-      <h3>Average by Agent</h3>
-      <div id="agentReport"></div>
-    </div>
-  </main>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
+  <script src="../js/firebase-config.js"></script>
+  <script src="../js/toast.js"></script>
   <script src="../js/core.js"></script>
   <script src="../js/sidebar.js"></script>
-  <script src="../js/reports.js"></script>
+  <script src="../js/pages/reports.js"></script>
 </body>
 </html>

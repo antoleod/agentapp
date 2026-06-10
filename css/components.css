@@ -1,118 +1,203 @@
-/* ── Nav links ── */
-.nav {
-  width: 100%;
-  display: block;
-  margin-bottom: 10px;
-  background: transparent;
-  color: #d9e2ec;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 13px;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  text-align: left;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.nav.active,
-.nav:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: white;
-}
-
 /* ── Card ── */
 .card {
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--r-lg);
   box-shadow: var(--shadow);
-  padding: 22px;
 }
 
-/* ── Form grid ── */
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(220px, 1fr));
-  gap: 16px;
+.card-header {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-.full { grid-column: 1 / -1; }
+.card-body { padding: 22px; }
 
-label {
-  display: grid;
-  gap: 8px;
-  font-weight: 700;
-  font-size: 14px;
-}
-
-input,
-select,
-textarea {
-  width: 100%;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 12px 14px;
-  font: inherit;
-  background: white;
-}
-
-input:focus,
-select:focus,
-textarea:focus {
-  outline: 2px solid var(--primary);
-  border-color: transparent;
+/* ── Section title ── */
+.section-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+  margin-bottom: 16px;
 }
 
 /* ── Buttons ── */
-button,
-.upload {
-  border: 0;
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: var(--r-md);
+  font: 600 13.5px 'Inter', sans-serif;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background var(--ease), box-shadow var(--ease), border-color var(--ease);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+.btn-primary {
   background: var(--primary);
   color: white;
-  padding: 12px 16px;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-weight: 700;
-  font: inherit;
+  border-color: var(--primary);
+}
+.btn-primary:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  box-shadow: 0 0 0 3px var(--primary-border);
 }
 
-button:hover,
-.upload:hover { background: var(--primary-dark); }
-
-.secondary {
-  background: #e8eef5;
-  color: var(--text);
-}
-
-.secondary:hover { background: var(--border); }
-
-.danger             { background: var(--danger); }
-.danger:hover       { background: #a93226; }
-
-/* Anchor styled as secondary button (e.g. Edit link in table) */
 .btn-secondary {
-  display: inline-block;
-  background: #e8eef5;
+  background: var(--panel);
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
+.btn-secondary:hover {
+  background: var(--bg);
   color: var(--text);
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  font-weight: 700;
-  text-decoration: none;
+  border-color: #cbd5e1;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border-color: transparent;
+}
+.btn-ghost:hover { background: var(--bg); color: var(--text); }
+
+.btn-danger {
+  background: var(--danger);
+  color: white;
+  border-color: var(--danger);
+}
+.btn-danger:hover {
+  background: var(--danger-hover);
+  box-shadow: 0 0 0 3px var(--danger-border);
+}
+
+.btn-sm {
+  padding: 6px 11px;
+  font-size: 12.5px;
+  border-radius: var(--r-sm);
+}
+
+.btn-icon {
+  padding: 8px;
+  border-radius: var(--r-md);
+}
+
+/* Legacy support for older selectors */
+button, .upload {
+  font-family: 'Inter', sans-serif;
   cursor: pointer;
 }
 
-.btn-secondary:hover { background: var(--border); }
+/* ── Form elements ── */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
 
-/* ── Toolbar / action rows ── */
-.actions,
-.toolbar {
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group.full,
+.full { grid-column: 1 / -1; }
+
+label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+input, select, textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 9px 13px;
+  font: 14px 'Inter', sans-serif;
+  color: var(--text);
+  background: var(--panel);
+  transition: border-color var(--ease), box-shadow var(--ease);
+  outline: none;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-border);
+}
+
+input::placeholder, textarea::placeholder { color: var(--muted); }
+
+textarea { resize: vertical; }
+
+.form-section {
+  padding: 22px;
+  border-bottom: 1px solid var(--border);
+}
+
+.form-section:last-child { border-bottom: none; }
+
+.form-actions {
+  padding: 18px 22px;
   display: flex;
   gap: 10px;
+  background: #f8fafc;
+  border-top: 1px solid var(--border);
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
   flex-wrap: wrap;
-  align-items: center;
 }
+
+/* ── Score select ── */
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+/* ── Badges ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--r-full);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-success { background: var(--success-light); color: var(--success); }
+.badge-danger  { background: var(--danger-light);  color: var(--danger); }
+.badge-warning { background: var(--warning-light); color: var(--warning); }
+.badge-neutral { background: var(--bg); color: var(--muted); }
+
+.score-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 24px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.score-low    { background: var(--danger-light);  color: var(--danger); }
+.score-mid    { background: var(--warning-light); color: var(--warning); }
+.score-high   { background: var(--success-light); color: var(--success); }
 
 /* ── Table ── */
 .table-wrap { overflow-x: auto; }
@@ -120,18 +205,106 @@ button:hover,
 table {
   width: 100%;
   border-collapse: collapse;
+  font-size: 13.5px;
 }
 
-th, td {
-  padding: 13px;
-  border-bottom: 1px solid var(--border);
+thead th {
+  background: #f8fafc;
+  padding: 11px 14px;
   text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
   white-space: nowrap;
 }
 
-th { background: #f8fafc; }
+tbody tr {
+  transition: background var(--ease);
+  border-bottom: 1px solid var(--border);
+}
+
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover      { background: #f8fafc; }
+
+td {
+  padding: 12px 14px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+td .cell-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.td-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* ── Search input ── */
+.search-wrap {
+  position: relative;
+}
+
+.search-wrap svg {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15px;
+  height: 15px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.search-input {
+  padding-left: 34px !important;
+  min-width: 220px;
+}
+
+/* ── Empty state ── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.empty-state svg {
+  width: 48px;
+  height: 48px;
+  opacity: .4;
+}
+
+.empty-state p { font-size: 14px; }
+
+/* ── Toolbar ── */
+.toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ── Divider ── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
+}
 
 /* ── Responsive ── */
-@media (max-width: 850px) {
-  .form-grid { grid-template-columns: 1fr; }
+@media (max-width: 900px) {
+  .form-grid   { grid-template-columns: 1fr; }
+  .score-grid  { grid-template-columns: repeat(2,1fr); }
 }

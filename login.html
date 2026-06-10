@@ -3,63 +3,119 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agent Evaluation — Login</title>
+  <title>Agent Evaluation — Sign In</title>
   <link rel="stylesheet" href="css/variables.css" />
-  <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="css/login.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/toast.css" />
 </head>
 <body>
-  <div class="login-box">
-    <div class="login-brand">
-      <div class="logo">AE</div>
-      <div>
-        <h1>Agent Evaluation</h1>
-        <p>ServiceNow Evaluation Helper</p>
+  <div class="login-wrap">
+    <div class="login-card">
+
+      <div class="login-header">
+        <div class="login-brand">
+          <div class="login-logo">AE</div>
+          <div>
+            <h1>Agent Evaluation</h1>
+            <p>ServiceNow Evaluation Helper</p>
+          </div>
+        </div>
+        <h2>Welcome back</h2>
+        <p>Sign in to your account to continue</p>
+      </div>
+
+      <div class="login-body">
+        <div id="loginError" class="login-error"></div>
+
+        <label for="loginEmail">Email address
+          <input id="loginEmail" type="email" autocomplete="email"
+                 placeholder="you@example.com" required />
+        </label>
+
+        <label for="loginPass">Password
+          <input id="loginPass" type="password" autocomplete="current-password"
+                 placeholder="••••••••" required />
+        </label>
+
+        <button type="button" id="loginBtn" class="login-btn">Sign In</button>
+
+        <div class="login-divider">or</div>
+
+        <button type="button" id="guestBtn" class="guest-btn">Continue as Guest</button>
+      </div>
+
+      <div class="login-footer">
+        Secured by Firebase Authentication
       </div>
     </div>
-
-    <div id="loginError" class="login-error">Incorrect username or password.</div>
-
-    <form id="loginForm">
-      <label>Username
-        <input id="loginUser" type="text" autocomplete="username" placeholder="Enter username" required />
-      </label>
-
-      <label>Password
-        <input id="loginPass" type="password" autocomplete="current-password" placeholder="Enter password" required />
-      </label>
-
-      <button type="submit" class="login-btn">Sign In</button>
-    </form>
   </div>
 
-  <script src="js/core.js"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <script src="js/firebase-config.js"></script>
+  <script src="js/toast.js"></script>
   <script>
-    document.getElementById("loginForm").addEventListener("submit", function (e) {
-      e.preventDefault();
+    const auth = firebase.auth();
 
-      const s = getSettings();
-      const storedUser = s.loginUsername || "admin";
-      const storedPass = s.loginPassword || "admin";
+    // If already signed in, skip login
+    auth.onAuthStateChanged(user => {
+      if (user) window.location.href = "pages/form.html";
+    });
 
-      const user = document.getElementById("loginUser").value;
-      const pass = document.getElementById("loginPass").value;
+    function setLoading(on) {
+      const btn = document.getElementById("loginBtn");
+      btn.disabled = on;
+      btn.textContent = on ? "Signing in…" : "Sign In";
+    }
 
-      if (user === storedUser && pass === storedPass) {
-        sessionStorage.setItem("aeSession", "1");
+    function showError(msg) {
+      const el = document.getElementById("loginError");
+      el.textContent = msg;
+      el.classList.add("visible");
+    }
+
+    function clearError() {
+      document.getElementById("loginError").classList.remove("visible");
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      const email = document.getElementById("loginEmail").value.trim();
+      const pass  = document.getElementById("loginPass").value;
+      if (!email || !pass) { showError("Please enter your email and password."); return; }
+      clearError();
+      setLoading(true);
+      try {
+        await auth.signInWithEmailAndPassword(email, pass);
         window.location.href = "pages/form.html";
-      } else {
-        document.getElementById("loginError").classList.add("visible");
-        document.getElementById("loginPass").value = "";
-        document.getElementById("loginPass").focus();
+      } catch (err) {
+        const msgs = {
+          "auth/user-not-found":  "No account found with this email.",
+          "auth/wrong-password":  "Incorrect password.",
+          "auth/invalid-email":   "Invalid email address.",
+          "auth/too-many-requests": "Too many attempts. Try again later.",
+        };
+        showError(msgs[err.code] || err.message);
+        setLoading(false);
       }
     });
 
-    ["loginUser", "loginPass"].forEach(id => {
-      document.getElementById(id).addEventListener("input", () => {
-        document.getElementById("loginError").classList.remove("visible");
-      });
+    document.getElementById("guestBtn").addEventListener("click", () => {
+      sessionStorage.setItem("guestSession", "1");
+      window.location.href = "pages/form.html";
     });
+
+    // Enter key submits
+    document.getElementById("loginPass").addEventListener("keydown", e => {
+      if (e.key === "Enter") document.getElementById("loginBtn").click();
+    });
+
+    ["loginEmail", "loginPass"].forEach(id =>
+      document.getElementById(id).addEventListener("input", clearError)
+    );
   </script>
 </body>
 </html>

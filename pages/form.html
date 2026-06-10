@@ -7,87 +7,261 @@
   <link rel="stylesheet" href="../css/variables.css" />
   <link rel="stylesheet" href="../css/layout.css" />
   <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/toast.css" />
+  <link rel="stylesheet" href="../css/form.css" />
 </head>
 <body>
-  <main class="app">
-    <div class="topbar">
-      <h2>Evaluation Form</h2>
-      <div class="toolbar">
-        <button type="button" id="pasteSnowBtn" class="secondary">Paste ServiceNow Info</button>
-        <button id="clearBtn" class="secondary">Clear</button>
+  <div id="loadingOverlay" class="loading-overlay"><div class="spinner"></div></div>
+
+  <div class="shell">
+    <div class="app">
+      <div class="page">
+
+        <!-- Topbar -->
+        <div class="topbar">
+          <div>
+            <h2>Evaluation Form</h2>
+            <p style="color:var(--muted);font-size:13px;margin-top:3px">Create or update an agent evaluation</p>
+          </div>
+          <div class="topbar-actions">
+            <button type="button" id="pasteSnowBtn" class="btn btn-secondary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+              </svg>
+              Paste ServiceNow
+            </button>
+            <button type="button" id="openSnowBtn" class="btn btn-secondary">Open in ServiceNow</button>
+            <button type="button" id="clearBtn" class="btn btn-ghost">Clear</button>
+          </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="progress-wrap">
+          <div class="progress-header">
+            <span id="progressLabel">Fill in the required fields to continue</span>
+            <span id="progressPercent">0%</span>
+          </div>
+          <div class="progress-track"><div id="progressBar" class="progress-fill"></div></div>
+        </div>
+
+        <form id="evaluationForm">
+          <div class="card">
+
+            <!-- ── Section 1: Ticket ── -->
+            <div class="form-section">
+              <div class="section-header">
+                <span class="section-num">1</span>
+                <div>
+                  <div class="section-title">Ticket Information</div>
+                  <div class="section-sub">Main ticket and agent details</div>
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="ticketNumber">
+                    Ticket Number <span class="req">*</span>
+                    <span id="ticketBadge" class="ticket-badge" hidden></span>
+                  </label>
+                  <div class="input-with-action">
+                    <input id="ticketNumber" required placeholder="INC / RITM / REQ / SCTASK…"
+                           autocomplete="off" spellcheck="false" />
+                    <button type="button" id="searchSnowBtn" class="input-action-btn"
+                            title="Search in ServiceNow (or press Enter)">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <span class="field-hint">Press Enter or click the icon to open in ServiceNow</span>
+                </div>
+
+                <div class="form-group">
+                  <label for="agentName">Agent Name <span class="req">*</span></label>
+                  <input id="agentName" required placeholder="Full name" />
+                </div>
+
+                <div class="form-group">
+                  <label for="evaluationDate">Evaluation Date <span class="req">*</span></label>
+                  <input id="evaluationDate" type="date" required />
+                </div>
+
+                <div class="form-group">
+                  <label>SLA Breach</label>
+                  <div class="toggle-group" id="slaToggle">
+                    <button type="button" class="toggle-btn active" data-value="No">✓ Within SLA</button>
+                    <button type="button" class="toggle-btn toggle-danger" data-value="Yes">⚠ Breached</button>
+                  </div>
+                  <input type="hidden" id="slaBreach" value="No" />
+                </div>
+
+                <div class="form-group">
+                  <label for="lsa">LSA / Support Area</label>
+                  <input id="lsa" placeholder="Assignment group" />
+                </div>
+
+                <div class="form-group">
+                  <label for="assignedTo">Assigned Technician</label>
+                  <input id="assignedTo" placeholder="Technician name" />
+                </div>
+              </div>
+            </div>
+
+            <!-- ── Section 2: Scores ── -->
+            <div class="form-section">
+              <div class="section-header">
+                <span class="section-num">2</span>
+                <div>
+                  <div class="section-title">Evaluation Scores</div>
+                  <div class="section-sub">Click a number to score each criterion (1 = Poor, 5 = Excellent)</div>
+                </div>
+                <div class="avg-badge" id="avgBadge">Avg —</div>
+              </div>
+
+              <div class="score-criteria">
+
+                <div class="criterion">
+                  <div class="criterion-label">
+                    <span>Asset Tracking</span>
+                    <span class="criterion-hint">Asset registration &amp; tracking</span>
+                  </div>
+                  <div class="score-picker" data-field="assetTracking" data-value="3">
+                    <button type="button" class="sp-btn" data-v="1">1</button>
+                    <button type="button" class="sp-btn" data-v="2">2</button>
+                    <button type="button" class="sp-btn sp-active" data-v="3">3</button>
+                    <button type="button" class="sp-btn" data-v="4">4</button>
+                    <button type="button" class="sp-btn" data-v="5">5</button>
+                  </div>
+                  <input type="hidden" id="assetTracking" value="3" />
+                </div>
+
+                <div class="criterion">
+                  <div class="criterion-label">
+                    <span>Planning Compliance</span>
+                    <span class="criterion-hint">Adherence to schedule</span>
+                  </div>
+                  <div class="score-picker" data-field="planningCompliance" data-value="3">
+                    <button type="button" class="sp-btn" data-v="1">1</button>
+                    <button type="button" class="sp-btn" data-v="2">2</button>
+                    <button type="button" class="sp-btn sp-active" data-v="3">3</button>
+                    <button type="button" class="sp-btn" data-v="4">4</button>
+                    <button type="button" class="sp-btn" data-v="5">5</button>
+                  </div>
+                  <input type="hidden" id="planningCompliance" value="3" />
+                </div>
+
+                <div class="criterion">
+                  <div class="criterion-label">
+                    <span>KB Compliance</span>
+                    <span class="criterion-hint">Knowledge base usage</span>
+                  </div>
+                  <div class="score-picker" data-field="kbCompliance" data-value="3">
+                    <button type="button" class="sp-btn" data-v="1">1</button>
+                    <button type="button" class="sp-btn" data-v="2">2</button>
+                    <button type="button" class="sp-btn sp-active" data-v="3">3</button>
+                    <button type="button" class="sp-btn" data-v="4">4</button>
+                    <button type="button" class="sp-btn" data-v="5">5</button>
+                  </div>
+                  <input type="hidden" id="kbCompliance" value="3" />
+                </div>
+
+                <div class="criterion">
+                  <div class="criterion-label">
+                    <span>Team Spirit</span>
+                    <span class="criterion-hint">Collaboration &amp; attitude</span>
+                  </div>
+                  <div class="score-picker" data-field="teamSpirit" data-value="3">
+                    <button type="button" class="sp-btn" data-v="1">1</button>
+                    <button type="button" class="sp-btn" data-v="2">2</button>
+                    <button type="button" class="sp-btn sp-active" data-v="3">3</button>
+                    <button type="button" class="sp-btn" data-v="4">4</button>
+                    <button type="button" class="sp-btn" data-v="5">5</button>
+                  </div>
+                  <input type="hidden" id="teamSpirit" value="3" />
+                </div>
+
+                <div class="criterion">
+                  <div class="criterion-label">
+                    <span>Dress Code</span>
+                    <span class="criterion-hint">Professional appearance</span>
+                  </div>
+                  <div class="score-picker" data-field="dressCode" data-value="3">
+                    <button type="button" class="sp-btn" data-v="1">1</button>
+                    <button type="button" class="sp-btn" data-v="2">2</button>
+                    <button type="button" class="sp-btn sp-active" data-v="3">3</button>
+                    <button type="button" class="sp-btn" data-v="4">4</button>
+                    <button type="button" class="sp-btn" data-v="5">5</button>
+                  </div>
+                  <input type="hidden" id="dressCode" value="3" />
+                </div>
+
+                <div class="criterion">
+                  <div class="criterion-label">
+                    <span>Customer Oriented</span>
+                    <span class="criterion-hint">Quality of customer interaction</span>
+                  </div>
+                  <div class="score-picker" data-field="customerOriented" data-value="3">
+                    <button type="button" class="sp-btn" data-v="1">1</button>
+                    <button type="button" class="sp-btn" data-v="2">2</button>
+                    <button type="button" class="sp-btn sp-active" data-v="3">3</button>
+                    <button type="button" class="sp-btn" data-v="4">4</button>
+                    <button type="button" class="sp-btn" data-v="5">5</button>
+                  </div>
+                  <input type="hidden" id="customerOriented" value="3" />
+                </div>
+
+              </div>
+            </div>
+
+            <!-- ── Section 3: Notes ── -->
+            <div class="form-section">
+              <div class="section-header">
+                <span class="section-num">3</span>
+                <div>
+                  <div class="section-title">Notes</div>
+                  <div class="section-sub">Additional context and evaluator</div>
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="evaluatedBy">Evaluated By</label>
+                  <input id="evaluatedBy" placeholder="Your name" />
+                </div>
+                <div class="form-group full">
+                  <label for="comments">Comments</label>
+                  <textarea id="comments" rows="3"
+                            placeholder="Observations, follow-up actions, context…"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── Actions ── -->
+            <div class="form-actions">
+              <button type="submit" id="saveBtn" class="btn btn-primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px">
+                  <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                  <polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+                </svg>
+                Save Evaluation
+              </button>
+              <button type="button" id="searchLocalBtn" class="btn btn-secondary">Load Saved Ticket</button>
+            </div>
+          </div>
+        </form>
+
       </div>
     </div>
+  </div>
 
-    <form id="evaluationForm" class="card form-grid">
-      <label>Ticket Number
-        <input id="ticketNumber" required placeholder="INC / RITM / REQ..." />
-      </label>
-
-      <label>Agent Name
-        <input id="agentName" required placeholder="Agent name" />
-      </label>
-
-      <label>Evaluation Date
-        <input id="evaluationDate" type="date" required />
-      </label>
-
-      <label>SLA Breach
-        <select id="slaBreach">
-          <option value="No">No</option>
-          <option value="Yes">Yes</option>
-        </select>
-      </label>
-
-      <label>LSA
-        <input id="lsa" placeholder="LSA / Support area" />
-      </label>
-
-      <label>Assigned To
-        <input id="assignedTo" placeholder="Assigned technician" />
-      </label>
-
-      <label>Asset Tracking
-        <select id="assetTracking"></select>
-      </label>
-
-      <label>Planning Compliance
-        <select id="planningCompliance"></select>
-      </label>
-
-      <label>Knowledge Base Compliance
-        <select id="kbCompliance"></select>
-      </label>
-
-      <label>Team Spirit
-        <select id="teamSpirit"></select>
-      </label>
-
-      <label>Dress Code
-        <select id="dressCode"></select>
-      </label>
-
-      <label>Customer Oriented
-        <select id="customerOriented"></select>
-      </label>
-
-      <label>Evaluated By
-        <input id="evaluatedBy" placeholder="Your name" />
-      </label>
-
-      <label class="full">Comments
-        <textarea id="comments" rows="4" placeholder="Notes, details, follow-up..."></textarea>
-      </label>
-
-      <div class="actions full">
-        <button type="submit">Save Evaluation</button>
-        <button type="button" id="searchLocalBtn" class="secondary">Search Saved Ticket</button>
-        <button type="button" id="openSnowBtn" class="secondary">Open ServiceNow</button>
-      </div>
-    </form>
-  </main>
-
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="../js/toast.js"></script>
   <script src="../js/core.js"></script>
   <script src="../js/sidebar.js"></script>
-  <script src="../js/form.js"></script>
+  <script src="../js/pages/form.js"></script>
 </body>
 </html>
