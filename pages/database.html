@@ -35,6 +35,12 @@
               <span data-i18n="db.import_json">Import JSON</span>
               <input id="importJsonInput" type="file" accept=".json" hidden />
             </label>
+            <button id="auditLogBtn" class="btn btn-secondary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px">
+                <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
+              </svg>
+              <span>Audit Log</span>
+            </button>
             <button id="deleteAllBtn" class="btn btn-danger" data-i18n="db.delete_all">Delete All</button>
           </div>
         </div>
@@ -59,6 +65,104 @@
             </table>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import Preview Modal -->
+  <div id="importPreviewModal" class="modal-overlay" hidden aria-modal="true" role="dialog">
+    <div class="modal" style="max-width:760px;width:95%">
+      <div class="modal-header">
+        <h3 id="importPreviewTitle">Import Preview</h3>
+        <button class="btn btn-ghost btn-icon" id="importPreviewClose" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" style="padding-bottom:0">
+        <div id="importSummaryBar" class="import-summary-bar"></div>
+        <div style="overflow-x:auto;max-height:360px;margin-top:14px;border:1px solid var(--border);border-radius:var(--r-md)">
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead>
+              <tr style="position:sticky;top:0;background:var(--panel);z-index:1">
+                <th style="padding:8px 10px;text-align:left;font-weight:600;border-bottom:1px solid var(--border);width:32px">
+                  <input type="checkbox" id="importSelectAll" title="Select all valid/warning rows">
+                </th>
+                <th style="padding:8px 10px;text-align:left;font-weight:600;border-bottom:1px solid var(--border);width:28px"></th>
+                <th style="padding:8px 10px;text-align:left;font-weight:600;border-bottom:1px solid var(--border)">Ticket</th>
+                <th style="padding:8px 10px;text-align:left;font-weight:600;border-bottom:1px solid var(--border)">Agent</th>
+                <th style="padding:8px 10px;text-align:left;font-weight:600;border-bottom:1px solid var(--border)">Date</th>
+                <th style="padding:8px 10px;text-align:left;font-weight:600;border-bottom:1px solid var(--border)">SLA</th>
+                <th style="padding:8px 10px;text-align:left;font-weight:600;border-bottom:1px solid var(--border)">Issues</th>
+              </tr>
+            </thead>
+            <tbody id="importPreviewBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="importPreviewCancel">Cancel</button>
+        <button class="btn btn-primary" id="importConfirmBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px">
+            <polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/>
+            <path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/>
+          </svg>
+          <span id="importConfirmLabel">Import 0 selected</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audit Log Modal -->
+  <div id="auditLogModal" class="modal-overlay" hidden aria-modal="true" role="dialog">
+    <div class="modal" style="max-width:820px;width:95%">
+      <div class="modal-header">
+        <h3>Audit Log</h3>
+        <button class="btn btn-ghost btn-icon" id="auditLogClose" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" style="padding-bottom:0">
+        <div style="display:grid;grid-template-columns:1fr 1fr auto auto;gap:8px;margin-bottom:12px;align-items:end">
+          <div>
+            <label style="font-size:11px;font-weight:600;display:block;margin-bottom:3px;color:var(--muted)">From</label>
+            <input type="date" id="auditDateFrom" style="width:100%">
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;display:block;margin-bottom:3px;color:var(--muted)">To</label>
+            <input type="date" id="auditDateTo" style="width:100%">
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;display:block;margin-bottom:3px;color:var(--muted)">Action</label>
+            <select id="auditActionFilter" style="padding:9px 10px">
+              <option value="">All</option>
+              <option value="create">Create</option>
+              <option value="update">Update</option>
+              <option value="delete">Delete</option>
+              <option value="import">Import</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;display:block;margin-bottom:3px;color:var(--muted)">Agent / Ticket</label>
+            <input type="text" id="auditSearch" placeholder="Search…" style="width:140px">
+          </div>
+        </div>
+        <div id="auditEntriesList" style="max-height:420px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r-md);background:var(--bg)">
+          <div class="empty-state" style="padding:32px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:32px;height:32px">
+              <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+            <p>Loading audit log…</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="auditExportCsvBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Export CSV
+        </button>
+        <button class="btn btn-secondary" id="auditLogCloseBtn">Close</button>
       </div>
     </div>
   </div>

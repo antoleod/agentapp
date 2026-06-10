@@ -2,6 +2,7 @@ const STORAGE_KEY        = "agentEvaluationsV2";
 const SETTINGS_KEY       = "agentEvaluationSettingsV1";
 const SEARCH_HISTORY_KEY = "serviceNowSearchHistoryV1";
 const COLLECTION         = "evaluations";
+const AUDIT_COLLECTION   = "auditLog";
 
 // Built-in score criteria — labelKey/hintKey resolved via t() from i18n.js
 const BUILTIN_CRITERIA = [
@@ -95,7 +96,7 @@ async function getData() {
   }
 }
 
-async function saveEvaluation(item) {
+async function saveEvaluation(item, auditCtx = {}) {
   await window.db.collection(COLLECTION).doc(item.ticketNumber).set({
     ...item,
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -104,14 +105,64 @@ async function saveEvaluation(item) {
   const idx = cached.findIndex(x => x.ticketNumber === item.ticketNumber);
   if (idx >= 0) cached[idx] = item; else cached.unshift(item);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(cached));
+
+  const { action = "create", prevData = null } = auditCtx;
+  let changes = null;
+  if (action === "update" && prevData) {
+    changes = {};
+    const keys = new Set([...Object.keys(prevData), ...Object.keys(item)]);
+    keys.forEach(k => {
+      if (k === "updatedAt" || k === "createdAt") return;
+      if (String(prevData[k] ?? "") !== String(item[k] ?? "")) {
+        changes[k] = { before: prevData[k] ?? null, after: item[k] ?? null };
+      }
+    });
+    if (!Object.keys(changes).length) changes = null;
+  }
+  logAudit({
+    action,
+    ticketNumber:   item.ticketNumber,
+    agentName:      item.agentName      || "",
+    evaluationDate: item.evaluationDate || "",
+    changes,
+    snapshot: action === "create" ? item : null,
+  });
 }
 
-async function deleteEvaluation(ticketNumber) {
+async function deleteEvaluation(ticketNumber, snapshot = null) {
   await window.db.collection(COLLECTION).doc(ticketNumber).delete();
   const cached = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
   localStorage.setItem(STORAGE_KEY,
     JSON.stringify(cached.filter(x => x.ticketNumber !== ticketNumber))
   );
+  logAudit({
+    action:         "delete",
+    ticketNumber,
+    agentName:      snapshot?.agentName      || "",
+    evaluationDate: snapshot?.evaluationDate || "",
+    snapshot,
+  });
+}
+
+function logAudit(entry) {
+  const user = window.currentUser;
+  window.db.collection(AUDIT_COLLECTION).add({
+    ...entry,
+    performedBy: user ? (user.email || user.uid || "unknown") : "anonymous",
+    timestamp:   firebase.firestore.FieldValue.serverTimestamp(),
+  }).catch(() => {});
+}
+
+async function getAuditLog(limit = 300) {
+  try {
+    const snap = await window.db.collection(AUDIT_COLLECTION)
+      .orderBy("timestamp", "desc")
+      .limit(limit)
+      .get();
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch {
+    return [];
+  }
 }
 
 // ── ServiceNow ────────────────────────────────────────────────────────────────

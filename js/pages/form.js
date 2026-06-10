@@ -1,4 +1,5 @@
-let _editCreatedAt = null; // preserved when editing an existing record
+let _editCreatedAt = null;
+let _editPrevData  = null;
 
 document.addEventListener("appReady", async () => {
   renderAllCriteria();
@@ -14,6 +15,7 @@ document.addEventListener("appReady", async () => {
     const item   = cached.find(x => x.ticketNumber === ticket);
     if (item) {
       _editCreatedAt = item.createdAt || null;
+      _editPrevData  = { ...item };
       loadIntoForm(item);
       updateProgress();
       updateAvgBadge();
@@ -24,6 +26,7 @@ document.addEventListener("appReady", async () => {
         if (doc.exists) {
           const data = doc.data();
           _editCreatedAt = data.createdAt || null;
+          _editPrevData  = { ...data };
           loadIntoForm(data);
           updateProgress();
           updateAvgBadge();
@@ -373,9 +376,12 @@ async function handleSave(e) {
   btn.textContent  = "Saving…";
 
   try {
-    await saveEvaluation(item);
+    const isEdit   = _editCreatedAt !== null;
+    const auditCtx = { action: isEdit ? "update" : "create", prevData: isEdit ? _editPrevData : null };
+    await saveEvaluation(item, auditCtx);
     toast("Evaluation saved successfully.", "success");
     _editCreatedAt = null;
+    _editPrevData  = null;
     clearForm();
     document.getElementById("ticketNumber").focus();
   } catch (err) {
@@ -416,6 +422,7 @@ function bindEvents() {
     const item   = cached.find(x => x.ticketNumber === ticket);
     if (item) {
       _editCreatedAt = item.createdAt || null;
+      _editPrevData  = { ...item };
       loadIntoForm(item);
       updateProgress();
       toast("Evaluation loaded.", "info");
@@ -427,6 +434,7 @@ function bindEvents() {
       if (doc.exists) {
         const data = doc.data();
         _editCreatedAt = data.createdAt || null;
+        _editPrevData  = { ...data };
         loadIntoForm(data);
         updateProgress();
         toast("Evaluation loaded from database.", "info");
