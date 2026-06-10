@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Evaluation — Form</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <div class="topbar">
+      <h2>Evaluation Form</h2>
+      <div class="toolbar">
+        <button type="button" id="pasteSnowBtn" class="secondary">Paste ServiceNow Info</button>
+        <button id="clearBtn" class="secondary">Clear</button>
+      </div>
+    </div>
+
+    <form id="evaluationForm" class="card form-grid">
+      <label>Ticket Number
+        <input id="ticketNumber" required placeholder="INC / RITM / REQ..." />
+      </label>
+
+      <label>Agent Name
+        <input id="agentName" required placeholder="Agent name" />
+      </label>
+
+      <label>Evaluation Date
+        <input id="evaluationDate" type="date" required />
+      </label>
+
+      <label>SLA Breach
+        <select id="slaBreach">
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </label>
+
+      <label>LSA
+        <input id="lsa" placeholder="LSA / Support area" />
+      </label>
+
+      <label>Assigned To
+        <input id="assignedTo" placeholder="Assigned technician" />
+      </label>
+
+      <label>Asset Tracking
+        <select id="assetTracking"></select>
+      </label>
+
+      <label>Planning Compliance
+        <select id="planningCompliance"></select>
+      </label>
+
+      <label>Knowledge Base Compliance
+        <select id="kbCompliance"></select>
+      </label>
+
+      <label>Team Spirit
+        <select id="teamSpirit"></select>
+      </label>
+
+      <label>Dress Code
+        <select id="dressCode"></select>
+      </label>
+
+      <label>Customer Oriented
+        <select id="customerOriented"></select>
+      </label>
+
+      <label>Evaluated By
+        <input id="evaluatedBy" placeholder="Your name" />
+      </label>
+
+      <label class="full">Comments
+        <textarea id="comments" rows="4" placeholder="Notes, details, follow-up..."></textarea>
+      </label>
+
+      <div class="actions full">
+        <button type="submit">Save Evaluation</button>
+        <button type="button" id="searchLocalBtn" class="secondary">Search Saved Ticket</button>
+        <button type="button" id="openSnowBtn" class="secondary">Open ServiceNow</button>
+      </div>
+    </form>
+  </main>
+
+  <script src="js/core.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/form.js"></script>
+</body>
+</html>

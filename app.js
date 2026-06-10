@@ -383,11 +383,18 @@ document.getElementById("importJsonInput").addEventListener("change", event => {
 document.getElementById("saveSettingsBtn").addEventListener("click", () => {
   const settings = {
     serviceNowInstance: document.getElementById("serviceNowInstance").value.trim(),
-    defaultEvaluator: document.getElementById("defaultEvaluator").value.trim()
+    defaultEvaluator: document.getElementById("defaultEvaluator").value.trim(),
+    loginUsername: document.getElementById("loginUsername").value.trim(),
+    loginPassword: document.getElementById("loginPassword").value
   };
 
   saveSettings(settings);
   alert("Settings saved.");
+});
+
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  sessionStorage.removeItem("aeSession");
+  window.location.href = "login.html";
 });
 
 function loadSettingsUI() {
@@ -395,6 +402,8 @@ function loadSettingsUI() {
 
   document.getElementById("serviceNowInstance").value = settings.serviceNowInstance || "";
   document.getElementById("defaultEvaluator").value = settings.defaultEvaluator || "";
+  document.getElementById("loginUsername").value = settings.loginUsername || "";
+  document.getElementById("loginPassword").value = settings.loginPassword || "";
 }
 
 fillScoreDropdowns();

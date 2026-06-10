@@ -26,6 +26,8 @@ body {
   background: #102a43;
   color: white;
   padding: 24px;
+  display: flex;
+  flex-direction: column;
 }
 
 .brand {
@@ -67,6 +69,9 @@ body {
   border-radius: 12px;
   cursor: pointer;
   text-align: left;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .nav.active,
@@ -74,6 +79,39 @@ body {
   background: rgba(255,255,255,0.12);
   color: white;
 }
+
+#logoutBtn {
+  margin-top: auto;
+  background: transparent;
+  color: #bcccdc;
+  border: 1px solid rgba(255,255,255,0.15);
+  width: 100%;
+  padding: 13px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  text-align: left;
+  font-size: 14px;
+}
+
+#logoutBtn:hover {
+  background: rgba(255,255,255,0.08);
+  color: white;
+}
+
+.btn-secondary {
+  display: inline-block;
+  background: #e8eef5;
+  color: #172033;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-secondary:hover { background: #d9e2ec; }
 
 .app {
   flex: 1;

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Evaluation — Reports</title>
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/reports.css" />
+</head>
+<body>
+  <main class="app">
+    <div class="topbar">
+      <h2>Reports</h2>
+      <button id="refreshReportsBtn" class="secondary">Refresh</button>
+    </div>
+
+    <div class="report-grid">
+      <div class="metric card">
+        <span>Total Evaluations</span>
+        <strong id="totalEvaluations">0</strong>
+      </div>
+      <div class="metric card">
+        <span>SLA Breaches</span>
+        <strong id="totalBreaches">0</strong>
+      </div>
+      <div class="metric card">
+        <span>Average Score</span>
+        <strong id="averageScore">0</strong>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Average by Agent</h3>
+      <div id="agentReport"></div>
+    </div>
+  </main>
+
+  <script src="../js/core.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script src="../js/reports.js"></script>
+</body>
+</html>

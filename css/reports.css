@@ -1,0 +1,43 @@
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.metric span {
+  display: block;
+  color: var(--muted);
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.metric strong {
+  font-size: 32px;
+}
+
+.agent-row {
+  display: grid;
+  grid-template-columns: 220px 1fr 60px;
+  gap: 12px;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.bar {
+  height: 12px;
+  border-radius: 999px;
+  background: #e8eef5;
+  overflow: hidden;
+}
+
+.bar > div {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 999px;
+}
+
+@media (max-width: 850px) {
+  .report-grid  { grid-template-columns: 1fr; }
+  .agent-row    { grid-template-columns: 1fr; }
+}

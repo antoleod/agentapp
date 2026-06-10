@@ -1,0 +1,81 @@
+/* ── Sidebar ── */
+.sidebar {
+  width: 280px;
+  min-height: 100vh;
+  background: var(--sidebar-bg);
+  color: white;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.brand {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: #2f80ed;
+  color: white;
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.brand p {
+  margin: 4px 0 0;
+  color: #bcccdc;
+  font-size: 13px;
+}
+
+#logoutBtn {
+  margin-top: auto;
+  background: transparent;
+  color: #bcccdc;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  width: 100%;
+  padding: 13px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 700;
+  text-align: left;
+  font-size: 14px;
+}
+
+#logoutBtn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+}
+
+/* ── Main content ── */
+.app {
+  flex: 1;
+  padding: 28px;
+  min-width: 0;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 850px) {
+  body        { flex-direction: column; }
+  .sidebar    { width: 100%; min-height: unset; }
+}

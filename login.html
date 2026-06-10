@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Evaluation — Login</title>
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/login.css" />
+</head>
+<body>
+  <div class="login-box">
+    <div class="login-brand">
+      <div class="logo">AE</div>
+      <div>
+        <h1>Agent Evaluation</h1>
+        <p>ServiceNow Evaluation Helper</p>
+      </div>
+    </div>
+
+    <div id="loginError" class="login-error">Incorrect username or password.</div>
+
+    <form id="loginForm">
+      <label>Username
+        <input id="loginUser" type="text" autocomplete="username" placeholder="Enter username" required />
+      </label>
+
+      <label>Password
+        <input id="loginPass" type="password" autocomplete="current-password" placeholder="Enter password" required />
+      </label>
+
+      <button type="submit" class="login-btn">Sign In</button>
+    </form>
+  </div>
+
+  <script src="js/core.js"></script>
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const s = getSettings();
+      const storedUser = s.loginUsername || "admin";
+      const storedPass = s.loginPassword || "admin";
+
+      const user = document.getElementById("loginUser").value;
+      const pass = document.getElementById("loginPass").value;
+
+      if (user === storedUser && pass === storedPass) {
+        sessionStorage.setItem("aeSession", "1");
+        window.location.href = "pages/form.html";
+      } else {
+        document.getElementById("loginError").classList.add("visible");
+        document.getElementById("loginPass").value = "";
+        document.getElementById("loginPass").focus();
+      }
+    });
+
+    ["loginUser", "loginPass"].forEach(id => {
+      document.getElementById(id).addEventListener("input", () => {
+        document.getElementById("loginError").classList.remove("visible");
+      });
+    });
+  </script>
+</body>
+</html>
