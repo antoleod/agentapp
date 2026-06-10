@@ -1,0 +1,29 @@
+{
+  "settings": {
+    "serviceNowInstance": "YOUR_INSTANCE",
+    "defaultEvaluator": ""
+  },
+  "evaluations": [],
+  "scoreScale": [
+    {
+      "score": 1,
+      "meaning": "Poor"
+    },
+    {
+      "score": 2,
+      "meaning": "Needs Improvement"
+    },
+    {
+      "score": 3,
+      "meaning": "Good"
+    },
+    {
+      "score": 4,
+      "meaning": "Very Good"
+    },
+    {
+      "score": 5,
+      "meaning": "Excellent"
+    }
+  ]
+}

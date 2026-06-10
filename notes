@@ -1,0 +1,56 @@
+{
+  "number": "INC0441139",
+  "shortDescription": "[CASP] computer is on german by default",
+  "assignedTo": "Juan Carlos DIOSES",
+  "assignmentGroup": "ITEC-SUP-Desk Side",
+  "state": "On Hold"
+}
+
+(function () {
+    const gf = gsft_main.g_form;
+  
+    const oldBtn = document.getElementById("exportAgentEvaluationBtn");
+    if (oldBtn) oldBtn.remove();
+  
+    const btn = document.createElement("button");
+    btn.id = "exportAgentEvaluationBtn";
+    btn.textContent = "📤 Export Ticket";
+  
+    Object.assign(btn.style, {
+      position: "fixed",
+      top: "20px",
+      right: "20px",
+      zIndex: "999999",
+      padding: "10px 15px",
+      background: "#0070d2",
+      color: "white",
+      border: "none",
+      borderRadius: "6px",
+      cursor: "pointer",
+      fontWeight: "bold"
+    });
+  
+    btn.onclick = async () => {
+      const data = {
+        number: gf.getValue("number"),
+        shortDescription: gf.getValue("short_description"),
+        assignedTo: gf.getDisplayValue("assigned_to"),
+        assignmentGroup: gf.getDisplayValue("assignment_group"),
+        state: gf.getDisplayValue("state")
+      };
+  
+      const json = JSON.stringify(data, null, 2);
+      console.table(data);
+  
+      try {
+        await navigator.clipboard.writeText(json);
+        alert("Ticket copied to clipboard");
+      } catch (e) {
+        prompt("Copy manually:", json);
+      }
+    };
+  
+    document.body.appendChild(btn);
+  })();
+
+  
