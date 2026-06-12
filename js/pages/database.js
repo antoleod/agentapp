@@ -6,8 +6,9 @@ let _mathAnswer      = 0;  // correct answer for Delete All math check
 document.addEventListener("appReady", async () => {
   if (getSettings().compactTable) document.querySelector(".table-wrap table")?.setAttribute("data-compact", "");
 
-  // Show cached data instantly, then refresh from Firestore in background
-  const cached = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  // Show cached data instantly — guests never see another user's cache
+  const isGuest = sessionStorage.getItem("guestSession") === "1";
+  const cached  = isGuest ? [] : JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
   if (cached.length) {
     allData = cached;
     renderTable(allData);
