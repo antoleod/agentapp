@@ -5,7 +5,7 @@ node_modules/
 .env
 .env.local
 .env.*.local
-js/firebase-config.js
+# firebase-config.js is intentionally tracked — Firebase client config is public by design
 
 # OS files
 .DS_Store
