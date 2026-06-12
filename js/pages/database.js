@@ -35,7 +35,7 @@ document.addEventListener("appReady", async () => {
 function setTableLoading(on) {
   if (on) {
     document.getElementById("databaseBody").innerHTML =
-      `<tr><td colspan="9"><div class="empty-state"><div class="spinner" style="border-top-color:var(--primary)"></div></div></td></tr>`;
+      `<tr><td colspan="15"><div class="empty-state"><div class="spinner" style="border-top-color:var(--primary)"></div></div></td></tr>`;
   }
   // false → do nothing; renderTable() replaces the content
 }
@@ -55,7 +55,7 @@ function renderTable(data) {
   const body = document.getElementById("databaseBody");
   if (!data.length) {
     body.innerHTML = `
-      <tr><td colspan="9">
+      <tr><td colspan="15">
         <div class="empty-state">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -65,9 +65,24 @@ function renderTable(data) {
       </td></tr>`;
     return;
   }
+  const KPI_FIELDS = [
+    { id: "assetTracking",      label: "Asset Tracking" },
+    { id: "planningCompliance", label: "Planning Compliance" },
+    { id: "kbCompliance",       label: "KB Compliance" },
+    { id: "teamSpirit",         label: "Team Spirit" },
+    { id: "dressCode",          label: "Dress Code" },
+    { id: "customerOriented",   label: "Customer Oriented" },
+  ];
+
   body.innerHTML = data.map(item => {
     const avg    = calculateAverage(item);
     const ticket = escapeHtml(item.ticketNumber);
+    const kpiCells = KPI_FIELDS.map(({ id, label }) => {
+      const val = item[id];
+      if (!val && val !== 0) return `<td class="kpi-cell kpi-empty" title="${label}">—</td>`;
+      const cls = val >= 4 ? "kpi-high" : val >= 3 ? "kpi-mid" : "kpi-low";
+      return `<td class="kpi-cell ${cls}" title="${label}: ${val}">${val}</td>`;
+    }).join("");
     return `
       <tr>
         <td><strong>${ticket}</strong></td>
@@ -76,6 +91,7 @@ function renderTable(data) {
         <td>${slaBadge(item.slaBreach)}</td>
         <td>${escapeHtml(item.lsa || "—")}</td>
         <td>${escapeHtml(item.assignedTo || "—")}</td>
+        ${kpiCells}
         <td>${scoreBadge(avg)}</td>
         <td>${escapeHtml(item.evaluatedBy || "—")}</td>
         <td>

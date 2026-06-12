@@ -192,6 +192,29 @@ textarea { resize: vertical; }
 .score-mid    { background: var(--warning-light); color: var(--warning); }
 .score-high   { background: var(--success-light); color: var(--success); }
 
+/* ── KPI columns ── */
+.kpi-col {
+  width: 36px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: var(--muted);
+  cursor: default;
+}
+
+.kpi-cell {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 4px !important;
+}
+
+.kpi-high  { color: var(--success); }
+.kpi-mid   { color: var(--warning); }
+.kpi-low   { color: var(--danger);  }
+.kpi-empty { color: var(--muted); font-weight: 400; }
+
 /* ── Table ── */
 .table-wrap { overflow-x: auto; }
 
