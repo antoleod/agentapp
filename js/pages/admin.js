@@ -278,7 +278,7 @@ async function onRoleChange(e) {
 
   sel.disabled = true;
   try {
-    await setUserRole(u.email, u.displayName, newRole);
+    await updateUserRole(docId, newRole);
     sel.dataset.current = newRole;
     toast(`Role updated to ${newRole}.`, "success");
     await refreshUsers();
@@ -357,12 +357,12 @@ function bindForm() {
 
 async function sendInviteEmail(email) {
   const actionCodeSettings = {
-    url: window.location.origin + "/login.html",
+    url: "https://oryxen.tech/agentapp/login.html",
     handleCodeInApp: true,
   };
   await window.auth.sendSignInLinkToEmail(email, actionCodeSettings);
-  // Store email so login.html can complete the sign-in if opened on same device
-  localStorage.setItem("inviteEmailForSignIn", email);
+  // NOTE: do NOT store the email here (admin's browser ≠ invitee's browser).
+  // The invitee will be prompted to enter their email on the login page.
 }
 
 function bindSearch() {

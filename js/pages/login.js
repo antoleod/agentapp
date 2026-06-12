@@ -2,21 +2,38 @@
 (async () => {
   if (!window.auth.isSignInWithEmailLink(window.location.href)) return;
 
-  let email = localStorage.getItem("inviteEmailForSignIn");
-  if (!email) {
-    email = window.prompt("Please enter your email address to complete sign-in:");
-    if (!email) return;
-  }
+  // Hide normal login UI — show the email-confirm panel instead
+  document.getElementById("loginForm").hidden     = true;
+  document.getElementById("guestBtn").hidden      = true;
+  document.querySelector(".login-divider").hidden = true;
+  document.getElementById("emailConfirmPanel").hidden = false;
 
-  try {
-    await window.auth.signInWithEmailLink(email, window.location.href);
-    localStorage.removeItem("inviteEmailForSignIn");
-    // Clean the URL so refreshing doesn't re-trigger
-    history.replaceState(null, "", window.location.pathname);
-    // After sign-in, onAuthStateChanged fires — set-password check happens there
-  } catch (err) {
-    showError("Invitation link is invalid or expired. Please contact an admin.");
-  }
+  document.getElementById("emailConfirmBtn").addEventListener("click", async () => {
+    const email = document.getElementById("confirmEmail").value.trim();
+    const errEl = document.getElementById("emailConfirmError");
+    errEl.hidden = true;
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errEl.textContent = "Please enter a valid email address.";
+      errEl.hidden = false;
+      return;
+    }
+
+    const btn = document.getElementById("emailConfirmBtn");
+    btn.disabled = true;
+    btn.textContent = "Verifying…";
+
+    try {
+      await window.auth.signInWithEmailLink(email, window.location.href);
+      history.replaceState(null, "", window.location.pathname);
+      // onAuthStateChanged fires next — set-password check happens there
+    } catch (_) {
+      errEl.textContent = "Invitation link is invalid or expired. Please contact an admin.";
+      errEl.hidden = false;
+      btn.disabled = false;
+      btn.textContent = "Continue";
+    }
+  });
 })();
 
 // Already signed in — check session expiry first
@@ -28,7 +45,6 @@ window.auth.onAuthStateChanged(async user => {
     return;
   }
 
-  // Check if this user must set a password on first login
   if (user.email) {
     try {
       const key  = user.email.toLowerCase().replace(/[@.]/g, "_");
@@ -122,9 +138,9 @@ document.getElementById("setPasswordBtn")?.addEventListener("click", async () =>
     const user = window.auth.currentUser;
     await user.updatePassword(pw1);
 
-    // Clear the mustSetPassword flag
-    const key = user.email.toLowerCase().replace(/[@.]/g, "_");
-    await window.db.collection("roles").doc(key).update({ mustSetPassword: false });
+    // Clear the flag server-side via Cloud Function (Admin SDK — client cannot tamper)
+    const clearFn = window.functions.httpsCallable("clearMustSetPassword");
+    await clearFn();
 
     showSessionModal(() => { window.location.href = "pages/form.html"; });
   } catch (e) {
@@ -154,7 +170,7 @@ document.getElementById("loginForm").addEventListener("submit", async e => {
       "auth/invalid-email":      "Invalid email address.",
       "auth/too-many-requests":  "Too many attempts. Try again later.",
     };
-    showError(msgs[err.code] || err.message);
+    showError(msgs[err.code] || "Authentication failed. Please try again.");
     setLoading(false);
   }
 });

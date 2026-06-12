@@ -361,27 +361,21 @@ async function getUserRole(email) {
   }
 }
 
-// SECURITY WARNING: setUserRole and removeUserRole write to the roles collection.
-// Firestore rules block all client writes to this collection (allow write: if false).
-// To actually modify roles, use the Firebase Admin SDK from a trusted server environment
-// (e.g., a Cloud Function with admin credentials). These functions will fail at runtime
-// for all clients — they are retained here only for UI error-handling and future migration.
+// Role writes go through Cloud Functions — Admin SDK bypasses Firestore rules server-side,
+// so no client can self-escalate or tamper with the roles collection directly.
 async function setUserRole(email, displayName, role) {
-  const key = emailKey(email);
-  if (!key) throw new Error("Invalid email");
-  const user = window.currentUser;
-  await window.db.collection(ROLES_COLLECTION).doc(key).set({
-    email,
-    displayName: displayName || email.split("@")[0],
-    role,
-    addedAt: new Date().toISOString(),
-    addedBy: user ? (user.uid || user.email || "unknown") : "unknown",
-    mustSetPassword: true,
-  });
+  const fn = window.functions.httpsCallable("setUserRole");
+  await fn({ email, displayName: displayName || null, role });
+}
+
+async function updateUserRole(docId, role) {
+  const fn = window.functions.httpsCallable("updateUserRole");
+  await fn({ docId, role });
 }
 
 async function removeUserRole(docId) {
-  await window.db.collection(ROLES_COLLECTION).doc(docId).delete();
+  const fn = window.functions.httpsCallable("removeUserRole");
+  await fn({ docId });
 }
 
 async function listAllRoles() {

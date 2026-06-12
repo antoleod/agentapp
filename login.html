@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://apis.google.com 'sha256-vvt4KWwuNr51XfE5m+hzeNEGhiOfZzG97ccfqGsPwvE='; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; frame-src https://agentapp-8ea1c.firebaseapp.com;" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://apis.google.com 'sha256-vvt4KWwuNr51XfE5m+hzeNEGhiOfZzG97ccfqGsPwvE='; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://us-central1-agentapp-8ea1c.cloudfunctions.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; frame-src https://agentapp-8ea1c.firebaseapp.com;" />
   <title>Agent Evaluation — Sign In</title>
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/login.css" />
@@ -102,7 +102,7 @@
         <span id="loginErrorMsg"></span>
       </div>
 
-      <form id="loginForm" action="" method="get" autocomplete="on">
+      <form id="loginForm" onsubmit="return false" autocomplete="on">
         <div class="login-field">
           <label for="loginEmail">Email address</label>
           <div class="login-input-wrap">
@@ -190,6 +190,39 @@
             Back to sign in
           </a>
         </div>
+      </div>
+
+      <!-- Email confirm panel (opening invite link on a different device) -->
+      <div id="emailConfirmPanel" hidden>
+        <div class="recovery-header">
+          <div class="recovery-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+          <div>
+            <div class="recovery-title">Confirm your email</div>
+            <div class="recovery-sub">Enter the email address where you received the invitation</div>
+          </div>
+        </div>
+        <div id="emailConfirmError" class="login-error" role="alert" hidden style="margin-bottom:12px"></div>
+        <div class="login-field">
+          <label for="confirmEmail">Email address</label>
+          <div class="login-input-wrap">
+            <svg class="login-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <input id="confirmEmail" type="email" placeholder="you@company.com" autocomplete="username" />
+          </div>
+        </div>
+        <button type="button" id="emailConfirmBtn" class="login-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/>
+          </svg>
+          Continue
+        </button>
       </div>
 
       <!-- Set password panel (first login via invite link) -->
@@ -291,6 +324,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
 
   <script src="js/firebase-config.js"></script>
   <script src="js/toast.js"></script>
