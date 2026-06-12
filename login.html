@@ -96,24 +96,26 @@
         <span id="loginErrorMsg"></span>
       </div>
 
-      <div class="login-field">
-        <label for="loginEmail">Email address</label>
-        <input id="loginEmail" type="email" autocomplete="email"
-               placeholder="you@company.com" required />
-      </div>
+      <form id="loginForm" action="#" autocomplete="on">
+        <div class="login-field">
+          <label for="loginEmail">Email address</label>
+          <input id="loginEmail" name="email" type="email" autocomplete="username"
+                 placeholder="you@company.com" required />
+        </div>
 
-      <div class="login-field">
-        <label for="loginPass">Password</label>
-        <input id="loginPass" type="password" autocomplete="current-password"
-               placeholder="••••••••" required />
-      </div>
+        <div class="login-field">
+          <label for="loginPass">Password</label>
+          <input id="loginPass" name="password" type="password" autocomplete="current-password"
+                 placeholder="••••••••" required />
+        </div>
 
-      <button type="button" id="loginBtn" class="login-btn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/>
-        </svg>
-        Sign In
-      </button>
+        <button type="submit" id="loginBtn" class="login-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/>
+          </svg>
+          Sign In
+        </button>
+      </form>
 
       <div class="login-divider">or</div>
 
@@ -173,7 +175,8 @@
       document.getElementById("loginError").classList.remove("visible");
     }
 
-    document.getElementById("loginBtn").addEventListener("click", async () => {
+    document.getElementById("loginForm").addEventListener("submit", async e => {
+      e.preventDefault();
       const email = document.getElementById("loginEmail").value.trim();
       const pass  = document.getElementById("loginPass").value;
       if (!email || !pass) { showError("Please enter your email and password."); return; }
@@ -198,10 +201,6 @@
     document.getElementById("guestBtn").addEventListener("click", () => {
       sessionStorage.setItem("guestSession", "1");
       window.location.href = "pages/form.html";
-    });
-
-    document.getElementById("loginPass").addEventListener("keydown", e => {
-      if (e.key === "Enter") document.getElementById("loginBtn").click();
     });
 
     ["loginEmail", "loginPass"].forEach(id =>
