@@ -29,115 +29,280 @@
 
         <div class="settings-grid">
 
-          <!-- Application -->
-          <div class="card">
-            <div class="card-header">
-              <h3 style="font-size:15px" data-i18n="set.app">Application</h3>
-            </div>
-            <div class="card-body">
-              <div class="form-grid">
-                <div class="form-group full">
-                  <label for="serviceNowInstance" data-i18n="set.sn_url">ServiceNow Instance URL</label>
-                  <input id="serviceNowInstance" placeholder="e.g. yourinstance.service-now.com" />
-                </div>
-                <div class="form-group full">
-                  <label for="defaultEvaluator" data-i18n="set.default_eval">Default Evaluated By</label>
-                  <input id="defaultEvaluator" placeholder="Your name (pre-fills the form)" />
-                </div>
-              </div>
-            </div>
-          </div>
+          <!-- LEFT COLUMN -->
+          <div class="settings-col">
 
-          <!-- Evaluation Defaults -->
-          <div class="card">
-            <div class="card-header">
-              <div>
-                <h3 style="font-size:15px" data-i18n="set.eval_defaults">Evaluation Defaults</h3>
-                <p style="font-size:12px;color:var(--muted);margin-top:3px" data-i18n="set.eval_defaults_sub">Pre-filled values when you open a new evaluation</p>
+            <!-- Application -->
+            <div class="card">
+              <div class="card-header">
+                <h3 style="font-size:15px" data-i18n="set.app">Application</h3>
               </div>
-            </div>
-            <div class="card-body">
-              <div class="form-grid">
-                <div class="form-group">
-                  <label for="defaultSla" data-i18n="set.default_sla">Default SLA Breach</label>
-                  <select id="defaultSla">
-                    <option value="No">No</option>
-                    <option value="Yes">Yes</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="defaultScore" data-i18n="set.default_score">Default Score</label>
-                  <select id="defaultScore">
-                    <option value="" data-i18n="set.no_prefill">No pre-fill</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                  </select>
-                </div>
-                <div class="form-group full" style="padding-top:4px">
-                  <label class="settings-switch">
-                    <input type="checkbox" id="requireAllScores">
-                    <span class="switch-track"><span class="switch-thumb"></span></span>
-                    <span data-i18n="set.require_scores">Require all scores before saving</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Appearance -->
-          <div class="card settings-col-right">
-            <div class="card-header">
-              <h3 style="font-size:15px" data-i18n="set.appearance">Appearance</h3>
-            </div>
-            <div class="card-body">
-              <div class="form-grid">
-                <div class="form-group full">
-                  <label data-i18n="set.theme">Theme</label>
-                  <div id="themePicker" class="theme-picker"></div>
-                </div>
-                <div class="form-group full">
-                  <label data-i18n="set.font">Font</label>
-                  <div id="fontPicker" class="font-picker" style="margin-top:8px"></div>
-                </div>
-                <div class="form-group">
-                  <label data-i18n="set.font_size">Font Size</label>
-                  <div class="toggle-group" id="fontSizePicker" style="margin-top:8px;height:auto">
-                    <button type="button" class="toggle-btn" data-size="sm" style="padding:8px 20px" data-i18n="set.font_sm">S</button>
-                    <button type="button" class="toggle-btn" data-size="md" style="padding:8px 20px" data-i18n="set.font_md">M</button>
-                    <button type="button" class="toggle-btn" data-size="lg" style="padding:8px 20px" data-i18n="set.font_lg">L</button>
+              <div class="card-body">
+                <div class="form-grid">
+                  <div class="form-group full">
+                    <label for="serviceNowInstance" data-i18n="set.sn_url">ServiceNow Instance URL</label>
+                    <input id="serviceNowInstance" placeholder="e.g. yourinstance.service-now.com" />
+                  </div>
+                  <div class="form-group full">
+                    <label for="defaultEvaluator" data-i18n="set.default_eval">Default Evaluated By</label>
+                    <input id="defaultEvaluator" placeholder="Your name (pre-fills the form)" />
                   </div>
                 </div>
-                <div class="form-group">
-                  <label for="languageSelect" data-i18n="set.language">Language</label>
-                  <select id="languageSelect">
-                    <option value="en">English</option>
-                    <option value="es">Español</option>
-                    <option value="fr">Français</option>
-                    <option value="ro">Română</option>
-                    <option value="nl">Nederlands</option>
-                  </select>
+              </div>
+            </div>
+
+            <!-- Evaluation Defaults -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 style="font-size:15px" data-i18n="set.eval_defaults">Evaluation Defaults</h3>
+                  <p style="font-size:12px;color:var(--muted);margin-top:3px" data-i18n="set.eval_defaults_sub">Pre-filled values when you open a new evaluation</p>
                 </div>
-                <div class="form-group">
-                  <label for="dateFormat" data-i18n="set.date_format">Date Format</label>
-                  <select id="dateFormat">
-                    <option value="iso" data-i18n="set.date_iso">ISO (YYYY-MM-DD)</option>
-                    <option value="dmy" data-i18n="set.date_dmy">European (DD/MM/YYYY)</option>
-                    <option value="mdy" data-i18n="set.date_mdy">US (MM/DD/YYYY)</option>
-                  </select>
+              </div>
+              <div class="card-body">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="defaultSla" data-i18n="set.default_sla">Default SLA Breach</label>
+                    <select id="defaultSla">
+                      <option value="No">No</option>
+                      <option value="Yes">Yes</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="defaultScore" data-i18n="set.default_score">Default Score</label>
+                    <select id="defaultScore">
+                      <option value="" data-i18n="set.no_prefill">No pre-fill</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                    </select>
+                  </div>
+                  <div class="form-group full" style="padding-top:4px">
+                    <label class="settings-switch">
+                      <input type="checkbox" id="requireAllScores">
+                      <span class="switch-track"><span class="switch-thumb"></span></span>
+                      <span data-i18n="set.require_scores">Require all scores before saving</span>
+                    </label>
+                  </div>
                 </div>
-                <div class="form-group full" style="padding-top:4px">
+              </div>
+            </div>
+
+            <!-- Form Behavior -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 style="font-size:15px">Form Behavior</h3>
+                  <p style="font-size:12px;color:var(--muted);margin-top:3px">Actions triggered automatically when using the evaluation form</p>
+                </div>
+              </div>
+              <div class="card-body">
+                <div style="display:flex;flex-direction:column;gap:14px">
                   <label class="settings-switch">
-                    <input type="checkbox" id="compactTable">
+                    <input type="checkbox" id="formAutoOpenSN">
                     <span class="switch-track"><span class="switch-thumb"></span></span>
-                    <span data-i18n="set.compact_table">Compact table rows</span>
+                    <span>Auto-open ServiceNow ticket after saving</span>
+                  </label>
+                  <label class="settings-switch">
+                    <input type="checkbox" id="formClearAfterSave">
+                    <span class="switch-track"><span class="switch-thumb"></span></span>
+                    <span>Clear form after saving an evaluation</span>
+                  </label>
+                  <label class="settings-switch">
+                    <input type="checkbox" id="formShowScoreHints" checked>
+                    <span class="switch-track"><span class="switch-thumb"></span></span>
+                    <span>Show score hint text below each criterion</span>
                   </label>
                 </div>
               </div>
             </div>
-          </div>
+
+            <!-- Data Behavior -->
+            <div class="card">
+              <div class="card-header">
+                <h3 style="font-size:15px" data-i18n="set.data_behavior">Data Behavior</h3>
+              </div>
+              <div class="card-body">
+                <div style="display:flex;flex-direction:column;gap:14px">
+                  <label class="settings-switch">
+                    <input type="checkbox" id="confirmDeleteSingle" checked>
+                    <span class="switch-track"><span class="switch-thumb"></span></span>
+                    <span data-i18n="set.confirm_delete">Ask for confirmation before deleting a record</span>
+                  </label>
+                  <label class="settings-switch">
+                    <input type="checkbox" id="autoSaveDraft">
+                    <span class="switch-track"><span class="switch-thumb"></span></span>
+                    <span>Auto-save form draft to browser (restored on next visit)</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Account -->
+            <div class="card" id="userInfoSection">
+              <div class="card-header">
+                <h3 style="font-size:15px" data-i18n="set.account">Account</h3>
+              </div>
+              <div class="card-body">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label data-i18n="set.email">Email</label>
+                    <input id="currentUserEmail" readonly style="background:var(--bg);color:var(--text-secondary)" />
+                  </div>
+                  <div class="form-group">
+                    <label data-i18n="set.uid">User ID</label>
+                    <input id="currentUid" readonly style="background:var(--bg);color:var(--muted);font-size:12px" />
+                  </div>
+                  <div class="form-group">
+                    <label data-i18n="set.login_email">Default Login Email</label>
+                    <input id="loginEmail" placeholder="Stored locally" />
+                  </div>
+                </div>
+                <div style="margin-top:16px">
+                  <button id="changePasswordBtn" class="btn btn-secondary" data-i18n="set.reset_pwd">Send Password Reset Email</button>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /LEFT COLUMN -->
+
+          <!-- RIGHT COLUMN -->
+          <div class="settings-col">
+
+            <!-- Appearance -->
+            <div class="card">
+              <div class="card-header">
+                <h3 style="font-size:15px" data-i18n="set.appearance">Appearance</h3>
+              </div>
+              <div class="card-body">
+                <div class="form-grid">
+                  <div class="form-group full">
+                    <label data-i18n="set.theme">Theme</label>
+                    <div id="themePicker" class="theme-picker"></div>
+                  </div>
+                  <div class="form-group full">
+                    <label data-i18n="set.font">Font</label>
+                    <div id="fontPicker" class="font-picker" style="margin-top:8px"></div>
+                  </div>
+                  <div class="form-group">
+                    <label data-i18n="set.font_size">Font Size</label>
+                    <div class="toggle-group" id="fontSizePicker" style="margin-top:8px;height:auto">
+                      <button type="button" class="toggle-btn" data-size="sm" style="padding:8px 20px" data-i18n="set.font_sm">S</button>
+                      <button type="button" class="toggle-btn" data-size="md" style="padding:8px 20px" data-i18n="set.font_md">M</button>
+                      <button type="button" class="toggle-btn" data-size="lg" style="padding:8px 20px" data-i18n="set.font_lg">L</button>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="languageSelect" data-i18n="set.language">Language</label>
+                    <select id="languageSelect">
+                      <option value="en">English</option>
+                      <option value="es">Español</option>
+                      <option value="fr">Français</option>
+                      <option value="ro">Română</option>
+                      <option value="nl">Nederlands</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="dateFormat" data-i18n="set.date_format">Date Format</label>
+                    <select id="dateFormat">
+                      <option value="iso" data-i18n="set.date_iso">ISO (YYYY-MM-DD)</option>
+                      <option value="dmy" data-i18n="set.date_dmy">European (DD/MM/YYYY)</option>
+                      <option value="mdy" data-i18n="set.date_mdy">US (MM/DD/YYYY)</option>
+                    </select>
+                  </div>
+                  <div class="form-group full" style="padding-top:4px">
+                    <label class="settings-switch">
+                      <input type="checkbox" id="compactTable">
+                      <span class="switch-track"><span class="switch-thumb"></span></span>
+                      <span data-i18n="set.compact_table">Compact table rows</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Database View -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 style="font-size:15px">Database View</h3>
+                  <p style="font-size:12px;color:var(--muted);margin-top:3px">Control how the evaluation table looks</p>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label>Default Sort</label>
+                    <select id="dbDefaultSort">
+                      <option value="date_desc">Date — newest first</option>
+                      <option value="date_asc">Date — oldest first</option>
+                      <option value="score_desc">Score — highest first</option>
+                      <option value="score_asc">Score — lowest first</option>
+                      <option value="agent_az">Agent — A → Z</option>
+                      <option value="ticket_asc">Ticket number</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Rows Per Page</label>
+                    <select id="dbRowsPerPage">
+                      <option value="25">25</option>
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                      <option value="0">All</option>
+                    </select>
+                  </div>
+                  <div class="form-group full" style="padding-top:4px">
+                    <label class="settings-switch">
+                      <input type="checkbox" id="dbShowKpi" checked>
+                      <span class="switch-track"><span class="switch-thumb"></span></span>
+                      <span>Show individual KPI columns (AT, PC, KB…)</span>
+                    </label>
+                  </div>
+                  <div class="form-group full" style="padding-top:4px">
+                    <label class="settings-switch">
+                      <input type="checkbox" id="dbHighlightBreaches" checked>
+                      <span class="switch-track"><span class="switch-thumb"></span></span>
+                      <span>Highlight SLA breach rows</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Export Defaults -->
+            <div class="card">
+              <div class="card-header">
+                <h3 style="font-size:15px">Export Defaults</h3>
+              </div>
+              <div class="card-body">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label>Default Export Format</label>
+                    <select id="exportDefaultFormat">
+                      <option value="csv">CSV</option>
+                      <option value="json">JSON</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>SLA Breach Highlight Threshold (%)</label>
+                    <input type="number" id="slaThreshold" min="0" max="500" placeholder="100" style="width:100%" />
+                  </div>
+                  <div class="form-group full" style="padding-top:4px">
+                    <label class="settings-switch">
+                      <input type="checkbox" id="exportIncludeComments" checked>
+                      <span class="switch-track"><span class="switch-thumb"></span></span>
+                      <span>Include comments column in CSV exports</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /RIGHT COLUMN -->
+
+          <!-- FULL WIDTH -->
 
           <!-- Score Criteria -->
           <div class="card settings-span">
@@ -183,163 +348,11 @@
             </div>
           </div>
 
-          <!-- Account -->
-          <div class="card" id="userInfoSection">
-            <div class="card-header">
-              <h3 style="font-size:15px" data-i18n="set.account">Account</h3>
-            </div>
-            <div class="card-body">
-              <div class="form-grid">
-                <div class="form-group">
-                  <label data-i18n="set.email">Email</label>
-                  <input id="currentUserEmail" readonly style="background:var(--bg);color:var(--text-secondary)" />
-                </div>
-                <div class="form-group">
-                  <label data-i18n="set.uid">User ID</label>
-                  <input id="currentUid" readonly style="background:var(--bg);color:var(--muted);font-size:12px" />
-                </div>
-                <div class="form-group">
-                  <label data-i18n="set.login_email">Default Login Email</label>
-                  <input id="loginEmail" placeholder="Stored locally" />
-                </div>
-              </div>
-              <div style="margin-top:16px">
-                <button id="changePasswordBtn" class="btn btn-secondary" data-i18n="set.reset_pwd">Send Password Reset Email</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Database View -->
-          <div class="card settings-col-right">
-            <div class="card-header">
-              <div>
-                <h3 style="font-size:15px">Database View</h3>
-                <p style="font-size:12px;color:var(--muted);margin-top:3px">Control how the evaluation table looks</p>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="form-grid">
-                <div class="form-group">
-                  <label>Default Sort</label>
-                  <select id="dbDefaultSort">
-                    <option value="date_desc">Date — newest first</option>
-                    <option value="date_asc">Date — oldest first</option>
-                    <option value="score_desc">Score — highest first</option>
-                    <option value="score_asc">Score — lowest first</option>
-                    <option value="agent_az">Agent — A → Z</option>
-                    <option value="ticket_asc">Ticket number</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>Rows Per Page</label>
-                  <select id="dbRowsPerPage">
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                    <option value="0">All</option>
-                  </select>
-                </div>
-                <div class="form-group full" style="padding-top:4px">
-                  <label class="settings-switch">
-                    <input type="checkbox" id="dbShowKpi" checked>
-                    <span class="switch-track"><span class="switch-thumb"></span></span>
-                    <span>Show individual KPI columns (AT, PC, KB…)</span>
-                  </label>
-                </div>
-                <div class="form-group full" style="padding-top:4px">
-                  <label class="settings-switch">
-                    <input type="checkbox" id="dbHighlightBreaches" checked>
-                    <span class="switch-track"><span class="switch-thumb"></span></span>
-                    <span>Highlight SLA breach rows</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Form Behavior -->
-          <div class="card">
-            <div class="card-header">
-              <div>
-                <h3 style="font-size:15px">Form Behavior</h3>
-                <p style="font-size:12px;color:var(--muted);margin-top:3px">Actions triggered automatically when using the evaluation form</p>
-              </div>
-            </div>
-            <div class="card-body">
-              <div style="display:flex;flex-direction:column;gap:14px">
-                <label class="settings-switch">
-                  <input type="checkbox" id="formAutoOpenSN">
-                  <span class="switch-track"><span class="switch-thumb"></span></span>
-                  <span>Auto-open ServiceNow ticket after saving</span>
-                </label>
-                <label class="settings-switch">
-                  <input type="checkbox" id="formClearAfterSave">
-                  <span class="switch-track"><span class="switch-thumb"></span></span>
-                  <span>Clear form after saving an evaluation</span>
-                </label>
-                <label class="settings-switch">
-                  <input type="checkbox" id="formShowScoreHints" checked>
-                  <span class="switch-track"><span class="switch-thumb"></span></span>
-                  <span>Show score hint text below each criterion</span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <!-- Export Defaults -->
-          <div class="card settings-col-right">
-            <div class="card-header">
-              <h3 style="font-size:15px">Export Defaults</h3>
-            </div>
-            <div class="card-body">
-              <div class="form-grid">
-                <div class="form-group">
-                  <label>Default Export Format</label>
-                  <select id="exportDefaultFormat">
-                    <option value="csv">CSV</option>
-                    <option value="json">JSON</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>SLA Breach Highlight Threshold (%)</label>
-                  <input type="number" id="slaThreshold" min="0" max="500" placeholder="100" style="width:100%" />
-                </div>
-                <div class="form-group full" style="padding-top:4px">
-                  <label class="settings-switch">
-                    <input type="checkbox" id="exportIncludeComments" checked>
-                    <span class="switch-track"><span class="switch-thumb"></span></span>
-                    <span>Include comments column in CSV exports</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Data Behavior -->
-          <div class="card">
-            <div class="card-header">
-              <h3 style="font-size:15px" data-i18n="set.data_behavior">Data Behavior</h3>
-            </div>
-            <div class="card-body">
-              <div style="display:flex;flex-direction:column;gap:14px">
-                <label class="settings-switch">
-                  <input type="checkbox" id="confirmDeleteSingle" checked>
-                  <span class="switch-track"><span class="switch-thumb"></span></span>
-                  <span data-i18n="set.confirm_delete">Ask for confirmation before deleting a record</span>
-                </label>
-                <label class="settings-switch">
-                  <input type="checkbox" id="autoSaveDraft">
-                  <span class="switch-track"><span class="switch-thumb"></span></span>
-                  <span>Auto-save form draft to browser (restored on next visit)</span>
-                </label>
-              </div>
-            </div>
-          </div>
-
           <!-- Save -->
           <div style="display:flex;gap:10px" class="settings-span">
             <button id="saveSettingsBtn" class="btn btn-primary" data-i18n="set.save">Save Settings</button>
           </div>
+
         </div>
       </div>
     </div>
