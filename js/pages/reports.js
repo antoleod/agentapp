@@ -12,12 +12,18 @@ document.addEventListener("appReady", async () => {
   document.getElementById("refreshBtn").addEventListener("click", async () => {
     const btn     = document.getElementById("refreshBtn");
     const labelEl = btn.querySelector(".refresh-label");
+    if (btn.disabled) return;
+    btn.disabled = true;
     if (labelEl) labelEl.textContent = "Refreshing…";
-    const data = await getData();
-    _reportData = data;
-    renderReports(data);
-    if (labelEl) labelEl.textContent = t("rep.refresh");
-    toast("Reports updated.", "info");
+    try {
+      const data = await getData();
+      _reportData = data;
+      renderReports(data);
+      toast("Reports updated.", "info");
+    } finally {
+      btn.disabled = false;
+      if (labelEl) labelEl.textContent = t("rep.refresh");
+    }
   });
 
   bindExportModal();
@@ -33,7 +39,7 @@ function renderReports(data) {
   document.getElementById("statTotal").textContent   = total;
   document.getElementById("statBreaches").textContent = breaches;
   document.getElementById("statAvg").textContent      = avgScore;
-  document.getElementById("statBreach%").textContent  = total
+  document.getElementById("statBreachPct").textContent  = total
     ? `${((breaches / total) * 100).toFixed(0)}% breach rate`
     : "No data";
 

@@ -263,7 +263,7 @@
 @media (max-width: 640px) {
   .page { padding: 16px 12px; }
   /* compact nav: icon only, no text */
-  .sidebar-nav .nav { padding: 8px; flex-direction: column; gap: 2px; font-size: 10px; }
+  .sidebar-nav .nav { padding: 8px; flex-direction: column; gap: 2px; font-size: 12px; }
   .sidebar-brand p { display: none; }
   .topbar { gap: 10px; margin-bottom: 16px; }
   .topbar h2 { font-size: 17px; }

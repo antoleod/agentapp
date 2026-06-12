@@ -233,6 +233,7 @@ function bindImportPreview() {
   closeBtn.addEventListener("click",  closeModal);
   cancelBtn.addEventListener("click", closeModal);
   modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !modal.hidden) closeModal(); });
 
   function updateConfirmLabel() {
     const checked = previewBody.querySelectorAll("input[type=checkbox]:checked").length;
@@ -263,7 +264,7 @@ function bindImportPreview() {
       const batch = window.db.batch();
       toImport.forEach(item => {
         const ref = window.db.collection(COLLECTION).doc(item.ticketNumber.trim());
-        batch.set(ref, { ...item, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        batch.set(ref, { ...item, updatedAt: firebase.firestore.FieldValue.serverTimestamp(), createdAt: item.createdAt || firebase.firestore.FieldValue.serverTimestamp() });
       });
       await batch.commit();
 
@@ -387,6 +388,7 @@ function bindAuditModal() {
   closeBtn.addEventListener("click",  closeModal);
   closeBtnF.addEventListener("click", closeModal);
   modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !modal.hidden) closeModal(); });
 
   openBtn.addEventListener("click", async () => {
     modal.hidden = false;

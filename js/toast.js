@@ -15,6 +15,10 @@ function getToastContainer() {
   return c;
 }
 
+function _esc(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
 function toast(message, type = "success", duration = 3500) {
   const container = getToastContainer();
 
@@ -24,7 +28,7 @@ function toast(message, type = "success", duration = 3500) {
     <span class="toast-icon">${ICONS[type] || ICONS.info}</span>
     <div class="toast-body">
       <div class="toast-title">${capitalize(type)}</div>
-      <div class="toast-msg">${message}</div>
+      <div class="toast-msg">${_esc(message)}</div>
     </div>
     <button class="toast-close" onclick="dismissToast(this)">×</button>
   `;

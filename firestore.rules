@@ -3,30 +3,38 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper: check if the requesting user has admin role
+    // emailKey must match JS: replace(/[@.]/g, "_")
+    function emailKey(email) {
+      return email.lower().replace("@", "_").replace(".", "_");
+    }
+
+    // Check if the requesting user has admin role
     function isAdmin() {
-      let key = request.auth.token.email.replace(".", "_").replace("@", "_at_");
+      let key = emailKey(request.auth.token.email);
       return exists(/databases/$(database)/documents/roles/$(key))
         && get(/databases/$(database)/documents/roles/$(key)).data.role == "admin";
     }
 
     // Evaluations collection
     match /evaluations/{ticketNumber} {
-      // Any authenticated user can read and create evaluations
       allow read, create: if request.auth != null;
-
-      // Update/delete only if the caller owns the document or is admin
       allow update, delete: if request.auth != null
         && (resource.data.ownerUid == request.auth.uid || isAdmin());
     }
 
-    // Roles collection — readable by authenticated users, never writable from clients
+    // Roles collection — readable by all authenticated users, writable only by admins
     match /roles/{docId} {
       allow read: if request.auth != null;
-      allow write: if false;
+      allow write: if request.auth != null && isAdmin();
     }
 
-    // Block everything else by default
+    // Audit log — readable and creatable by authenticated users
+    match /auditLog/{logId} {
+      allow read, create: if request.auth != null;
+      allow update, delete: if false;
+    }
+
+    // Block everything else
     match /{document=**} {
       allow read, write: if false;
     }

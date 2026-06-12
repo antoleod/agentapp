@@ -110,6 +110,9 @@ function buildSidebar(user) {
   }
 
   function doSignOut() {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(SEARCH_HISTORY_KEY);
+    sessionStorage.removeItem("guestSession");
     window.auth.signOut().catch(() => {}).finally(() => {
       window.location.href = "../login.html";
     });
@@ -120,17 +123,22 @@ function buildSidebar(user) {
 }
 
 // Auth guard — supports Firebase Auth and temporary guest session
+let _sidebarBuilt = false;
 if (sessionStorage.getItem("guestSession")) {
+  _sidebarBuilt = true;
   window.currentUser = { isAnonymous: true, email: null, displayName: "Guest" };
   buildSidebar(window.currentUser);
   hideLoading();
   setTimeout(() => document.dispatchEvent(new Event("appReady")), 0);
 } else {
   window.auth.onAuthStateChanged(user => {
+    if (_sidebarBuilt) return;
     if (!user) {
       window.location.href = "../login.html";
       return;
     }
+    _sidebarBuilt = true;
+    sessionStorage.removeItem("guestSession");
     window.currentUser = user;
     buildSidebar(user);
     hideLoading();
