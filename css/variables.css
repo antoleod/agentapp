@@ -123,8 +123,11 @@
   --shadow:         0 1px 3px rgba(0,0,0,.6), 0 1px 2px rgba(0,0,0,.5);
   --shadow-md:      0 4px 6px rgba(0,0,0,.6), 0 2px 4px rgba(0,0,0,.5);
   --sidebar-bg:     #0a0a0a;
-  --sidebar-active: rgba(249,115,22,.2);
+  --sidebar-active: rgba(249,115,22,.18);
   --sidebar-border: rgba(255,255,255,.06);
+  --sidebar-hover:  rgba(249,115,22,.08);
+  --sidebar-text:   #d4d4d4;
+  --sidebar-muted:  #737373;
 }
 
 [data-theme="sunset"] .criterion:hover { background: rgba(255,255,255,.04); }

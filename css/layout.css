@@ -110,7 +110,7 @@
 
 .nav.active {
   background: var(--sidebar-active);
-  color: #93c5fd;
+  color: var(--primary);
 }
 
 .nav.active .nav-icon { opacity: 1; }
