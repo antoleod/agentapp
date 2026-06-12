@@ -1,6 +1,7 @@
 let allData = [];
-let _importParsed   = [];  // rows from last parsed import file
-let _auditAllEntries = []; // full audit log loaded into viewer
+let _importParsed    = [];
+let _auditAllEntries = [];
+let _mathAnswer      = 0;  // correct answer for Delete All math check
 
 document.addEventListener("appReady", async () => {
   if (getSettings().compactTable) document.querySelector(".table-wrap table")?.setAttribute("data-compact", "");
@@ -35,7 +36,7 @@ document.addEventListener("appReady", async () => {
 function setTableLoading(on) {
   if (on) {
     document.getElementById("databaseBody").innerHTML =
-      `<tr><td colspan="14"><div class="empty-state"><div class="spinner" style="border-top-color:var(--primary)"></div></div></td></tr>`;
+      `<tr><td colspan="15"><div class="empty-state"><div class="spinner" style="border-top-color:var(--primary)"></div></div></td></tr>`;
   }
   // false → do nothing; renderTable() replaces the content
 }
@@ -95,7 +96,7 @@ function renderTable(data) {
   const body = document.getElementById("databaseBody");
   if (!data.length) {
     body.innerHTML = `
-      <tr><td colspan="14">
+      <tr><td colspan="15">
         <div class="empty-state">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -105,6 +106,10 @@ function renderTable(data) {
       </td></tr>`;
     return;
   }
+
+  // Reset select-all checkbox
+  const selectAll = document.getElementById("selectAllRows");
+  if (selectAll) selectAll.checked = false;
 
   body.innerHTML = paginated.map(item => {
     const avg    = calculateAverage(item);
@@ -120,6 +125,7 @@ function renderTable(data) {
     }).join("");
     return `
       <tr${rowClass}>
+        <td style="text-align:center"><input type="checkbox" class="row-select" data-ticket="${ticket}" style="cursor:pointer"></td>
         <td><strong>${ticket}</strong></td>
         <td>${escapeHtml(item.agentName)}</td>
         <td>${escapeHtml(formatDisplayDate(item.evaluationDate))}</td>
@@ -297,11 +303,106 @@ function exportTicketReport(item) {
   win.document.close();
 }
 
+function exportMultiTicketReport(items) {
+  const criteria = getActiveCriteria();
+  const esc      = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+  const scoreBar = v => {
+    if (!v && v !== 0) return `<span style="color:#9ca3af">—</span>`;
+    const pct   = (v / 5) * 100;
+    const color = v >= 4 ? "#22c55e" : v >= 3 ? "#f59e0b" : "#ef4444";
+    return `<span style="font-weight:700;color:${color};margin-right:6px">${v}</span><span style="display:inline-block;vertical-align:middle;width:60px;height:6px;background:#f3f4f6;border-radius:99px;overflow:hidden"><span style="display:block;width:${pct}%;height:100%;background:${color}"></span></span>`;
+  };
+
+  const ticketCards = items.map((item, idx) => {
+    const avg      = calculateAverage(item);
+    const isBreach = item.slaBreach === "Yes";
+    const scoreRows = criteria.map(c => {
+      const label = c.builtin ? (scoreLabels[c.id] || c.id) : (c.label || c.id);
+      return `<tr><td style="padding:5px 0;color:#374151;width:50%;font-size:12px">${esc(label)}</td><td style="padding:5px 0">${scoreBar(item[c.id])}</td></tr>`;
+    }).join("");
+    return `
+    <div style="${idx > 0 ? "page-break-before:always;" : ""}border:1px solid #e5e7eb;border-radius:8px;padding:20px;margin-bottom:24px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #f3f4f6">
+        <div>
+          <h2 style="font-size:18px;font-weight:700;margin-bottom:2px">${esc(item.ticketNumber)}</h2>
+          <p style="font-size:12px;color:#6b7280">${esc(item.agentName)} · ${esc(formatDisplayDate(item.evaluationDate))}</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          ${isBreach ? '<span style="background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700">SLA BREACH</span>' : '<span style="background:#dcfce7;color:#166534;border:1px solid #86efac;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700">SLA OK</span>'}
+          <span style="font-size:22px;font-weight:800;color:${avg >= 4 ? '#22c55e' : avg >= 3 ? '#f59e0b' : '#ef4444'}">${avg.toFixed(2)}</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;margin-bottom:14px;font-size:12px">
+        ${item.lsa ? `<div><span style="color:#6b7280">LSA:</span> <strong>${esc(item.lsa)}</strong></div>` : ""}
+        ${item.evaluatedBy ? `<div><span style="color:#6b7280">Evaluated by:</span> <strong>${esc(item.evaluatedBy)}</strong></div>` : ""}
+      </div>
+      <table style="width:100%;border-collapse:collapse">${scoreRows}</table>
+      ${item.comments ? `<div style="margin-top:12px;padding:10px 12px;background:#f9fafb;border-radius:6px;font-size:12px;color:#374151;white-space:pre-wrap">${esc(item.comments)}</div>` : ""}
+    </div>`;
+  }).join("");
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Evaluation Report — ${items.length} ticket${items.length !== 1 ? "s" : ""}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #1a1a2e; background: #fff; padding: 28px; max-width: 800px; margin: 0 auto; }
+  @media print { body { padding: 12px; } .no-print { display: none; } }
+  .print-btn { display: inline-block; margin-bottom: 20px; padding: 8px 20px; background: #4f46e5; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
+  .print-btn:hover { background: #4338ca; }
+</style>
+</head>
+<body>
+  <button class="print-btn no-print" onclick="window.print()">&#x1F5A8; Print / Save as PDF</button>
+  <div style="margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid #e5e7eb">
+    <h1 style="font-size:20px;font-weight:700">Agent Evaluation Report</h1>
+    <p style="font-size:12px;color:#6b7280;margin-top:4px">${items.length} evaluation${items.length !== 1 ? "s" : ""} · Generated ${new Date().toLocaleString()}</p>
+  </div>
+  ${ticketCards}
+</body>
+</html>`;
+
+  const win = window.open("", "_blank");
+  if (!win) { toast("Pop-up blocked. Allow pop-ups and try again.", "warning"); return; }
+  win.document.write(html);
+  win.document.close();
+}
+
+function getSelectedTickets() {
+  return [...document.querySelectorAll(".row-select:checked")].map(cb => cb.dataset.ticket);
+}
+
+function updatePdfLabel() {
+  const sel = getSelectedTickets();
+  const label = document.getElementById("exportPdfLabel");
+  if (label) label.textContent = sel.length ? `Export PDF (${sel.length})` : "Export PDF";
+}
+
 function bindEvents() {
   let debounce;
   document.getElementById("searchInput").addEventListener("input", e => {
     clearTimeout(debounce);
     debounce = setTimeout(() => renderTable(filterData(e.target.value)), 200);
+  });
+
+  // Select-all checkbox in header
+  document.getElementById("selectAllRows")?.addEventListener("change", e => {
+    document.querySelectorAll(".row-select").forEach(cb => { cb.checked = e.target.checked; });
+    updatePdfLabel();
+  });
+
+  // Row checkbox — update PDF label and header checkbox state
+  document.getElementById("databaseBody").addEventListener("change", e => {
+    if (e.target.classList.contains("row-select")) {
+      const all  = document.querySelectorAll(".row-select");
+      const chkd = document.querySelectorAll(".row-select:checked");
+      const hdr  = document.getElementById("selectAllRows");
+      if (hdr) { hdr.checked = all.length && chkd.length === all.length; hdr.indeterminate = chkd.length > 0 && chkd.length < all.length; }
+      updatePdfLabel();
+    }
   });
 
   document.getElementById("databaseBody").addEventListener("click", e => {
@@ -314,6 +415,16 @@ function bindEvents() {
       const item = allData.find(x => x.ticketNumber === ticket);
       if (item) exportTicketReport(item);
     }
+  });
+
+  // PDF export — selected rows, or all if none selected
+  document.getElementById("exportPdfBtn")?.addEventListener("click", () => {
+    const selected = getSelectedTickets();
+    const items    = selected.length
+      ? allData.filter(x => selected.includes(x.ticketNumber))
+      : allData;
+    if (!items.length) { toast("No data to export.", "warning"); return; }
+    exportMultiTicketReport(items);
   });
 
   document.getElementById("exportJsonBtn").addEventListener("click", () => {
@@ -336,8 +447,36 @@ function bindEvents() {
     toast("CSV export downloaded.", "success");
   });
 
-  document.getElementById("deleteAllBtn").addEventListener("click", async () => {
-    if (!confirm(`Delete ALL ${allData.length} evaluations? This cannot be undone.`)) return;
+  // Delete All — open math confirm modal
+  document.getElementById("deleteAllBtn").addEventListener("click", () => {
+    if (!allData.length) { toast("Nothing to delete.", "warning"); return; }
+    const a = Math.floor(Math.random() * 20) + 5;
+    const b = Math.floor(Math.random() * 30) + 10;
+    _mathAnswer = a + b;
+    document.getElementById("mathQuestion").textContent  = `${a} + ${b} = ?`;
+    document.getElementById("mathAnswer").value          = "";
+    document.getElementById("mathError").textContent     = "";
+    document.getElementById("mathConfirmCount").textContent = `all ${allData.length}`;
+    document.getElementById("mathConfirmModal").hidden   = false;
+    setTimeout(() => document.getElementById("mathAnswer").focus(), 50);
+  });
+
+  document.getElementById("mathConfirmClose")?.addEventListener("click",  () => { document.getElementById("mathConfirmModal").hidden = true; });
+  document.getElementById("mathConfirmCancel")?.addEventListener("click", () => { document.getElementById("mathConfirmModal").hidden = true; });
+
+  document.getElementById("mathAnswer")?.addEventListener("keydown", e => {
+    if (e.key === "Enter") document.getElementById("mathConfirmSubmit").click();
+    if (e.key === "Escape") document.getElementById("mathConfirmModal").hidden = true;
+  });
+
+  document.getElementById("mathConfirmSubmit")?.addEventListener("click", async () => {
+    const answer = Number(document.getElementById("mathAnswer").value);
+    if (answer !== _mathAnswer) {
+      document.getElementById("mathError").textContent = "Incorrect answer. Try again.";
+      document.getElementById("mathAnswer").focus();
+      return;
+    }
+    document.getElementById("mathConfirmModal").hidden = true;
     const btn = document.getElementById("deleteAllBtn");
     btn.disabled    = true;
     btn.textContent = "Deleting…";
