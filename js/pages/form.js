@@ -90,7 +90,7 @@ function setSlaValue(value) {
 // ── Progress bar ──────────────────────────────────────────────────────────────
 // Key fields the user must fill (scores always have a value so not tracked here)
 const REQUIRED_FIELDS = ["ticketNumber", "agentName", "evaluationDate"];
-const OPTIONAL_FIELDS = ["lsa", "assignedTo", "comments"];
+const OPTIONAL_FIELDS = ["lsa", "comments"];
 
 function initProgress() {
   [...REQUIRED_FIELDS, ...OPTIONAL_FIELDS].forEach(id => {
@@ -196,7 +196,6 @@ function readForm() {
     evaluationDate:     v("evaluationDate"),
     slaBreach:          v("slaBreach"),
     lsa:                v("lsa").trim(),
-    assignedTo:         v("assignedTo").trim(),
     ...Object.fromEntries(getActiveCriteria().map(c => [c.id, v(c.id)])),
     comments:           v("comments").trim(),
     evaluatedBy:        v("evaluatedBy").trim(),
@@ -211,7 +210,6 @@ function loadIntoForm(item) {
   set("agentName",      item.agentName);
   set("evaluationDate", item.evaluationDate);
   set("lsa",            item.lsa);
-  set("assignedTo",     item.assignedTo);
   set("comments",       item.comments);
   // Keep original evaluator when loading; current user shown as read-only hint
   set("evaluatedBy", item.evaluatedBy || resolveEvaluatorName());
@@ -277,15 +275,10 @@ async function pasteServiceNowInfo() {
 
   const ticket = data.number || data.ticketNumber || "";
   setField("ticketNumber", ticket,                           "Ticket Number");
-  setField("assignedTo",   data.assignedTo,                  "Assigned To");
   setField("lsa",          data.assignmentGroup || data.lsa, "LSA");
 
-  // Auto-fill Agent Name from assignedTo if still empty
   const agentEl = document.getElementById("agentName");
-  if (agentEl && !agentEl.value.trim() && data.assignedTo) {
-    agentEl.value = data.assignedTo;
-    filled.push("Agent Name (from Assigned To)");
-  } else if (agentEl?.value.trim()) {
+  if (agentEl?.value.trim()) {
     skipped.push("Agent Name (kept existing)");
   }
 

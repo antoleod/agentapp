@@ -35,7 +35,7 @@ document.addEventListener("appReady", async () => {
 function setTableLoading(on) {
   if (on) {
     document.getElementById("databaseBody").innerHTML =
-      `<tr><td colspan="15"><div class="empty-state"><div class="spinner" style="border-top-color:var(--primary)"></div></div></td></tr>`;
+      `<tr><td colspan="14"><div class="empty-state"><div class="spinner" style="border-top-color:var(--primary)"></div></div></td></tr>`;
   }
   // false → do nothing; renderTable() replaces the content
 }
@@ -95,7 +95,7 @@ function renderTable(data) {
   const body = document.getElementById("databaseBody");
   if (!data.length) {
     body.innerHTML = `
-      <tr><td colspan="15">
+      <tr><td colspan="14">
         <div class="empty-state">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -125,7 +125,6 @@ function renderTable(data) {
         <td>${escapeHtml(formatDisplayDate(item.evaluationDate))}</td>
         <td>${slaBadge(item.slaBreach)}</td>
         <td>${escapeHtml(item.lsa || "—")}</td>
-        <td>${escapeHtml(item.assignedTo || "—")}</td>
         ${kpiCells}
         <td>${scoreBadge(avg)}</td>
         <td>${escapeHtml(item.evaluatedBy || "—")}</td>
@@ -171,7 +170,7 @@ function exportCsv(data) {
   const scoreKeys = Object.keys(scoreLabels);
   const headers = [
     "Ticket Number", "Agent Name", "Evaluation Date", "SLA Breach",
-    "LSA", "Assigned To", "Evaluated By",
+    "LSA", "Evaluated By",
     ...scoreKeys.map(k => scoreLabels[k]),
     "Average Score", "Comments", "Created At",
   ];
@@ -180,7 +179,7 @@ function exportCsv(data) {
     const esc = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
     return [
       esc(item.ticketNumber), esc(item.agentName), esc(item.evaluationDate),
-      esc(item.slaBreach), esc(item.lsa), esc(item.assignedTo), esc(item.evaluatedBy),
+      esc(item.slaBreach), esc(item.lsa), esc(item.evaluatedBy),
       ...scoreKeys.map(k => esc(item[k] ?? "")),
       esc(avg), esc(item.comments), esc(item.createdAt),
     ].join(",");
@@ -262,7 +261,6 @@ function exportTicketReport(item) {
       <div class="meta-item"><label>Evaluation Date</label><span>${esc(formatDisplayDate(item.evaluationDate))}</span></div>
       <div class="meta-item"><label>SLA Breach</label><span>${isBreach ? '<span class="badge-breach">YES</span>' : '<span class="badge-ok">NO</span>'}</span></div>
       ${item.lsa ? `<div class="meta-item"><label>LSA</label><span>${esc(item.lsa)}</span></div>` : ""}
-      ${item.assignedTo ? `<div class="meta-item"><label>Assigned To</label><span>${esc(item.assignedTo)}</span></div>` : ""}
       <div class="meta-item"><label>Evaluated By</label><span>${esc(item.evaluatedBy || "—")}</span></div>
       ${item.createdAt ? `<div class="meta-item"><label>Recorded At</label><span>${esc(typeof item.createdAt === "object" ? item.evaluationDate : item.createdAt)}</span></div>` : ""}
     </div>
