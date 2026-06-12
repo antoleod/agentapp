@@ -491,4 +491,68 @@ function bindEvents() {
   document.getElementById("searchSnowBtn").addEventListener("click", openSnow);
 
   document.getElementById("pasteSnowBtn").addEventListener("click", pasteServiceNowInfo);
+
+  // Global Ctrl+V — auto-fill form if clipboard contains ServiceNow JSON
+  document.addEventListener("paste", e => {
+    const active = document.activeElement;
+    const isTyping = active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.tagName === "SELECT");
+    if (isTyping) return; // let normal paste work in fields
+
+    const text = e.clipboardData?.getData("text") || "";
+    if (!text.trim().startsWith("{")) return; // only handle JSON
+    e.preventDefault();
+    handleSnowPaste(text);
+  });
+}
+
+function handleSnowPaste(text) {
+  let data;
+  try { data = JSON.parse(text); } catch {
+    toast("Clipboard content is not valid ServiceNow JSON.", "warning");
+    return;
+  }
+  if (!data.number && !data.ticketNumber) {
+    toast("No ticket number found in pasted data.", "warning");
+    return;
+  }
+
+  const filled  = [];
+  const skipped = [];
+
+  function setField(id, value, label) {
+    const el = document.getElementById(id);
+    if (!el || !value) { skipped.push(label); return; }
+    el.value = value;
+    filled.push(label);
+  }
+
+  const ticket = (data.number || data.ticketNumber || "").toUpperCase();
+  setField("ticketNumber", ticket,                           "Ticket Number");
+  setField("lsa",          data.assignmentGroup || data.lsa, "LSA");
+
+  const agentEl = document.getElementById("agentName");
+  if (agentEl?.value.trim()) skipped.push("Agent Name (kept existing)");
+
+  if (data.slaBreach) {
+    setSlaValue(data.slaBreach);
+    const pctLabel = data.slaPercentage !== null ? ` (${data.slaPercentage}%)` : "";
+    filled.push(`SLA Breach${pctLabel} → ${data.slaBreach === "Yes" ? "⚠ Breached" : "✓ OK"}`);
+  }
+
+  const commentParts = [
+    data.shortDescription || data.comments,
+    data.state ? `State: ${data.state}` : "",
+    data.slaName ? `SLA: ${data.slaName}` : "",
+  ].filter(Boolean);
+  if (commentParts.length) {
+    document.getElementById("comments").value = commentParts.join("\n\n");
+    filled.push("Comments");
+  }
+
+  updateTicketBadge(ticket);
+  updateProgress();
+  showAuditPanel(data, filled);
+
+  const firstEmpty = ["agentName", "evaluationDate"].find(id => !document.getElementById(id)?.value.trim());
+  if (firstEmpty) document.getElementById(firstEmpty).focus();
 }

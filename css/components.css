@@ -147,6 +147,17 @@ button {
 .form-group.full,
 .full { grid-column: 1 / -1; }
 
+/* Compact inline row for Date + SLA + LSA */
+.form-row-compact {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr;
+  gap: 10px;
+  align-items: start;
+}
+@media (max-width: 600px) {
+  .form-row-compact { grid-template-columns: 1fr; }
+}
+
 label {
   font-size: 13px;
   font-weight: 600;

@@ -115,7 +115,30 @@
           </svg>
           Sign In
         </button>
+
+        <div style="text-align:right;margin-top:10px">
+          <a href="#" id="forgotLink" style="font-size:13px;color:var(--primary,#6366f1);text-decoration:none">Forgot password?</a>
+        </div>
       </form>
+
+      <!-- Recovery panel (hidden by default) -->
+      <div id="recoveryPanel" style="display:none;margin-top:16px">
+        <div style="font-size:14px;font-weight:600;margin-bottom:8px">Reset your password</div>
+        <div id="recoverySuccess" style="display:none;font-size:13px;color:#16a34a;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;margin-bottom:10px">
+          If that email is registered, a reset link has been sent.
+        </div>
+        <div style="display:flex;gap:8px">
+          <input id="recoveryEmail" type="email" placeholder="you@company.com"
+                 style="flex:1;padding:9px 12px;border:1px solid var(--border,#e2e8f0);border-radius:8px;font-size:14px;outline:none" />
+          <button type="button" id="recoveryBtn"
+                  style="padding:9px 16px;background:var(--primary,#6366f1);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">
+            Send link
+          </button>
+        </div>
+        <div style="margin-top:8px">
+          <a href="#" id="backToLogin" style="font-size:13px;color:var(--muted,#94a3b8);text-decoration:none">← Back to sign in</a>
+        </div>
+      </div>
 
       <div class="login-divider">or</div>
 
@@ -207,6 +230,43 @@
     const style = document.createElement("style");
     style.textContent = "@keyframes spin{to{transform:rotate(360deg)}}";
     document.head.appendChild(style);
+
+    // ── Password recovery ─────────────────────────────────────────────────────
+    document.getElementById("forgotLink").addEventListener("click", e => {
+      e.preventDefault();
+      document.getElementById("loginForm").style.display = "none";
+      document.getElementById("recoveryPanel").style.display = "block";
+      const email = document.getElementById("loginEmail").value.trim();
+      if (email) document.getElementById("recoveryEmail").value = email;
+      document.getElementById("recoveryEmail").focus();
+    });
+
+    document.getElementById("backToLogin").addEventListener("click", e => {
+      e.preventDefault();
+      document.getElementById("recoveryPanel").style.display = "none";
+      document.getElementById("recoverySuccess").style.display = "none";
+      document.getElementById("loginForm").style.display = "block";
+    });
+
+    document.getElementById("recoveryBtn").addEventListener("click", async () => {
+      const email = document.getElementById("recoveryEmail").value.trim();
+      if (!email) { document.getElementById("recoveryEmail").focus(); return; }
+
+      const btn = document.getElementById("recoveryBtn");
+      btn.disabled = true;
+      btn.textContent = "Sending…";
+
+      try {
+        await window.auth.sendPasswordResetEmail(email);
+      } catch (_) {
+        // Silently ignore — always show success to prevent user enumeration
+      }
+
+      btn.disabled = false;
+      btn.textContent = "Send link";
+      document.getElementById("recoveryEmail").value = "";
+      document.getElementById("recoverySuccess").style.display = "block";
+    });
   </script>
 </body>
 </html>

@@ -88,23 +88,25 @@
                   <datalist id="agentRosterList"></datalist>
                 </div>
 
-                <div class="form-group">
-                  <label for="evaluationDate"><span data-i18n="form.date">Evaluation Date</span> <span class="req">*</span></label>
-                  <input id="evaluationDate" type="date" required />
-                </div>
-
-                <div class="form-group">
-                  <label data-i18n="form.sla">SLA Breach</label>
-                  <div class="toggle-group" id="slaToggle">
-                    <button type="button" class="toggle-btn active" data-value="No" data-i18n="form.sla_ok">✓ Within SLA</button>
-                    <button type="button" class="toggle-btn toggle-danger" data-value="Yes" data-i18n="form.sla_breach">⚠ Breached</button>
+                <div class="form-row-compact">
+                  <div class="form-group">
+                    <label for="evaluationDate"><span data-i18n="form.date">Evaluation Date</span> <span class="req">*</span></label>
+                    <input id="evaluationDate" type="date" required />
                   </div>
-                  <input type="hidden" id="slaBreach" value="No" />
-                </div>
 
-                <div class="form-group">
-                  <label for="lsa" data-i18n="form.lsa">LSA / Support Area</label>
-                  <input id="lsa" placeholder="Assignment group" />
+                  <div class="form-group">
+                    <label data-i18n="form.sla">SLA Breach</label>
+                    <div class="toggle-group" id="slaToggle">
+                      <button type="button" class="toggle-btn active" data-value="No" data-i18n="form.sla_ok">✓ Within SLA</button>
+                      <button type="button" class="toggle-btn toggle-danger" data-value="Yes" data-i18n="form.sla_breach">⚠ Breached</button>
+                    </div>
+                    <input type="hidden" id="slaBreach" value="No" />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="lsa" data-i18n="form.lsa">LSA / Support Area</label>
+                    <input id="lsa" placeholder="Assignment group" />
+                  </div>
                 </div>
 
 
