@@ -119,9 +119,9 @@ document.getElementById("setPasswordBtn")?.addEventListener("click", async () =>
     const user = window.auth.currentUser;
     await user.updatePassword(pw1);
 
-    // Clear the flag server-side via Cloud Function (Admin SDK — client cannot tamper)
-    const clearFn = window.functions.httpsCallable("clearMustSetPassword");
-    await clearFn();
+    // Clear the flag — Firestore rules allow only this specific field update on own doc
+    const key = user.email.toLowerCase().replace(/[@.]/g, "_");
+    await window.db.collection("roles").doc(key).update({ mustSetPassword: false });
 
     applySessionAndRedirect("pages/form.html");
   } catch (e) {

@@ -361,21 +361,32 @@ async function getUserRole(email) {
   }
 }
 
-// Role writes go through Cloud Functions — Admin SDK bypasses Firestore rules server-side,
-// so no client can self-escalate or tamper with the roles collection directly.
 async function setUserRole(email, displayName, role) {
-  const fn = window.functions.httpsCallable("setUserRole");
-  await fn({ email, displayName: displayName || null, role });
+  const key  = emailKey(email);
+  if (!key) throw new Error("Invalid email");
+  const user = window.currentUser;
+  await window.db.collection(ROLES_COLLECTION).doc(key).set({
+    email,
+    displayName: displayName || email.split("@")[0],
+    role,
+    addedAt:         new Date().toISOString(),
+    addedBy:         user ? (user.email || user.uid || "unknown") : "unknown",
+    mustSetPassword: true,
+  });
 }
 
+// Updates only the role field — does NOT reset mustSetPassword
 async function updateUserRole(docId, role) {
-  const fn = window.functions.httpsCallable("updateUserRole");
-  await fn({ docId, role });
+  const user = window.currentUser;
+  await window.db.collection(ROLES_COLLECTION).doc(docId).update({
+    role,
+    updatedAt: new Date().toISOString(),
+    updatedBy: user ? (user.email || user.uid || "unknown") : "unknown",
+  });
 }
 
 async function removeUserRole(docId) {
-  const fn = window.functions.httpsCallable("removeUserRole");
-  await fn({ docId });
+  await window.db.collection(ROLES_COLLECTION).doc(docId).delete();
 }
 
 async function listAllRoles() {
