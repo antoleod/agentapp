@@ -28,14 +28,22 @@ const NAV_ITEMS = [
 
 function userInitials(user) {
   if (user.isAnonymous) return "G";
-  const email = user.email || "";
-  const name  = user.displayName || email.split("@")[0] || "U";
+  const name = userDisplayName(user);
   return name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+}
+
+function formatEmailName(email) {
+  const local = email.split("@")[0] || "User";
+  return local
+    .replace(/[._-]+/g, " ")
+    .replace(/\b\w/g, c => c.toUpperCase());
 }
 
 function userDisplayName(user) {
   if (user.isAnonymous) return "Guest";
-  return user.displayName || user.email?.split("@")[0] || "User";
+  if (user.displayName)  return user.displayName;
+  if (user.email)        return formatEmailName(user.email);
+  return "User";
 }
 
 function buildSidebar(user) {
