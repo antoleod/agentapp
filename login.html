@@ -6,48 +6,154 @@
   <title>Agent Evaluation — Sign In</title>
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/login.css" />
-  <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="css/toast.css" />
 </head>
 <body>
-  <div class="login-wrap">
-    <div class="login-card">
 
-      <div class="login-header">
-        <div class="login-brand">
-          <div class="login-logo">AE</div>
-          <div>
-            <h1>Agent Evaluation</h1>
-            <p>ServiceNow Evaluation Helper</p>
+  <!-- ── Left panel — branding ── -->
+  <div class="login-left">
+
+    <div class="login-brand">
+      <!-- Logo mark: rising trend line → checkmark, symbolising evaluation + quality -->
+      <svg class="login-logo-mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+            <stop offset="0%"   stop-color="#6366f1"/>
+            <stop offset="100%" stop-color="#38bdf8"/>
+          </linearGradient>
+          <linearGradient id="logoGrad2" x1="0" y1="48" x2="48" y2="0" gradientUnits="userSpaceOnUse">
+            <stop offset="0%"   stop-color="#818cf8" stop-opacity=".3"/>
+            <stop offset="100%" stop-color="#38bdf8" stop-opacity=".1"/>
+          </linearGradient>
+        </defs>
+        <!-- Background rounded square -->
+        <rect width="48" height="48" rx="13" fill="#1e1b4b"/>
+        <rect width="48" height="48" rx="13" fill="url(#logoGrad2)"/>
+        <!-- Inner glow border -->
+        <rect x=".75" y=".75" width="46.5" height="46.5" rx="12.25" stroke="url(#logoGrad)" stroke-width="1.5" stroke-opacity=".5"/>
+        <!-- Bars: 3 columns rising left to right -->
+        <rect x="8"  y="28" width="7" height="13" rx="2" fill="url(#logoGrad)" opacity=".45"/>
+        <rect x="20" y="21" width="7" height="20" rx="2" fill="url(#logoGrad)" opacity=".65"/>
+        <rect x="32" y="13" width="7" height="28" rx="2" fill="url(#logoGrad)" opacity=".85"/>
+        <!-- Checkmark arc over top-right bar -->
+        <path d="M19 22 L25 29 L39 14" stroke="url(#logoGrad)" stroke-width="3"
+              stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Dot at check tip -->
+        <circle cx="39" cy="14" r="2.5" fill="#38bdf8"/>
+      </svg>
+
+      <div class="login-brand-text">
+        <h1>Agent Evaluation</h1>
+        <p>ServiceNow Helper</p>
+      </div>
+    </div>
+
+    <div class="login-hero">
+      <h2>Evaluate agents<br>with <span>precision</span>.</h2>
+      <p>Streamline your ServiceNow agent reviews with smart forms, automatic SLA detection, and real-time performance reports.</p>
+
+      <div class="login-features">
+        <div class="login-feature">
+          <div class="login-feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+          </div>
+          <div class="login-feature-text">
+            <strong>Smart Evaluation Forms</strong>
+            <span>Auto-fill from ServiceNow bookmarklet</span>
           </div>
         </div>
-        <h2 data-i18n="login.title">Welcome back</h2>
-        <p data-i18n="login.subtitle">Sign in to your account to continue</p>
+
+        <div class="login-feature">
+          <div class="login-feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 20V10M12 20V4M6 20v-6"/>
+            </svg>
+          </div>
+          <div class="login-feature-text">
+            <strong>Real-time Reports</strong>
+            <span>Agent scores and SLA breach analytics</span>
+          </div>
+        </div>
+
+        <div class="login-feature">
+          <div class="login-feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <ellipse cx="12" cy="5" rx="9" ry="3"/>
+              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+            </svg>
+          </div>
+          <div class="login-feature-text">
+            <strong>Firestore Sync</strong>
+            <span>Data available on any device, offline-ready</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="login-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      Secured by Firebase Authentication
+    </div>
+
+  </div>
+
+  <!-- ── Right panel — form ── -->
+  <div class="login-right">
+    <div class="login-form-wrap">
+
+      <div class="login-form-header">
+        <h2>Welcome back</h2>
+        <p>Sign in to your account to continue</p>
       </div>
 
-      <div class="login-body">
-        <div id="loginError" class="login-error"></div>
-
-        <label for="loginEmail"><span data-i18n="login.email">Email address</span>
-          <input id="loginEmail" type="email" autocomplete="email"
-                 placeholder="you@example.com" required />
-        </label>
-
-        <label for="loginPass"><span data-i18n="login.password">Password</span>
-          <input id="loginPass" type="password" autocomplete="current-password"
-                 placeholder="••••••••" required />
-        </label>
-
-        <button type="button" id="loginBtn" class="login-btn" data-i18n="login.signin">Sign In</button>
-
-        <div class="login-divider">or</div>
-
-        <button type="button" id="guestBtn" class="guest-btn" data-i18n="login.guest">Continue as Guest</button>
+      <div id="loginError" class="login-error" role="alert">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span id="loginErrorMsg"></span>
       </div>
 
-      <div class="login-footer" data-i18n="login.secured">
-        Secured by Firebase Authentication
+      <div class="login-field">
+        <label for="loginEmail">Email address</label>
+        <input id="loginEmail" type="email" autocomplete="email"
+               placeholder="you@company.com" required />
       </div>
+
+      <div class="login-field">
+        <label for="loginPass">Password</label>
+        <input id="loginPass" type="password" autocomplete="current-password"
+               placeholder="••••••••" required />
+      </div>
+
+      <button type="button" id="loginBtn" class="login-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/>
+        </svg>
+        Sign In
+      </button>
+
+      <div class="login-divider">or</div>
+
+      <button type="button" id="guestBtn" class="guest-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+        Continue as Guest
+      </button>
+
+      <div class="login-form-footer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+        Your data is encrypted and synced via Firebase
+      </div>
+
     </div>
   </div>
 
@@ -63,13 +169,13 @@
   <script>
     const auth = firebase.auth();
 
-    // Apply saved theme and pre-fill login email
+    // Pre-fill saved email
     (function() {
       const s = getSettings();
       if (s.loginEmail) document.getElementById("loginEmail").value = s.loginEmail;
     })();
 
-    // If already signed in, skip login
+    // Already signed in — skip login
     auth.onAuthStateChanged(user => {
       if (user) window.location.href = "pages/form.html";
     });
@@ -77,12 +183,15 @@
     function setLoading(on) {
       const btn = document.getElementById("loginBtn");
       btn.disabled = on;
-      btn.textContent = on ? "Signing in…" : "Sign In";
+      btn.innerHTML = on
+        ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin .7s linear infinite"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> Signing in…`
+        : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg> Sign In`;
     }
 
     function showError(msg) {
-      const el = document.getElementById("loginError");
-      el.textContent = msg;
+      const el  = document.getElementById("loginError");
+      const txt = document.getElementById("loginErrorMsg");
+      txt.textContent = msg;
       el.classList.add("visible");
     }
 
@@ -101,11 +210,11 @@
         window.location.href = "pages/form.html";
       } catch (err) {
         const msgs = {
-          "auth/user-not-found":       "No account found with this email.",
-          "auth/wrong-password":       "Incorrect password.",
-          "auth/invalid-credential":   "Incorrect email or password.",
-          "auth/invalid-email":        "Invalid email address.",
-          "auth/too-many-requests":    "Too many attempts. Try again later.",
+          "auth/user-not-found":     "No account found with this email.",
+          "auth/wrong-password":     "Incorrect password.",
+          "auth/invalid-credential": "Incorrect email or password.",
+          "auth/invalid-email":      "Invalid email address.",
+          "auth/too-many-requests":  "Too many attempts. Try again later.",
         };
         showError(msgs[err.code] || err.message);
         setLoading(false);
@@ -117,7 +226,6 @@
       window.location.href = "pages/form.html";
     });
 
-    // Enter key submits
     document.getElementById("loginPass").addEventListener("keydown", e => {
       if (e.key === "Enter") document.getElementById("loginBtn").click();
     });
@@ -125,6 +233,11 @@
     ["loginEmail", "loginPass"].forEach(id =>
       document.getElementById(id).addEventListener("input", clearError)
     );
+
+    /* spinner keyframe (reused from layout.css but scoped here too) */
+    const style = document.createElement("style");
+    style.textContent = "@keyframes spin{to{transform:rotate(360deg)}}";
+    document.head.appendChild(style);
   </script>
 </body>
 </html>

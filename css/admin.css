@@ -1,0 +1,177 @@
+/* ── Role badges ── */
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--r-full);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.role-admin {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary-border);
+}
+
+.role-evaluator {
+  background: var(--success-light);
+  color: var(--success);
+  border: 1px solid var(--success-border);
+}
+
+.role-viewer {
+  background: var(--bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+/* ── Users table ── */
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.users-table thead tr {
+  border-bottom: 1px solid var(--border);
+}
+
+.users-table th {
+  padding: 11px 22px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  white-space: nowrap;
+}
+
+.users-table td {
+  padding: 13px 22px;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border);
+}
+
+.users-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.users-table tbody tr:hover td {
+  background: var(--bg);
+}
+
+/* ── Row meta ── */
+.user-row-name {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.user-row-meta {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* ── Inline role select ── */
+.inline-role-select {
+  width: auto;
+  padding: 5px 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color var(--ease), box-shadow var(--ease);
+}
+
+.inline-role-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-border);
+  outline: none;
+}
+
+/* ── Loading / empty states ── */
+.users-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 40px 22px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.users-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 48px 22px;
+  color: var(--muted);
+}
+
+.users-empty svg {
+  width: 40px;
+  height: 40px;
+  opacity: .4;
+}
+
+.users-empty p {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.hidden { display: none !important; }
+
+/* ── Invite helper text ── */
+.invite-helper {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+  flex: 1;
+}
+
+/* ── Search icon overlay ── */
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15px;
+  height: 15px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .users-table th:nth-child(3),
+  .users-table td:nth-child(3) {
+    display: none;
+  }
+
+  .users-table th,
+  .users-table td {
+    padding: 11px 14px;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .card-header > div[style*="max-width"] {
+    max-width: 100% !important;
+    width: 100%;
+  }
+}

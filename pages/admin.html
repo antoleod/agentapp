@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Evaluation — Admin</title>
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/toast.css" />
+  <link rel="stylesheet" href="../css/admin.css" />
+</head>
+<body>
+  <div id="loadingOverlay" class="loading-overlay" role="status" aria-live="polite" aria-label="Loading application">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="shell">
+    <div class="app">
+      <div class="page">
+        <div class="topbar">
+          <div>
+            <h2>User Management</h2>
+            <p style="color:var(--muted);font-size:13px;margin-top:3px">Manage access and roles</p>
+          </div>
+        </div>
+
+        <div style="display:grid;gap:20px;max-width:800px">
+
+          <!-- Add User -->
+          <div class="card">
+            <div class="card-header">
+              <h3 style="font-size:15px">Add / Invite User</h3>
+            </div>
+            <div class="card-body">
+              <form id="inviteForm" autocomplete="off">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="inviteEmail">Email Address</label>
+                    <input id="inviteEmail" type="email" placeholder="user@example.com" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="inviteRole">Role</label>
+                    <select id="inviteRole">
+                      <option value="admin">Admin</option>
+                      <option value="evaluator" selected>Evaluator</option>
+                      <option value="viewer">Viewer</option>
+                    </select>
+                  </div>
+                  <div class="form-group full">
+                    <label for="inviteNote">Display Name <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+                    <input id="inviteNote" type="text" placeholder="Display name override" />
+                  </div>
+                </div>
+                <div style="margin-top:16px;display:flex;align-items:center;gap:14px">
+                  <button type="submit" class="btn btn-primary" id="inviteBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                    Add User
+                  </button>
+                  <p class="invite-helper">The user must already have a Firebase account. Add them here to assign a role.</p>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Current Users -->
+          <div class="card">
+            <div class="card-header">
+              <h3 style="font-size:15px">Current Users</h3>
+              <div style="position:relative;flex:1;max-width:260px">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input id="userSearch" type="search" placeholder="Filter users…" style="padding-left:34px" />
+              </div>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div id="usersLoading" class="users-loading">
+                <div class="spinner" style="width:24px;height:24px;border-width:3px"></div>
+                <span>Loading users…</span>
+              </div>
+              <div id="usersEmpty" class="users-empty hidden">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                <p>No users found</p>
+              </div>
+              <table class="users-table hidden" id="usersTable">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Role</th>
+                    <th>Added</th>
+                    <th style="text-align:right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="usersBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="../js/toast.js"></script>
+  <script src="../js/core.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script src="../js/pages/admin.js"></script>
+</body>
+</html>

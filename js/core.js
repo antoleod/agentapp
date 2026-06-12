@@ -227,7 +227,11 @@ function escapeHtml(str) {
 
 function openServiceNow(ticket) {
   if (!ticket) return;
-  const instance = getSettings().serviceNowInstance || "europarl.service-now.com";
+  const instance = getSettings().serviceNowInstance;
+  if (!instance) {
+    toast("Configure your ServiceNow instance URL in Settings first.", "warning");
+    return;
+  }
   const tableMap  = { INC: "incident", RITM: "sc_req_item", REQ: "sc_request", SCTASK: "sc_task" };
   const table     = Object.entries(tableMap).find(([k]) => ticket.startsWith(k))?.[1] ?? "task";
   const query     = `${table}.do?sysparm_query=number=${encodeURIComponent(ticket)}`;
@@ -244,4 +248,59 @@ function showLoading() {
 function hideLoading() {
   const el = document.getElementById("loadingOverlay");
   if (el) el.classList.add("hidden");
+}
+
+// ── Role management (Firestore: roles/{emailKey}) ─────────────────────────────
+const ROLES_COLLECTION = "roles";
+
+function emailKey(email) {
+  if (!email) return null;
+  return email.toLowerCase().replace(/[@.]/g, "_");
+}
+
+async function getUserRole(email) {
+  const key = emailKey(email);
+  if (!key) return null;
+  try {
+    const doc = await window.db.collection(ROLES_COLLECTION).doc(key).get();
+    return doc.exists ? (doc.data().role || null) : null;
+  } catch {
+    return null;
+  }
+}
+
+async function setUserRole(email, displayName, role) {
+  const key = emailKey(email);
+  if (!key) throw new Error("Invalid email");
+  const user = window.currentUser;
+  await window.db.collection(ROLES_COLLECTION).doc(key).set({
+    email,
+    displayName: displayName || email.split("@")[0],
+    role,
+    addedAt: new Date().toISOString(),
+    addedBy: user ? (user.uid || user.email || "unknown") : "unknown",
+  });
+}
+
+async function removeUserRole(docId) {
+  await window.db.collection(ROLES_COLLECTION).doc(docId).delete();
+}
+
+async function listAllRoles() {
+  try {
+    const snap = await window.db.collection(ROLES_COLLECTION).get();
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch {
+    return [];
+  }
+}
+
+async function isAdmin(email) {
+  if (!email) return false;
+  try {
+    const role = await getUserRole(email);
+    return role === "admin";
+  } catch {
+    return false;
+  }
 }

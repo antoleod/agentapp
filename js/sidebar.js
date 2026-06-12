@@ -87,6 +87,23 @@ function buildSidebar(user) {
   const shell = document.querySelector(".shell");
   shell.insertBefore(sidebar, shell.firstChild);
 
+  // Async admin nav injection — only for authenticated (non-guest) users with an email
+  if (!user.isAnonymous && user.email) {
+    isAdmin(user.email).then(ok => {
+      if (!ok) return;
+      const nav = sidebar.querySelector(".sidebar-nav");
+      if (!nav || nav.querySelector('a[href="admin.html"]')) return;
+      const adminLink = document.createElement("a");
+      adminLink.className = "nav" + (current === "admin.html" ? " active" : "");
+      adminLink.href = "admin.html";
+      adminLink.innerHTML = `
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></span>
+        Admin
+      `;
+      nav.appendChild(adminLink);
+    }).catch(() => {});
+  }
+
   function doSignOut() {
     window.auth.signOut().catch(() => {}).finally(() => {
       window.location.href = "../login.html";
