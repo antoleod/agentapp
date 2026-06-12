@@ -18,6 +18,12 @@ document.addEventListener("appReady", async () => {
     if (!cached.length) toast("Failed to load reports: " + err.message, "error");
   }
 
+  // Real-time listener for changes from other users
+  subscribeData(data => {
+    _reportData = data;
+    renderReports(data);
+  });
+
   document.getElementById("refreshBtn").addEventListener("click", async () => {
     const btn     = document.getElementById("refreshBtn");
     const labelEl = btn.querySelector(".refresh-label");
@@ -25,7 +31,7 @@ document.addEventListener("appReady", async () => {
     btn.disabled = true;
     if (labelEl) labelEl.textContent = "Refreshing…";
     try {
-      const data = await getData();
+      const data = await getData({ forceFullSync: true });
       _reportData = data;
       renderReports(data);
       toast("Reports updated.", "info");
@@ -36,6 +42,11 @@ document.addEventListener("appReady", async () => {
   });
 
   bindExportModal();
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") unsubscribeData();
+  else subscribeData(data => { _reportData = data; renderReports(data); });
 });
 
 function renderReports(data) {

@@ -20,7 +20,7 @@ document.addEventListener("appReady", async () => {
   bindImportPreview();
   bindAuditModal();
 
-  // Background refresh
+  // Background incremental sync
   try {
     const fresh = await getData();
     if (JSON.stringify(fresh) !== JSON.stringify(allData)) {
@@ -32,6 +32,20 @@ document.addEventListener("appReady", async () => {
   } finally {
     setTableLoading(false);
   }
+
+  // Real-time listener for changes from other users
+  subscribeData(data => {
+    allData = data;
+    renderTable(filterData(document.getElementById("searchInput").value));
+  });
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") unsubscribeData();
+  else subscribeData(data => {
+    allData = data;
+    renderTable(filterData(document.getElementById("searchInput")?.value || ""));
+  });
 });
 
 function setTableLoading(on) {
@@ -523,6 +537,7 @@ function bindEvents() {
       });
       await batch.commit();
       localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(SYNC_KEY);
       allData = [];
       renderTable([]);
       toast("All evaluations deleted.", "success");
@@ -644,7 +659,7 @@ function bindImportPreview() {
         tickets:     toImport.map(x => x.ticketNumber),
       });
 
-      allData = await getData();
+      allData = await getData({ forceFullSync: true });
       renderTable(allData);
       toast(`${toImport.length} evaluation${toImport.length !== 1 ? "s" : ""} imported.`, "success");
       closeModal();

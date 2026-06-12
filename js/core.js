@@ -1,4 +1,5 @@
 const STORAGE_KEY        = "agentEvaluationsV2";
+const SYNC_KEY           = "agentSyncMetaV1";
 const SETTINGS_KEY       = "agentEvaluationSettingsV1";
 const SEARCH_HISTORY_KEY = "serviceNowSearchHistoryV1";
 const COLLECTION         = "evaluations";
@@ -137,19 +138,97 @@ applyFont(getSettings().font);
 applyFontSize(getSettings().fontSize);
 
 // ── Data layer (Firestore primary, localStorage cache) ────────────────────────
-async function getData() {
-  // Guests get no cached data — avoid exposing another user's evaluations
+async function getData(opts = {}) {
   if (sessionStorage.getItem("guestSession") === "1") return [];
+
+  const { forceFullSync = false } = opts;
+  const cached   = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  const syncMeta = JSON.parse(localStorage.getItem(SYNC_KEY)    || "{}");
+
   try {
+    if (!forceFullSync && cached.length && syncMeta.lastSyncedAt) {
+      // Incremental: only fetch records modified after the last successful sync
+      const since = firebase.firestore.Timestamp.fromDate(new Date(syncMeta.lastSyncedAt));
+      const snap  = await window.db.collection(COLLECTION)
+        .where("updatedAt", ">", since)
+        .orderBy("updatedAt", "desc")
+        .get();
+
+      localStorage.setItem(SYNC_KEY, JSON.stringify({ lastSyncedAt: new Date().toISOString() }));
+
+      if (snap.empty) return cached;
+
+      const map = new Map(cached.map(x => [x.ticketNumber, x]));
+      snap.docs.forEach(d => map.set(d.id, d.data()));
+      const merged = [...map.values()].sort(
+        (a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0)
+      );
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+      return merged;
+    }
+
+    // Full sync — capped at 1000 most recent records
     const snap = await window.db.collection(COLLECTION)
       .orderBy("createdAt", "desc")
+      .limit(1000)
       .get();
     const data = snap.docs.map(d => d.data());
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    localStorage.setItem(SYNC_KEY, JSON.stringify({ lastSyncedAt: new Date().toISOString() }));
     return data;
   } catch {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    return cached;
   }
+}
+
+// Real-time listener — fires callback with merged cache on any remote change
+let _unsubscribeSnapshot = null;
+
+function subscribeData(callback) {
+  if (_unsubscribeSnapshot) _unsubscribeSnapshot();
+  if (sessionStorage.getItem("guestSession") === "1") return;
+
+  let isFirst = true;
+
+  _unsubscribeSnapshot = window.db.collection(COLLECTION)
+    .orderBy("updatedAt", "desc")
+    .limit(50)
+    .onSnapshot({ includeMetadataChanges: false }, snap => {
+      // Skip the initial snapshot — getData() already loaded that data
+      if (isFirst) { isFirst = false; return; }
+
+      const cached = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      let changed = false;
+
+      snap.docChanges().forEach(change => {
+        const key = change.doc.id;
+        const doc = change.doc.data();
+        if (change.type === "added" || change.type === "modified") {
+          const idx = cached.findIndex(x => x.ticketNumber === key);
+          if (idx >= 0) {
+            if (JSON.stringify(cached[idx]) !== JSON.stringify(doc)) {
+              cached[idx] = doc;
+              changed = true;
+            }
+          } else {
+            cached.unshift(doc);
+            changed = true;
+          }
+        } else if (change.type === "removed") {
+          const idx = cached.findIndex(x => x.ticketNumber === key);
+          if (idx >= 0) { cached.splice(idx, 1); changed = true; }
+        }
+      });
+
+      if (changed) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cached));
+        callback(cached);
+      }
+    }, () => {});
+}
+
+function unsubscribeData() {
+  if (_unsubscribeSnapshot) { _unsubscribeSnapshot(); _unsubscribeSnapshot = null; }
 }
 
 async function saveEvaluation(item, auditCtx = {}) {
