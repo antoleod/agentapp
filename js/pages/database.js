@@ -134,6 +134,7 @@ function renderTable(data) {
             <a class="btn btn-secondary btn-sm"
                href="form.html?edit=${encodeURIComponent(item.ticketNumber)}">${t("db.edit")}</a>
             <button class="btn btn-ghost btn-sm" data-action="open" data-ticket="${ticket}">${t("db.open")}</button>
+            <button class="btn btn-ghost btn-sm" data-action="report" data-ticket="${ticket}" title="Export PDF report">&#x1F4C4;</button>
             <button class="btn btn-danger btn-sm" data-action="delete" data-ticket="${ticket}">${t("db.delete")}</button>
           </div>
         </td>
@@ -187,6 +188,117 @@ function exportCsv(data) {
   return [headers.join(","), ...rows].join("\r\n");
 }
 
+function exportTicketReport(item) {
+  const avg      = calculateAverage(item);
+  const criteria = getActiveCriteria();
+  const isBreach = item.slaBreach === "Yes";
+  const esc      = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+  const scoreBar = v => {
+    if (!v && v !== 0) return `<span class="score-empty">—</span>`;
+    const pct   = (v / 5) * 100;
+    const color = v >= 4 ? "#22c55e" : v >= 3 ? "#f59e0b" : "#ef4444";
+    return `<div class="score-row">
+      <span class="score-num">${v}</span>
+      <div class="score-track"><div class="score-fill" style="width:${pct}%;background:${color}"></div></div>
+    </div>`;
+  };
+
+  const scoreRows = criteria.map(c => {
+    const label = c.builtin ? (scoreLabels[c.id] || c.id) : (c.label || c.id);
+    return `<tr>
+      <td class="crit-label">${esc(label)}</td>
+      <td class="crit-score">${scoreBar(item[c.id])}</td>
+    </tr>`;
+  }).join("");
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Evaluation Report — ${esc(item.ticketNumber)}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #1a1a2e; background: #fff; padding: 32px; max-width: 760px; margin: 0 auto; }
+  @media print { body { padding: 16px; } .no-print { display: none; } }
+  h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { color: #666; font-size: 13px; margin-bottom: 24px; }
+  .badge-breach { display:inline-block; background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; border-radius:4px; padding:2px 8px; font-size:11px; font-weight:700; }
+  .badge-ok    { display:inline-block; background:#dcfce7; color:#166534; border:1px solid #86efac; border-radius:4px; padding:2px 8px; font-size:11px; font-weight:700; }
+  .section { border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px 20px; margin-bottom: 16px; }
+  .section h2 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #9ca3af; margin-bottom: 12px; }
+  .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+  .meta-item label { font-size: 11px; color: #6b7280; display: block; margin-bottom: 2px; }
+  .meta-item span  { font-weight: 600; font-size: 13px; }
+  table.scores { width: 100%; border-collapse: collapse; }
+  table.scores td { padding: 7px 0; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+  table.scores tr:last-child td { border-bottom: none; }
+  .crit-label { color: #374151; width: 50%; }
+  .crit-score { width: 50%; }
+  .score-row  { display: flex; align-items: center; gap: 8px; }
+  .score-num  { font-weight: 700; width: 16px; text-align: right; flex-shrink: 0; }
+  .score-track { flex: 1; height: 8px; background: #f3f4f6; border-radius: 99px; overflow: hidden; }
+  .score-fill  { height: 100%; border-radius: 99px; transition: width .3s; }
+  .score-empty { color: #9ca3af; }
+  .avg-block  { display: flex; align-items: center; gap: 12px; }
+  .avg-big    { font-size: 36px; font-weight: 800; line-height: 1; }
+  .avg-sub    { font-size: 12px; color: #6b7280; }
+  .comments-text { white-space: pre-wrap; color: #374151; line-height: 1.6; font-size: 13px; }
+  .footer { margin-top: 24px; font-size: 11px; color: #9ca3af; border-top: 1px solid #f3f4f6; padding-top: 12px; display: flex; justify-content: space-between; }
+  .print-btn { display: inline-block; margin-bottom: 20px; padding: 8px 20px; background: #4f46e5; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
+  .print-btn:hover { background: #4338ca; }
+</style>
+</head>
+<body>
+  <button class="print-btn no-print" onclick="window.print()">&#x1F5A8; Print / Save as PDF</button>
+  <h1>${esc(item.ticketNumber)}</h1>
+  <p class="subtitle">Agent Evaluation Report</p>
+
+  <div class="section">
+    <h2>Ticket Details</h2>
+    <div class="meta-grid">
+      <div class="meta-item"><label>Ticket Number</label><span>${esc(item.ticketNumber)}</span></div>
+      <div class="meta-item"><label>Agent</label><span>${esc(item.agentName)}</span></div>
+      <div class="meta-item"><label>Evaluation Date</label><span>${esc(formatDisplayDate(item.evaluationDate))}</span></div>
+      <div class="meta-item"><label>SLA Breach</label><span>${isBreach ? '<span class="badge-breach">YES</span>' : '<span class="badge-ok">NO</span>'}</span></div>
+      ${item.lsa ? `<div class="meta-item"><label>LSA</label><span>${esc(item.lsa)}</span></div>` : ""}
+      ${item.assignedTo ? `<div class="meta-item"><label>Assigned To</label><span>${esc(item.assignedTo)}</span></div>` : ""}
+      <div class="meta-item"><label>Evaluated By</label><span>${esc(item.evaluatedBy || "—")}</span></div>
+      ${item.createdAt ? `<div class="meta-item"><label>Recorded At</label><span>${esc(typeof item.createdAt === "object" ? item.evaluationDate : item.createdAt)}</span></div>` : ""}
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Scores</h2>
+    <table class="scores">${scoreRows}</table>
+  </div>
+
+  <div class="section">
+    <h2>Overall Score</h2>
+    <div class="avg-block">
+      <div class="avg-big" style="color:${avg >= 4 ? '#22c55e' : avg >= 3 ? '#f59e0b' : '#ef4444'}">${avg.toFixed(2)}</div>
+      <div class="avg-sub">out of 5.00</div>
+    </div>
+  </div>
+
+  ${item.comments ? `<div class="section">
+    <h2>Comments</h2>
+    <p class="comments-text">${esc(item.comments)}</p>
+  </div>` : ""}
+
+  <div class="footer">
+    <span>Generated from Agent Evaluation Tool</span>
+    <span>${new Date().toLocaleString()}</span>
+  </div>
+</body>
+</html>`;
+
+  const win = window.open("", "_blank");
+  if (!win) { toast("Pop-up blocked. Allow pop-ups and try again.", "warning"); return; }
+  win.document.write(html);
+  win.document.close();
+}
+
 function bindEvents() {
   let debounce;
   document.getElementById("searchInput").addEventListener("input", e => {
@@ -200,6 +312,10 @@ function bindEvents() {
     const ticket = btn.dataset.ticket;
     if (btn.dataset.action === "open")   openServiceNow(ticket);
     if (btn.dataset.action === "delete") confirmDelete(ticket);
+    if (btn.dataset.action === "report") {
+      const item = allData.find(x => x.ticketNumber === ticket);
+      if (item) exportTicketReport(item);
+    }
   });
 
   document.getElementById("exportJsonBtn").addEventListener("click", () => {
