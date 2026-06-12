@@ -9,7 +9,7 @@ function initAccordions() {
     const body   = card.querySelector(".card-body");
     if (!header || !body) return;
 
-    const key = "sec_" + (card.querySelector("h3")?.textContent?.trim() || Math.random()).toLowerCase().replace(/\s+/g, "_");
+    const key = "sec_" + (card.dataset.accordionId || card.querySelector("h3")?.id || Array.from(card.parentElement.children).indexOf(card));
 
     // Inject chevron
     const chevron = document.createElement("div");
@@ -46,8 +46,6 @@ document.addEventListener("appReady", () => {
   const s = getSettings();
   document.getElementById("serviceNowInstance").value = s.serviceNowInstance || "europarl.service-now.com";
   document.getElementById("defaultEvaluator").value   = s.defaultEvaluator   || "";
-  document.getElementById("loginEmail").value         = s.loginEmail         || "";
-
   // ── Evaluation Defaults ───────────────────────────────────────────────────
   document.getElementById("defaultSla").value        = s.defaultSla    || "No";
   document.getElementById("defaultScore").value      = s.defaultScore  !== undefined ? s.defaultScore : "3";
@@ -337,8 +335,6 @@ document.addEventListener("appReady", () => {
       serviceNowInstance: rawInstance || "europarl.service-now.com",
       defaultEvaluator:   document.getElementById("defaultEvaluator").value.trim(),
     };
-    // loginEmail is intentionally not persisted to localStorage (credential leak risk)
-    delete updated.loginEmail;
     saveSettings(updated);
     toast(t("set.save") + " ✓", "success");
   });

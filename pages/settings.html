@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://apis.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:;" />
   <title>Agent Evaluation — Settings</title>
   <link rel="stylesheet" href="../css/variables.css" />
   <link rel="stylesheet" href="../css/layout.css" />
@@ -181,10 +182,6 @@
                   <div class="form-group">
                     <label data-i18n="set.uid">User ID</label>
                     <input id="currentUid" readonly style="background:var(--bg);color:var(--muted);font-size:12px" />
-                  </div>
-                  <div class="form-group">
-                    <label data-i18n="set.login_email">Default Login Email</label>
-                    <input id="loginEmail" placeholder="Stored locally" />
                   </div>
                 </div>
                 <div style="margin-top:16px">

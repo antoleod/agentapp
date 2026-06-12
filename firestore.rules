@@ -5,7 +5,7 @@ service cloud.firestore {
 
     // emailKey must match JS: replace(/[@.]/g, "_")
     function emailKey(email) {
-      return email.lower().replace("@", "_").replace(".", "_");
+      return email.lower().replace("[@.]", "_");
     }
 
     // Check if the requesting user has admin role
@@ -17,7 +17,9 @@ service cloud.firestore {
 
     // Evaluations collection
     match /evaluations/{ticketNumber} {
-      allow read, create: if request.auth != null;
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.ownerUid == request.auth.uid;
       allow update, delete: if request.auth != null
         && (resource.data.ownerUid == request.auth.uid || isAdmin());
     }

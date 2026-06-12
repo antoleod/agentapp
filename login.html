@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://apis.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:;" />
   <title>Agent Evaluation — Sign In</title>
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/login.css" />
@@ -101,7 +102,7 @@
         <span id="loginErrorMsg"></span>
       </div>
 
-      <form id="loginForm" action="" method="get" autocomplete="on">
+      <form id="loginForm" action="" method="post" autocomplete="on">
         <div class="login-field">
           <label for="loginEmail">Email address</label>
           <div class="login-input-wrap">
@@ -344,9 +345,13 @@
       }
     });
 
-    document.getElementById("guestBtn").addEventListener("click", () => {
-      sessionStorage.setItem("guestSession", "1");
-      window.location.href = "pages/form.html";
+    document.getElementById("guestBtn").addEventListener("click", async () => {
+      try {
+        await window.auth.signInAnonymously();
+        // sidebar.js onAuthStateChanged handles the redirect
+      } catch (err) {
+        showError("Guest sign-in failed. Please try again.");
+      }
     });
 
     ["loginEmail", "loginPass"].forEach(id =>

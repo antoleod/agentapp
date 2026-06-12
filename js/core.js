@@ -47,8 +47,20 @@ function getSettings() {
 }
 
 function saveSettings(settings) {
+  delete settings.loginEmail;
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
 }
+
+// Clean up any previously stored loginEmail credential
+(function () {
+  try {
+    const s = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
+    if ("loginEmail" in s) {
+      delete s.loginEmail;
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+    }
+  } catch (_) {}
+})();
 
 // ── Criteria helpers ──────────────────────────────────────────────────────────
 function getHiddenCriteria() {
@@ -127,8 +139,7 @@ applyFontSize(getSettings().fontSize);
 // ── Data layer (Firestore primary, localStorage cache) ────────────────────────
 async function getData() {
   // Guests get no cached data — avoid exposing another user's evaluations
-  const isGuest = sessionStorage.getItem("guestSession") === "1";
-  if (isGuest) return [];
+  if (window.currentUser?.isAnonymous) return [];
   try {
     const snap = await window.db.collection(COLLECTION)
       .orderBy("createdAt", "desc")

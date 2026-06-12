@@ -83,8 +83,8 @@ function buildSidebar(user) {
       <div class="user-card">
         <div class="user-avatar">${initials}</div>
         <div class="user-info">
-          <div class="user-name">${name}</div>
-          <div class="user-role">${role}</div>
+          <div class="user-name">${escapeHtml(name)}</div>
+          <div class="user-role">${escapeHtml(role)}</div>
         </div>
       </div>
       <button class="logout-btn" id="logoutBtn" aria-label="Sign out">
@@ -120,7 +120,7 @@ function buildSidebar(user) {
   function doSignOut() {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(SEARCH_HISTORY_KEY);
-    sessionStorage.removeItem("guestSession");
+    localStorage.removeItem("sessionExpiresAt");
     window.auth.signOut().catch(() => {}).finally(() => {
       window.location.href = "../login.html";
     });
@@ -353,49 +353,44 @@ function lockSession(user) {
     overlay.remove();
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(SEARCH_HISTORY_KEY);
-    sessionStorage.removeItem("guestSession");
+    localStorage.removeItem("sessionExpiresAt");
     window.auth.signOut().finally(() => { window.location.href = "../login.html"; });
   });
 }
 
-// Auth guard — supports Firebase Auth and temporary guest session
+// Auth guard — uses Firebase Auth for all sessions including anonymous (guest)
 let _sidebarBuilt = false;
-if (sessionStorage.getItem("guestSession")) {
-  _sidebarBuilt = true;
-  window.currentUser = { isAnonymous: true, email: null, displayName: "Guest" };
-  buildSidebar(window.currentUser);
-  hideLoading();
-  setTimeout(() => document.dispatchEvent(new Event("appReady")), 0);
-} else {
-  let _authResolved = false;
-  const _authTimeout = setTimeout(() => {
-    if (!_authResolved) window.location.href = "../login.html";
-  }, 10000);
+let _authResolved = false;
+const _authTimeout = setTimeout(() => {
+  if (!_authResolved) window.location.href = "../login.html";
+}, 10000);
 
-  window.auth.onAuthStateChanged(user => {
-    _authResolved = true;
-    clearTimeout(_authTimeout);
-    if (_sidebarBuilt) return;
-    if (!user) {
-      window.location.href = "../login.html";
-      return;
-    }
+window.auth.onAuthStateChanged(user => {
+  _authResolved = true;
+  clearTimeout(_authTimeout);
+  if (_sidebarBuilt) return;
+  if (!user) {
+    window.location.href = "../login.html";
+    return;
+  }
 
-    // Session expiry check
+  // Session expiry check — skip for anonymous (guest) users
+  if (!user.isAnonymous) {
     const expiry = parseInt(localStorage.getItem("sessionExpiresAt") || "0", 10);
     if (expiry && Date.now() > expiry) {
       localStorage.removeItem("sessionExpiresAt");
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(SEARCH_HISTORY_KEY);
       window.auth.signOut().finally(() => {
         window.location.href = "../login.html";
       });
       return;
     }
+  }
 
-    _sidebarBuilt = true;
-    sessionStorage.removeItem("guestSession");
-    window.currentUser = user;
-    buildSidebar(user);
-    hideLoading();
-    document.dispatchEvent(new Event("appReady"));
-  });
-}
+  _sidebarBuilt = true;
+  window.currentUser = user;
+  buildSidebar(user);
+  hideLoading();
+  document.dispatchEvent(new Event("appReady"));
+});
