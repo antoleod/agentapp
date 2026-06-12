@@ -55,7 +55,7 @@
         <div class="card">
           <div class="table-wrap">
             <table aria-label="Saved evaluations">
-              <thead>
+              <thead id="dbHead">
                 <tr>
                   <th style="width:36px;text-align:center">
                     <input type="checkbox" id="selectAllRows" title="Select all visible rows" style="cursor:pointer">
@@ -65,12 +65,7 @@
                   <th data-i18n="db.col_date">Date</th>
                   <th data-i18n="db.col_sla">SLA</th>
                   <th data-i18n="db.col_lsa">LSA</th>
-                  <th class="kpi-col" title="Asset Tracking">AT</th>
-                  <th class="kpi-col" title="Planning Compliance">PC</th>
-                  <th class="kpi-col" title="KB Compliance">KB</th>
-                  <th class="kpi-col" title="Team Spirit">TS</th>
-                  <th class="kpi-col" title="Dress Code">DC</th>
-                  <th class="kpi-col" title="Customer Oriented">CO</th>
+                  <!-- KPI columns injected by database.js -->
                   <th data-i18n="db.col_score">Avg</th>
                   <th data-i18n="db.col_evaluated">Evaluated By</th>
                   <th data-i18n="db.col_actions">Actions</th>

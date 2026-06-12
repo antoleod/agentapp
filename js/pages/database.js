@@ -36,7 +36,7 @@ document.addEventListener("appReady", async () => {
 function setTableLoading(on) {
   if (on) {
     document.getElementById("databaseBody").innerHTML =
-      `<tr><td colspan="15"><div class="empty-state"><div class="spinner" style="border-top-color:var(--primary)"></div></div></td></tr>`;
+      `<tr><td colspan="${7 + getKpiFields().length}"><div class="empty-state"><div class="spinner" style="border-top-color:var(--primary)"></div></div></td></tr>`;
   }
   // false → do nothing; renderTable() replaces the content
 }
@@ -52,14 +52,15 @@ function slaBadge(val) {
     : `<span class="badge badge-success">✓ No</span>`;
 }
 
-const KPI_FIELDS = [
-  { id: "assetTracking",      label: "Asset Tracking" },
-  { id: "planningCompliance", label: "Planning Compliance" },
-  { id: "kbCompliance",       label: "KB Compliance" },
-  { id: "teamSpirit",         label: "Team Spirit" },
-  { id: "dressCode",          label: "Dress Code" },
-  { id: "customerOriented",   label: "Customer Oriented" },
-];
+// Dynamic — rebuilt on every renderTable() call so new custom criteria appear immediately
+function getKpiFields() {
+  return getActiveCriteria().map(c => ({
+    id:    c.id,
+    label: c.builtin ? (scoreLabels[c.id] || c.id) : (c.label || c.id),
+    abbr:  c.builtin ? (scoreLabels[c.id] || c.id).replace(/\s+/g, "").slice(0, 3).toUpperCase()
+                     : (c.label || c.id).replace(/\s+/g, "").slice(0, 3).toUpperCase(),
+  }));
+}
 
 function sortData(data) {
   const sort = getSettings().dbDefaultSort || "date_desc";
@@ -81,22 +82,36 @@ function paginateData(data) {
 
 function renderTable(data) {
   const s    = getSettings();
-  const showKpi        = s.dbShowKpi !== false;
+  const showKpi           = s.dbShowKpi !== false;
   const highlightBreaches = s.dbHighlightBreaches !== false;
-  const slaThreshold   = s.slaThreshold !== undefined ? Number(s.slaThreshold) : 100;
 
-  const sorted   = sortData(data);
+  const sorted    = sortData(data);
   const paginated = paginateData(sorted);
+  const kpiFields = getKpiFields();
 
-  // Update KPI header visibility
-  document.querySelectorAll(".kpi-col, .kpi-cell").forEach(el => {
-    el.style.display = showKpi ? "" : "none";
-  });
+  // Rebuild KPI header columns dynamically
+  const headRow = document.querySelector("#dbHead tr");
+  if (headRow) {
+    // Remove old kpi-col headers
+    headRow.querySelectorAll(".kpi-col").forEach(th => th.remove());
+    // Insert before the Avg th (second-to-last th before Actions)
+    const avgTh = headRow.querySelector("[data-i18n='db.col_score']");
+    kpiFields.forEach(({ abbr, label }) => {
+      const th = document.createElement("th");
+      th.className = "kpi-col";
+      th.title     = label;
+      th.textContent = abbr;
+      th.style.display = showKpi ? "" : "none";
+      headRow.insertBefore(th, avgTh);
+    });
+  }
 
+  const totalCols = 7 + kpiFields.length; // checkbox+ticket+agent+date+sla+lsa + kpis + avg+evalby+actions
   const body = document.getElementById("databaseBody");
+
   if (!data.length) {
     body.innerHTML = `
-      <tr><td colspan="15">
+      <tr><td colspan="${totalCols}">
         <div class="empty-state">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -116,7 +131,7 @@ function renderTable(data) {
     const ticket = escapeHtml(item.ticketNumber);
     const isBreach = item.slaBreach === "Yes";
     const rowClass = highlightBreaches && isBreach ? " class=\"row-breach\"" : "";
-    const kpiCells = KPI_FIELDS.map(({ id, label }) => {
+    const kpiCells = kpiFields.map(({ id, label }) => {
       const val = item[id];
       const display = showKpi ? "" : " style=\"display:none\"";
       if (!val && val !== 0) return `<td class="kpi-cell kpi-empty" title="${label}"${display}>—</td>`;
@@ -173,11 +188,11 @@ function filterData(q) {
 }
 
 function exportCsv(data) {
-  const scoreKeys = Object.keys(scoreLabels);
+  const criteria = getActiveCriteria();
   const headers = [
     "Ticket Number", "Agent Name", "Evaluation Date", "SLA Breach",
     "LSA", "Evaluated By",
-    ...scoreKeys.map(k => scoreLabels[k]),
+    ...criteria.map(c => c.builtin ? (scoreLabels[c.id] || c.id) : (c.label || c.id)),
     "Average Score", "Comments", "Created At",
   ];
   const rows = data.map(item => {
@@ -186,7 +201,7 @@ function exportCsv(data) {
     return [
       esc(item.ticketNumber), esc(item.agentName), esc(item.evaluationDate),
       esc(item.slaBreach), esc(item.lsa), esc(item.evaluatedBy),
-      ...scoreKeys.map(k => esc(item[k] ?? "")),
+      ...criteria.map(c => esc(item[c.id] ?? "")),
       esc(avg), esc(item.comments), esc(item.createdAt),
     ].join(",");
   });
