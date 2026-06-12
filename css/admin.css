@@ -152,10 +152,158 @@
   pointer-events: none;
 }
 
+/* ── Role permissions matrix ── */
+.role-matrix {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.role-col {
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.role-col-highlight {
+  border-color: var(--primary-border);
+  box-shadow: 0 0 0 1px var(--primary-border);
+}
+
+.role-col-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.role-col-default {
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary-border);
+  border-radius: var(--r-full);
+  padding: 1px 7px;
+}
+
+.role-perms {
+  list-style: none;
+  margin: 0;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.role-perms li {
+  font-size: 12.5px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.role-perms li::before {
+  content: '';
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background-size: 10px 10px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.perm-yes {
+  color: var(--text);
+}
+
+.perm-yes::before {
+  background-color: var(--success-light);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23059669' stroke-width='3'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+}
+
+.perm-no {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.perm-no::before {
+  background-color: var(--bg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='3'%3E%3Cline x1='18' y1='6' x2='6' y2='18'/%3E%3Cline x1='6' y1='6' x2='18' y2='18'/%3E%3C/svg%3E");
+  border: 1px solid var(--border);
+}
+
+/* ── User avatar row ── */
+.user-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border: 1px solid var(--primary-border);
+}
+
+.you-chip {
+  display: inline;
+  font-size: 10px;
+  font-weight: 600;
+  background: var(--warning-light);
+  color: var(--warning);
+  border: 1px solid var(--warning-border);
+  border-radius: var(--r-full);
+  padding: 1px 6px;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+/* ── Permission chips ── */
+.perm-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.perm-chip {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: var(--r-full);
+  background: var(--bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+/* ── Eval expand row ── */
+.eval-expand-row td { background: var(--bg); }
+
+.eval-expand-body {
+  border-top: 1px solid var(--border);
+}
+
 /* ── Responsive ── */
+@media (max-width: 860px) {
+  .role-matrix { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 640px) {
   .users-table th:nth-child(3),
-  .users-table td:nth-child(3) {
+  .users-table td:nth-child(3),
+  .users-table th:nth-child(4),
+  .users-table td:nth-child(4) {
     display: none;
   }
 

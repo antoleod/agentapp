@@ -85,6 +85,11 @@
     <div class="login-form-wrap">
 
       <div class="login-form-header">
+        <div class="login-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
         <h2>Welcome back</h2>
         <p>Sign in to your account to continue</p>
       </div>
@@ -99,14 +104,36 @@
       <form id="loginForm" action="" method="post" autocomplete="on">
         <div class="login-field">
           <label for="loginEmail">Email address</label>
-          <input id="loginEmail" name="email" type="email" autocomplete="username"
-                 placeholder="you@company.com" required />
+          <div class="login-input-wrap">
+            <svg class="login-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <input id="loginEmail" name="email" type="email" autocomplete="username"
+                   placeholder="you@company.com" required />
+          </div>
         </div>
 
         <div class="login-field">
           <label for="loginPass">Password</label>
-          <input id="loginPass" name="password" type="password" autocomplete="current-password"
-                 placeholder="••••••••" required />
+          <div class="login-input-wrap">
+            <svg class="login-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            <input id="loginPass" name="password" type="password" autocomplete="current-password"
+                   placeholder="••••••••" required />
+            <button type="button" class="login-pass-toggle" id="passToggle" aria-label="Show password" tabindex="-1">
+              <svg id="passEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="login-forgot-row">
+          <a href="#" id="forgotLink" class="login-forgot-link">Forgot password?</a>
         </div>
 
         <button type="submit" id="loginBtn" class="login-btn">
@@ -115,28 +142,52 @@
           </svg>
           Sign In
         </button>
-
-        <div style="text-align:right;margin-top:10px">
-          <a href="#" id="forgotLink" style="font-size:13px;color:var(--primary,#6366f1);text-decoration:none">Forgot password?</a>
-        </div>
       </form>
 
       <!-- Recovery panel (hidden by default) -->
-      <div id="recoveryPanel" style="display:none;margin-top:16px">
-        <div style="font-size:14px;font-weight:600;margin-bottom:8px">Reset your password</div>
-        <div id="recoverySuccess" style="display:none;font-size:13px;color:#16a34a;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;margin-bottom:10px">
+      <div id="recoveryPanel" class="recovery-panel" hidden>
+        <div class="recovery-header">
+          <div class="recovery-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+          <div>
+            <div class="recovery-title">Reset your password</div>
+            <div class="recovery-sub">We'll send a link to your inbox</div>
+          </div>
+        </div>
+        <div id="recoverySuccess" class="recovery-success" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
           If that email is registered, a reset link has been sent.
         </div>
-        <div style="display:flex;gap:8px">
-          <input id="recoveryEmail" type="email" placeholder="you@company.com"
-                 style="flex:1;padding:9px 12px;border:1px solid var(--border,#e2e8f0);border-radius:8px;font-size:14px;outline:none" />
-          <button type="button" id="recoveryBtn"
-                  style="padding:9px 16px;background:var(--primary,#6366f1);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">
-            Send link
-          </button>
+        <div class="login-field">
+          <label for="recoveryEmail">Email address</label>
+          <div class="login-input-wrap">
+            <svg class="login-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <input id="recoveryEmail" type="email" placeholder="you@company.com" />
+          </div>
         </div>
-        <div style="margin-top:8px">
-          <a href="#" id="backToLogin" style="font-size:13px;color:var(--muted,#94a3b8);text-decoration:none">← Back to sign in</a>
+        <button type="button" id="recoveryBtn" class="login-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+          Send reset link
+        </button>
+        <div class="recovery-back">
+          <a href="#" id="backToLogin">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            Back to sign in
+          </a>
         </div>
       </div>
 
@@ -231,11 +282,22 @@
     style.textContent = "@keyframes spin{to{transform:rotate(360deg)}}";
     document.head.appendChild(style);
 
+    // ── Password show/hide toggle ─────────────────────────────────────────────
+    document.getElementById("passToggle").addEventListener("click", () => {
+      const input = document.getElementById("loginPass");
+      const icon  = document.getElementById("passEyeIcon");
+      const show  = input.type === "password";
+      input.type  = show ? "text" : "password";
+      icon.innerHTML = show
+        ? `<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`
+        : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+    });
+
     // ── Password recovery ─────────────────────────────────────────────────────
     document.getElementById("forgotLink").addEventListener("click", e => {
       e.preventDefault();
-      document.getElementById("loginForm").style.display = "none";
-      document.getElementById("recoveryPanel").style.display = "block";
+      document.getElementById("loginForm").hidden = true;
+      document.getElementById("recoveryPanel").hidden = false;
       const email = document.getElementById("loginEmail").value.trim();
       if (email) document.getElementById("recoveryEmail").value = email;
       document.getElementById("recoveryEmail").focus();
@@ -243,9 +305,9 @@
 
     document.getElementById("backToLogin").addEventListener("click", e => {
       e.preventDefault();
-      document.getElementById("recoveryPanel").style.display = "none";
-      document.getElementById("recoverySuccess").style.display = "none";
-      document.getElementById("loginForm").style.display = "block";
+      document.getElementById("recoveryPanel").hidden = true;
+      document.getElementById("recoverySuccess").hidden = true;
+      document.getElementById("loginForm").hidden = false;
     });
 
     document.getElementById("recoveryBtn").addEventListener("click", async () => {
@@ -254,7 +316,7 @@
 
       const btn = document.getElementById("recoveryBtn");
       btn.disabled = true;
-      btn.textContent = "Sending…";
+      btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin .7s linear infinite"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> Sending…`;
 
       try {
         await window.auth.sendPasswordResetEmail(email);
@@ -263,9 +325,9 @@
       }
 
       btn.disabled = false;
-      btn.textContent = "Send link";
+      btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send reset link`;
       document.getElementById("recoveryEmail").value = "";
-      document.getElementById("recoverySuccess").style.display = "block";
+      document.getElementById("recoverySuccess").hidden = false;
     });
   </script>
 </body>

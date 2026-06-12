@@ -1,4 +1,48 @@
+// ── Accordion ────────────────────────────────────────────────────────────────
+const ACCORDION_KEY = "settings_accordion_v1";
+
+function initAccordions() {
+  const saved = JSON.parse(localStorage.getItem(ACCORDION_KEY) || "{}");
+
+  document.querySelectorAll(".settings-col .card, .settings-span.card").forEach(card => {
+    const header = card.querySelector(".card-header");
+    const body   = card.querySelector(".card-body");
+    if (!header || !body) return;
+
+    const key = "sec_" + (card.querySelector("h3")?.textContent?.trim() || Math.random()).toLowerCase().replace(/\s+/g, "_");
+
+    // Inject chevron
+    const chevron = document.createElement("div");
+    chevron.className  = "card-chevron";
+    chevron.innerHTML  = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>`;
+    header.appendChild(chevron);
+    header.classList.add("is-collapsible");
+    body.classList.add("accordion-body");
+
+    const isOpen = saved[key] !== false; // default open
+    if (isOpen) {
+      header.classList.add("is-open");
+    } else {
+      body.classList.add("is-collapsed");
+      chevron.style.transform = "rotate(-90deg)";
+    }
+
+    header.addEventListener("click", e => {
+      // Don't collapse if user clicks a button/input inside the header
+      if (e.target.closest("button,input,select,a")) return;
+      const nowOpen = body.classList.toggle("is-collapsed");
+      header.classList.toggle("is-open", !nowOpen);
+      chevron.style.transform = nowOpen ? "rotate(-90deg)" : "";
+
+      const state = JSON.parse(localStorage.getItem(ACCORDION_KEY) || "{}");
+      state[key] = !nowOpen;
+      localStorage.setItem(ACCORDION_KEY, JSON.stringify(state));
+    });
+  });
+}
+
 document.addEventListener("appReady", () => {
+  initAccordions();
   const s = getSettings();
   document.getElementById("serviceNowInstance").value = s.serviceNowInstance || "europarl.service-now.com";
   document.getElementById("defaultEvaluator").value   = s.defaultEvaluator   || "";

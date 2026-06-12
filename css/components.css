@@ -49,6 +49,40 @@
 
 .card-body { padding: 22px; }
 
+/* ── Accordion (collapsible cards) ── */
+.card-header.is-collapsible {
+  cursor: pointer;
+  user-select: none;
+  border-radius: var(--r-lg);
+  transition: background var(--ease);
+}
+
+.card-header.is-collapsible:hover { background: var(--bg); }
+
+.card-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-md);
+  flex-shrink: 0;
+  color: var(--muted);
+  transition: transform .2s cubic-bezier(.4,0,.2,1), background var(--ease);
+  margin-left: auto;
+}
+
+.card-header.is-collapsible:hover .card-chevron { background: var(--border); color: var(--text-secondary); }
+
+.card-header.is-collapsible.is-open { border-radius: var(--r-lg) var(--r-lg) 0 0; }
+
+.card-body.accordion-body {
+  overflow: hidden;
+  transition: none;
+}
+
+.card-body.accordion-body.is-collapsed { display: none; }
+
 /* ── Section title ── */
 .section-title {
   font-size: 13px;
@@ -147,11 +181,12 @@ button {
 .form-group.full,
 .full { grid-column: 1 / -1; }
 
-/* Compact inline row for Date + SLA + LSA */
+/* Compact inline row for Date + SLA + LSA — spans full form-grid width */
 .form-row-compact {
+  grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: auto 1fr 1fr;
-  gap: 10px;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 18px;
   align-items: start;
 }
 @media (max-width: 600px) {
