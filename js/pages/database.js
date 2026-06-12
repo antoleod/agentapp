@@ -20,9 +20,11 @@ document.addEventListener("appReady", async () => {
 });
 
 function setTableLoading(on) {
-  document.getElementById("databaseBody").innerHTML = on
-    ? `<tr><td colspan="9"><div class="empty-state"><div class="spinner" style="border-top-color:var(--primary)"></div></div></td></tr>`
-    : "";
+  if (on) {
+    document.getElementById("databaseBody").innerHTML =
+      `<tr><td colspan="9"><div class="empty-state"><div class="spinner" style="border-top-color:var(--primary)"></div></div></td></tr>`;
+  }
+  // false → do nothing; renderTable() replaces the content
 }
 
 function scoreBadge(avg) {
