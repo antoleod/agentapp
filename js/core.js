@@ -126,6 +126,9 @@ applyFontSize(getSettings().fontSize);
 
 // ── Data layer (Firestore primary, localStorage cache) ────────────────────────
 async function getData() {
+  // Guests get no cached data — avoid exposing another user's evaluations
+  const isGuest = sessionStorage.getItem("guestSession") === "1";
+  if (isGuest) return [];
   try {
     const snap = await window.db.collection(COLLECTION)
       .orderBy("createdAt", "desc")
@@ -226,9 +229,14 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;");
 }
 
+function getSafeInstance() {
+  const raw = getSettings().serviceNowInstance || "europarl.service-now.com";
+  return /^[a-zA-Z0-9.-]+$/.test(raw.trim()) ? raw.trim() : "europarl.service-now.com";
+}
+
 function openServiceNow(ticket) {
   if (!ticket) return;
-  const instance = getSettings().serviceNowInstance || "europarl.service-now.com";
+  const instance = getSafeInstance();
 
   const tableMap  = { INC: "incident", RITM: "sc_req_item", REQ: "sc_request", SCTASK: "sc_task" };
   const table     = Object.entries(tableMap).find(([k]) => ticket.startsWith(k))?.[1] ?? "task";

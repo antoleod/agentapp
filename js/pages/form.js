@@ -331,15 +331,16 @@ function showAuditPanel(data, filled) {
   panel.className = "audit-panel";
   const slaPct     = data.slaPercentage !== null ? data.slaPercentage : null;
   const slaColor   = slaPct === null ? "" : slaPct > 100 ? "color:var(--danger);font-weight:700" : "color:var(--success);font-weight:700";
+  const slaPctSafe = slaPct !== null ? escapeHtml(String(slaPct)) : "";
   const slaDisplay = slaPct !== null
-    ? `<span style="${slaColor}">${slaPct}% ${slaPct > 100 ? "⚠ Breached" : "✓ OK"}</span>`
+    ? `<span style="${slaColor}">${slaPctSafe}% ${slaPct > 100 ? "⚠ Breached" : "✓ OK"}</span>`
     : "";
 
   panel.innerHTML = `
     <div class="audit-header">
       <span class="audit-icon">📋</span>
       <strong>ServiceNow Import</strong>
-      <span class="audit-ticket">${data.number || ""}</span>
+      <span class="audit-ticket">${escapeHtml(data.number || "")}</span>
       ${slaDisplay ? `<span class="audit-sla">${slaDisplay}</span>` : ""}
       <button type="button" class="audit-close" onclick="document.getElementById('auditPanel').remove()">×</button>
     </div>
@@ -364,6 +365,12 @@ function showAuditPanel(data, filled) {
 // ── Save ──────────────────────────────────────────────────────────────────────
 async function handleSave(e) {
   e.preventDefault();
+
+  if (window.currentUser?.isAnonymous) {
+    toast("Sign in to save evaluations. Guest access is read-only.", "warning");
+    return;
+  }
+
   const item = readForm();
 
   if (!item.ticketNumber || !item.agentName || !item.evaluationDate) {

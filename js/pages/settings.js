@@ -235,9 +235,15 @@ document.addEventListener("appReady", () => {
 
   // ── Save settings ─────────────────────────────────────────────────────────
   document.getElementById("saveSettingsBtn").addEventListener("click", () => {
+    const rawInstance = document.getElementById("serviceNowInstance").value.trim();
+    if (rawInstance && !/^[a-zA-Z0-9.-]+$/.test(rawInstance)) {
+      toast("Invalid ServiceNow instance hostname. Use only letters, digits, hyphens, and dots.", "error");
+      document.getElementById("serviceNowInstance").focus();
+      return;
+    }
     const updated = {
       ...getSettings(),
-      serviceNowInstance: document.getElementById("serviceNowInstance").value.trim(),
+      serviceNowInstance: rawInstance || "europarl.service-now.com",
       defaultEvaluator:   document.getElementById("defaultEvaluator").value.trim(),
     };
     // loginEmail is intentionally not persisted to localStorage (credential leak risk)

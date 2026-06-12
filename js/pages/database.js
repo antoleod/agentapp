@@ -212,7 +212,7 @@ function exportTicketReport(item) {
   const avg      = calculateAverage(item);
   const criteria = getActiveCriteria();
   const isBreach = item.slaBreach === "Yes";
-  const esc      = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  const esc      = escapeHtml;
 
   const scoreBar = v => {
     if (!v && v !== 0) return `<span class="score-empty">—</span>`;
@@ -320,7 +320,7 @@ function exportTicketReport(item) {
 
 function exportMultiTicketReport(items) {
   const criteria = getActiveCriteria();
-  const esc      = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  const esc      = escapeHtml;
 
   const scoreBar = v => {
     if (!v && v !== 0) return `<span style="color:#9ca3af">—</span>`;
@@ -590,13 +590,26 @@ function bindImportPreview() {
     const toImport = selectedIdxs.map(i => _importParsed[i]).filter(Boolean);
     if (!toImport.length) return;
 
+    function sanitizeImportRow(item) {
+      const allowed = new Set([
+        "ticketNumber", "agentName", "evaluationDate", "slaBreach", "lsa",
+        "comments", "evaluatedBy", "createdBy", "createdAt",
+        ...getActiveCriteria().map(c => c.id),
+      ]);
+      const out = {};
+      for (const key of allowed) {
+        if (key in item) out[key] = item[key];
+      }
+      return out;
+    }
+
     confirmBtn.disabled = true;
     confirmBtn.querySelector("span").textContent = "Importing…";
     try {
       const batch = window.db.batch();
       toImport.forEach(item => {
         const ref = window.db.collection(COLLECTION).doc(item.ticketNumber.trim());
-        batch.set(ref, { ...item, updatedAt: firebase.firestore.FieldValue.serverTimestamp(), createdAt: item.createdAt || firebase.firestore.FieldValue.serverTimestamp() });
+        batch.set(ref, { ...sanitizeImportRow(item), updatedAt: firebase.firestore.FieldValue.serverTimestamp(), createdAt: item.createdAt || firebase.firestore.FieldValue.serverTimestamp() });
       });
       await batch.commit();
 
