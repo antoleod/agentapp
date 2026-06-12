@@ -223,7 +223,7 @@ function loadIntoForm(item) {
 function resolveEvaluatorName() {
   const user = window.currentUser;
   if (!user || user.isAnonymous) return getSettings().defaultEvaluator || "Guest";
-  return user.displayName || user.email?.split("@")[0] || getSettings().defaultEvaluator || "";
+  return user.displayName || (user.email ? formatEmailName(user.email) : null) || getSettings().defaultEvaluator || "";
 }
 
 function populateAgentRoster() {
