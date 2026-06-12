@@ -17,29 +17,22 @@
       <!-- Logo mark: rising trend line → checkmark, symbolising evaluation + quality -->
       <svg class="login-logo-mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="logoGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-            <stop offset="0%"   stop-color="#6366f1"/>
-            <stop offset="100%" stop-color="#38bdf8"/>
-          </linearGradient>
-          <linearGradient id="logoGrad2" x1="0" y1="48" x2="48" y2="0" gradientUnits="userSpaceOnUse">
-            <stop offset="0%"   stop-color="#818cf8" stop-opacity=".3"/>
-            <stop offset="100%" stop-color="#38bdf8" stop-opacity=".1"/>
+          <linearGradient id="lg1" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#6366f1"/>
+            <stop offset="100%" stop-color="#06b6d4"/>
           </linearGradient>
         </defs>
-        <!-- Background rounded square -->
-        <rect width="48" height="48" rx="13" fill="#1e1b4b"/>
-        <rect width="48" height="48" rx="13" fill="url(#logoGrad2)"/>
-        <!-- Inner glow border -->
-        <rect x=".75" y=".75" width="46.5" height="46.5" rx="12.25" stroke="url(#logoGrad)" stroke-width="1.5" stroke-opacity=".5"/>
-        <!-- Bars: 3 columns rising left to right -->
-        <rect x="8"  y="28" width="7" height="13" rx="2" fill="url(#logoGrad)" opacity=".45"/>
-        <rect x="20" y="21" width="7" height="20" rx="2" fill="url(#logoGrad)" opacity=".65"/>
-        <rect x="32" y="13" width="7" height="28" rx="2" fill="url(#logoGrad)" opacity=".85"/>
-        <!-- Checkmark arc over top-right bar -->
-        <path d="M19 22 L25 29 L39 14" stroke="url(#logoGrad)" stroke-width="3"
+        <!-- Background: vivid gradient so it pops on dark panel -->
+        <rect width="48" height="48" rx="13" fill="url(#lg1)"/>
+        <!-- Subtle inner highlight -->
+        <rect x="1" y="1" width="46" height="23" rx="12" fill="white" fill-opacity=".07"/>
+        <!-- Bars (white, rising left → right) -->
+        <rect x="7"  y="29" width="7" height="12" rx="2" fill="white" fill-opacity=".45"/>
+        <rect x="20" y="22" width="7" height="19" rx="2" fill="white" fill-opacity=".65"/>
+        <rect x="33" y="14" width="7" height="27" rx="2" fill="white" fill-opacity=".9"/>
+        <!-- Checkmark (bright white, over the bars) -->
+        <path d="M18 23 L24 30 L40 14" stroke="white" stroke-width="3"
               stroke-linecap="round" stroke-linejoin="round"/>
-        <!-- Dot at check tip -->
-        <circle cx="39" cy="14" r="2.5" fill="#38bdf8"/>
       </svg>
 
       <div class="login-brand-text">
