@@ -8,17 +8,17 @@ document.addEventListener("appReady", async () => {
     renderReports(cached);
   }
 
-  try {
-    const data = await getData();
-    if (JSON.stringify(data) !== JSON.stringify(_reportData)) {
-      _reportData = data;
-      renderReports(data);
+  // First load (no cache): full sync from Firestore
+  if (!cached.length) {
+    try {
+      _reportData = await getData();
+      renderReports(_reportData);
+    } catch (err) {
+      toast("Failed to load reports: " + err.message, "error");
     }
-  } catch (err) {
-    if (!cached.length) toast("Failed to load reports: " + err.message, "error");
   }
 
-  // Real-time listener for changes from other users
+  // Real-time listener: syncs any changes since last session
   subscribeData(data => {
     _reportData = data;
     renderReports(data);

@@ -20,20 +20,19 @@ document.addEventListener("appReady", async () => {
   bindImportPreview();
   bindAuditModal();
 
-  // Background incremental sync
-  try {
-    const fresh = await getData();
-    if (JSON.stringify(fresh) !== JSON.stringify(allData)) {
-      allData = fresh;
+  // First load (no cache): full sync from Firestore
+  if (!cached.length) {
+    try {
+      allData = await getData();
       renderTable(allData);
+    } catch (err) {
+      toast("Failed to load data: " + err.message, "error");
+    } finally {
+      setTableLoading(false);
     }
-  } catch (err) {
-    if (!cached.length) toast("Failed to load data: " + err.message, "error");
-  } finally {
-    setTableLoading(false);
   }
 
-  // Real-time listener for changes from other users
+  // Real-time listener: syncs any changes since last session
   subscribeData(data => {
     allData = data;
     renderTable(filterData(document.getElementById("searchInput").value));

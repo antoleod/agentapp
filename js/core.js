@@ -188,14 +188,10 @@ function subscribeData(callback) {
   if (_unsubscribeSnapshot) _unsubscribeSnapshot();
   if (sessionStorage.getItem("guestSession") === "1") return;
 
-  let isFirst = true;
-
   _unsubscribeSnapshot = window.db.collection(COLLECTION)
     .orderBy("updatedAt", "desc")
     .limit(50)
     .onSnapshot({ includeMetadataChanges: false }, snap => {
-      // Skip the initial snapshot — getData() already loaded that data
-      if (isFirst) { isFirst = false; return; }
 
       const cached = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
       let changed = false;
