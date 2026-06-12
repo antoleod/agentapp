@@ -277,6 +277,53 @@ document.addEventListener("appReady", () => {
     if (e.key === "Enter") addCustomCriterion();
   });
 
+  // ── Session Duration ──────────────────────────────────────────────────────
+  const SESSION_MS = { "1d": 86400000, "7d": 604800000, "30d": 2592000000 };
+
+  function renderSessionInfo() {
+    const expiry = parseInt(localStorage.getItem("sessionExpiresAt") || "0", 10);
+    const info   = document.getElementById("sessionExpiryInfo");
+    if (!info) return;
+    if (!expiry) {
+      info.textContent = "No active session timer set.";
+      return;
+    }
+    const remaining = expiry - Date.now();
+    if (remaining <= 0) {
+      info.textContent = "Session has expired — you will be signed out on next page load.";
+      info.style.color = "var(--danger)";
+      return;
+    }
+    const days  = Math.floor(remaining / 86400000);
+    const hours = Math.floor((remaining % 86400000) / 3600000);
+    info.textContent = `Current session expires in: ${days > 0 ? days + "d " : ""}${hours}h`;
+    info.style.color = "";
+  }
+
+  const durPicker  = document.getElementById("sessionDurationPicker");
+  const durButtons = durPicker.querySelectorAll(".toggle-btn");
+  const savedDur   = s.sessionDuration || "7d";
+
+  durButtons.forEach(btn => {
+    if (btn.dataset.duration === savedDur) btn.classList.add("active");
+    btn.addEventListener("click", () => {
+      durButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      saveSettings({ ...getSettings(), sessionDuration: btn.dataset.duration });
+      toast("Session duration saved.", "success");
+    });
+  });
+
+  document.getElementById("extendSessionBtn").addEventListener("click", () => {
+    const dur = getSettings().sessionDuration || "7d";
+    const ms  = SESSION_MS[dur] || SESSION_MS["7d"];
+    localStorage.setItem("sessionExpiresAt", String(Date.now() + ms));
+    renderSessionInfo();
+    toast("Session extended.", "success");
+  });
+
+  renderSessionInfo();
+
   // ── Save settings ─────────────────────────────────────────────────────────
   document.getElementById("saveSettingsBtn").addEventListener("click", () => {
     const rawInstance = document.getElementById("serviceNowInstance").value.trim();

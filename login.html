@@ -211,6 +211,40 @@
     </div>
   </div>
 
+  <!-- Session duration modal -->
+  <div id="sessionModal" class="sess-modal-backdrop" hidden>
+    <div class="sess-modal">
+      <div class="sess-modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </div>
+      <div class="sess-modal-title">Stay signed in for how long?</div>
+      <div class="sess-modal-sub">You can change this anytime in Settings</div>
+      <div class="sess-opts">
+        <button type="button" class="sess-opt" data-sess="1d">
+          <span class="sess-opt-num">1</span>
+          <span class="sess-opt-unit">Day</span>
+        </button>
+        <button type="button" class="sess-opt sess-opt-active" data-sess="7d">
+          <span class="sess-opt-num">7</span>
+          <span class="sess-opt-unit">Days</span>
+          <span class="sess-opt-rec">Default</span>
+        </button>
+        <button type="button" class="sess-opt" data-sess="30d">
+          <span class="sess-opt-num">30</span>
+          <span class="sess-opt-unit">Days</span>
+        </button>
+      </div>
+      <button type="button" id="sessionConfirmBtn" class="sess-confirm-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        Continue
+      </button>
+    </div>
+  </div>
+
   <!-- Firebase SDK — no defer: inline script below depends on these being ready -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -221,9 +255,15 @@
   <script src="js/core.js"></script>
   <script src="js/i18n.js"></script>
   <script>
-    // Already signed in — skip login (use window.auth set by firebase-config.js)
+    // Already signed in — check session expiry first
     window.auth.onAuthStateChanged(user => {
-      if (user) window.location.href = "pages/form.html";
+      if (!user) return;
+      const expiry = parseInt(localStorage.getItem("sessionExpiresAt") || "0", 10);
+      if (expiry && Date.now() > expiry) {
+        window.auth.signOut();
+        return;
+      }
+      window.location.href = "pages/form.html";
     });
 
     function setLoading(on) {
@@ -245,6 +285,41 @@
       document.getElementById("loginError").classList.remove("visible");
     }
 
+    // ── Session duration modal ────────────────────────────────────────────────
+    const SESSION_OPTS = [
+      { key: "1d",  label: "1 Day",    ms: 1  * 24 * 60 * 60 * 1000 },
+      { key: "7d",  label: "7 Days",   ms: 7  * 24 * 60 * 60 * 1000 },
+      { key: "30d", label: "30 Days",  ms: 30 * 24 * 60 * 60 * 1000 },
+    ];
+
+    function getDefaultDuration() {
+      const saved = JSON.parse(localStorage.getItem("agentEvaluationSettingsV1") || "{}");
+      return saved.sessionDuration || "7d";
+    }
+
+    function showSessionModal(onConfirm) {
+      const defKey = getDefaultDuration();
+      document.getElementById("sessionModal").hidden = false;
+      document.querySelectorAll(".sess-opt").forEach(btn => {
+        btn.classList.toggle("sess-opt-active", btn.dataset.sess === defKey);
+      });
+      document.getElementById("sessionConfirmBtn").onclick = () => {
+        const active = document.querySelector(".sess-opt.sess-opt-active");
+        const key = active?.dataset.sess || "7d";
+        const opt = SESSION_OPTS.find(o => o.key === key) || SESSION_OPTS[1];
+        localStorage.setItem("sessionExpiresAt", String(Date.now() + opt.ms));
+        document.getElementById("sessionModal").hidden = true;
+        onConfirm();
+      };
+    }
+
+    document.querySelectorAll(".sess-opt").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".sess-opt").forEach(b => b.classList.remove("sess-opt-active"));
+        btn.classList.add("sess-opt-active");
+      });
+    });
+
     document.getElementById("loginForm").addEventListener("submit", async e => {
       e.preventDefault();
       const email = document.getElementById("loginEmail").value.trim();
@@ -254,7 +329,8 @@
       setLoading(true);
       try {
         await window.auth.signInWithEmailAndPassword(email, pass);
-        window.location.href = "pages/form.html";
+        setLoading(false);
+        showSessionModal(() => { window.location.href = "pages/form.html"; });
       } catch (err) {
         const msgs = {
           "auth/user-not-found":     "No account found with this email.",

@@ -140,6 +140,33 @@
               </div>
             </div>
 
+            <!-- Session -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 style="font-size:15px">Session Duration</h3>
+                  <p style="font-size:12px;color:var(--muted);margin-top:3px">How long you stay signed in without activity</p>
+                </div>
+              </div>
+              <div class="card-body">
+                <div style="display:flex;flex-direction:column;gap:14px">
+                  <div class="form-group">
+                    <label>Keep me signed in for</label>
+                    <div class="toggle-group" id="sessionDurationPicker" style="margin-top:6px">
+                      <button type="button" class="toggle-btn" data-duration="1d">1 Day</button>
+                      <button type="button" class="toggle-btn" data-duration="7d">7 Days</button>
+                      <button type="button" class="toggle-btn" data-duration="30d">30 Days</button>
+                    </div>
+                  </div>
+                  <div id="sessionExpiryInfo" style="font-size:12.5px;color:var(--muted);padding:10px 14px;background:var(--bg);border-radius:var(--r-md);border:1px solid var(--border)"></div>
+                  <button id="extendSessionBtn" class="btn btn-secondary" style="width:fit-content">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Extend current session
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <!-- Account -->
             <div class="card" id="userInfoSection">
               <div class="card-header">
