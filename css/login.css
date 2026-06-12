@@ -60,6 +60,7 @@ body {
   flex-shrink: 0;
   border-radius: 14px;
   box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 8px 24px rgba(79,70,229,.5);
+  color: #6366f1; /* Asegura que el logo tenga un color vibrante por defecto */
 }
 
 .login-brand-text h1 {

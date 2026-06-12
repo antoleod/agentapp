@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bookmarklet – Agent Eval</title>
+  <link rel="stylesheet" href="../css/vars.css" />
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/bookmarklet.css" />
+</head>
+<body>
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="shell">
+    <div class="app">
+      <main class="page">
+        <div class="topbar">
+          <div>
+            <h2>Bookmarklet</h2>
+            <p class="page-subtitle">Instala el script en tu navegador para exportar tickets de ServiceNow</p>
+          </div>
+        </div>
+
+        <!-- Step 1: Drag -->
+        <div class="bm-card">
+          <div class="bm-step-badge">1</div>
+          <div class="bm-card-body">
+            <h3>Arrastra el botón a tu barra de favoritos</h3>
+            <p>Arrastra el siguiente enlace a tu barra de marcadores del navegador. Asegúrate de que la barra esté visible (<kbd>Ctrl+Shift+B</kbd> en Chrome/Edge).</p>
+
+            <div class="bm-drag-zone">
+              <div class="bm-drag-hint">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                Arrastra hacia la barra de favoritos
+              </div>
+              <a id="bookmarkletLink" class="bm-button" href="#" title="Export Ticket – Agent Eval">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export Ticket
+              </a>
+              <div class="bm-drag-hint">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                &nbsp;
+              </div>
+            </div>
+
+            <p class="bm-note">Si no puedes arrastrar, haz clic en "Copiar código" y crea un marcador manualmente pegando el código como URL.</p>
+            <button class="btn btn-secondary" id="copyCodeBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copiar código del bookmarklet
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Use -->
+        <div class="bm-card">
+          <div class="bm-step-badge">2</div>
+          <div class="bm-card-body">
+            <h3>Úsalo en ServiceNow</h3>
+            <p>Abre cualquier ticket en ServiceNow y haz clic en el marcador <strong>Export Ticket</strong> que acabas de guardar.</p>
+            <ol class="bm-steps-list">
+              <li>Navega al ticket en ServiceNow (INC, RITM, SCTASK…)</li>
+              <li>Haz clic en <strong>Export Ticket</strong> en tu barra de favoritos</li>
+              <li>Aparecerá un botón azul <strong>"Export Ticket"</strong> en la página</li>
+              <li>Haz clic en ese botón — el JSON se copia al portapapeles</li>
+              <li>Ve a <a href="form.html">Form</a> en Agent Eval y pega el JSON</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Step 3: Paste -->
+        <div class="bm-card">
+          <div class="bm-step-badge">3</div>
+          <div class="bm-card-body">
+            <h3>Pega en Agent Eval</h3>
+            <p>En la página <a href="form.html">Form</a>, usa el botón <strong>"Paste ServiceNow"</strong> o pega directamente en el campo de importación. El formulario se completará automáticamente.</p>
+
+            <div class="bm-data-preview">
+              <div class="bm-data-header">Ejemplo de datos exportados</div>
+              <pre class="bm-data-code">{
+  "number": "INC0435166",
+  "shortDescription": "Cannot access shared drive",
+  "assignedTo": "John Smith",
+  "assignmentGroup": "ITEC-SUP PS",
+  "state": "In Progress",
+  "slaBreach": "No",
+  "slaPercentage": 72.3,
+  "slaName": "ITEC-SUP PS - Medium Priority Incident"
+}</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Troubleshooting -->
+        <div class="bm-card bm-card-muted">
+          <div class="bm-card-body">
+            <h3>Solución de problemas</h3>
+            <div class="bm-faq">
+              <details>
+                <summary>El botón "Export Ticket" no aparece en ServiceNow</summary>
+                <p>Asegúrate de estar dentro de un ticket abierto. El script necesita que <code>g_form</code> esté disponible en la página. Si usas ServiceNow con vista clásica, el script también funciona.</p>
+              </details>
+              <details>
+                <summary>slaPercentage aparece como null</summary>
+                <p>Expande la sección "SLA" / "Related Lists" en el ticket antes de hacer clic en Export Ticket. ServiceNow carga las SLAs de forma diferida.</p>
+              </details>
+              <details>
+                <summary>Error: "g_form no disponible"</summary>
+                <p>Este mensaje aparece si haces clic en el marcador fuera de un ticket (ej. en la lista de incidentes). Abre un ticket específico y vuelve a intentarlo.</p>
+              </details>
+              <details>
+                <summary>No puedo arrastrar el marcador (Safari / Firefox)</summary>
+                <p>Haz clic en "Copiar código del bookmarklet", luego crea un nuevo marcador manualmente y pega el código como URL del marcador.</p>
+              </details>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="../js/firebase-init.js"></script>
+  <script src="../js/core.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script src="../js/pages/bookmarklet.js"></script>
+</body>
+</html>

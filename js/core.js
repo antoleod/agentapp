@@ -141,6 +141,7 @@ async function getData() {
 async function saveEvaluation(item, auditCtx = {}) {
   await window.db.collection(COLLECTION).doc(item.ticketNumber).set({
     ...item,
+    ownerUid: (firebase.auth().currentUser?.uid) || item.ownerUid || 'guest',
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
   });
   const cached = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
@@ -269,6 +270,11 @@ async function getUserRole(email) {
   }
 }
 
+// SECURITY WARNING: setUserRole and removeUserRole write to the roles collection.
+// Firestore rules block all client writes to this collection (allow write: if false).
+// To actually modify roles, use the Firebase Admin SDK from a trusted server environment
+// (e.g., a Cloud Function with admin credentials). These functions will fail at runtime
+// for all clients — they are retained here only for UI error-handling and future migration.
 async function setUserRole(email, displayName, role) {
   const key = emailKey(email);
   if (!key) throw new Error("Invalid email");

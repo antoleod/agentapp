@@ -181,12 +181,14 @@ document.addEventListener("appReady", () => {
 
   // ── Save settings ─────────────────────────────────────────────────────────
   document.getElementById("saveSettingsBtn").addEventListener("click", () => {
-    saveSettings({
+    const updated = {
       ...getSettings(),
       serviceNowInstance: document.getElementById("serviceNowInstance").value.trim(),
       defaultEvaluator:   document.getElementById("defaultEvaluator").value.trim(),
-      loginEmail:         document.getElementById("loginEmail").value.trim(),
-    });
+    };
+    // loginEmail is intentionally not persisted to localStorage (credential leak risk)
+    delete updated.loginEmail;
+    saveSettings(updated);
     toast(t("set.save") + " ✓", "success");
   });
 

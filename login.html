@@ -144,11 +144,7 @@
   <script>
     const auth = firebase.auth();
 
-    // Pre-fill saved email
-    (function() {
-      const s = getSettings();
-      if (s.loginEmail) document.getElementById("loginEmail").value = s.loginEmail;
-    })();
+    // loginEmail pre-fill removed — email is no longer persisted to localStorage
 
     // Already signed in — skip login
     auth.onAuthStateChanged(user => {

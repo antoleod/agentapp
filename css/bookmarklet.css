@@ -1,0 +1,240 @@
+.page-subtitle {
+  font-size: 13.5px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.bm-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  display: flex;
+  gap: 20px;
+  padding: 28px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.bm-card-muted {
+  background: var(--bg);
+}
+
+.bm-step-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.bm-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.bm-card-body h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.bm-card-body p {
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.bm-card-body a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.bm-card-body a:hover {
+  text-decoration: underline;
+}
+
+/* Drag zone */
+.bm-drag-zone {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--bg);
+  border: 2px dashed var(--border);
+  border-radius: var(--r-lg);
+  padding: 24px 28px;
+  margin-bottom: 16px;
+  justify-content: center;
+}
+
+.bm-drag-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.bm-drag-hint svg {
+  opacity: .5;
+}
+
+/* The draggable bookmarklet button */
+.bm-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  background: var(--primary);
+  color: white !important;
+  border-radius: var(--r-md);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none !important;
+  cursor: grab;
+  box-shadow: 0 4px 14px rgba(79,70,229,.4);
+  transition: box-shadow .2s, transform .2s;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.bm-button:hover {
+  box-shadow: 0 6px 20px rgba(79,70,229,.55);
+  transform: translateY(-2px);
+  text-decoration: none !important;
+}
+
+.bm-button:active {
+  cursor: grabbing;
+}
+
+.bm-note {
+  font-size: 12px !important;
+  color: var(--muted);
+  margin-bottom: 12px !important;
+}
+
+/* Steps list */
+.bm-steps-list {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.bm-steps-list li {
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 4px;
+}
+
+.bm-steps-list strong {
+  color: var(--text);
+}
+
+/* Data preview */
+.bm-data-preview {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.bm-data-header {
+  padding: 8px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.bm-data-code {
+  padding: 14px;
+  margin: 0;
+  font-size: 12px;
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  overflow-x: auto;
+}
+
+/* FAQ / troubleshooting */
+.bm-faq {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bm-faq details {
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.bm-faq summary {
+  padding: 12px 16px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bm-faq summary::-webkit-details-marker { display: none; }
+
+.bm-faq summary::before {
+  content: '+';
+  font-size: 16px;
+  color: var(--primary);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.bm-faq details[open] summary::before { content: '−'; }
+
+.bm-faq details p {
+  padding: 0 16px 14px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0 !important;
+}
+
+.bm-faq details p code {
+  font-family: monospace;
+  font-size: 12px;
+  background: var(--bg);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--text);
+}
+
+kbd {
+  display: inline-block;
+  padding: 2px 7px;
+  font-size: 11px;
+  font-family: monospace;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  box-shadow: 0 1px 0 var(--border);
+}
+
+@media (max-width: 640px) {
+  .bm-card { flex-direction: column; gap: 12px; padding: 20px; }
+  .bm-drag-zone { flex-direction: column; gap: 12px; }
+  .bm-drag-hint:last-child { display: none; }
+}
