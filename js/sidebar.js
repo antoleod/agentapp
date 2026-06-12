@@ -358,24 +358,30 @@ function lockSession(user) {
   });
 }
 
-// Auth guard — uses Firebase Auth for all sessions including anonymous (guest)
+// Auth guard — supports Firebase Auth and sessionStorage guest session
 let _sidebarBuilt = false;
-let _authResolved = false;
-const _authTimeout = setTimeout(() => {
-  if (!_authResolved) window.location.href = "../login.html";
-}, 10000);
+if (sessionStorage.getItem("guestSession")) {
+  _sidebarBuilt = true;
+  window.currentUser = { isAnonymous: true, email: null, displayName: "Guest" };
+  buildSidebar(window.currentUser);
+  hideLoading();
+  setTimeout(() => document.dispatchEvent(new Event("appReady")), 0);
+} else {
+  let _authResolved = false;
+  const _authTimeout = setTimeout(() => {
+    if (!_authResolved) window.location.href = "../login.html";
+  }, 10000);
 
-window.auth.onAuthStateChanged(user => {
-  _authResolved = true;
-  clearTimeout(_authTimeout);
-  if (_sidebarBuilt) return;
-  if (!user) {
-    window.location.href = "../login.html";
-    return;
-  }
+  window.auth.onAuthStateChanged(user => {
+    _authResolved = true;
+    clearTimeout(_authTimeout);
+    if (_sidebarBuilt) return;
+    if (!user) {
+      window.location.href = "../login.html";
+      return;
+    }
 
-  // Session expiry check — skip for anonymous (guest) users
-  if (!user.isAnonymous) {
+    // Session expiry check
     const expiry = parseInt(localStorage.getItem("sessionExpiresAt") || "0", 10);
     if (expiry && Date.now() > expiry) {
       localStorage.removeItem("sessionExpiresAt");
@@ -386,11 +392,11 @@ window.auth.onAuthStateChanged(user => {
       });
       return;
     }
-  }
 
-  _sidebarBuilt = true;
-  window.currentUser = user;
-  buildSidebar(user);
-  hideLoading();
-  document.dispatchEvent(new Event("appReady"));
-});
+    _sidebarBuilt = true;
+    window.currentUser = user;
+    buildSidebar(user);
+    hideLoading();
+    document.dispatchEvent(new Event("appReady"));
+  });
+}

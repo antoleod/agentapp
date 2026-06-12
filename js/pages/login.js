@@ -87,13 +87,9 @@ document.getElementById("loginForm").addEventListener("submit", async e => {
   }
 });
 
-document.getElementById("guestBtn").addEventListener("click", async () => {
-  try {
-    await window.auth.signInAnonymously();
-    // sidebar.js onAuthStateChanged handles the redirect
-  } catch (err) {
-    showError("Guest sign-in failed. Please try again.");
-  }
+document.getElementById("guestBtn").addEventListener("click", () => {
+  sessionStorage.setItem("guestSession", "1");
+  window.location.href = "pages/form.html";
 });
 
 ["loginEmail", "loginPass"].forEach(id =>

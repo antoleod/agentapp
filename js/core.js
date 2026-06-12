@@ -139,7 +139,7 @@ applyFontSize(getSettings().fontSize);
 // ── Data layer (Firestore primary, localStorage cache) ────────────────────────
 async function getData() {
   // Guests get no cached data — avoid exposing another user's evaluations
-  if (window.currentUser?.isAnonymous) return [];
+  if (sessionStorage.getItem("guestSession") === "1") return [];
   try {
     const snap = await window.db.collection(COLLECTION)
       .orderBy("createdAt", "desc")
