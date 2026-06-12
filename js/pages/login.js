@@ -78,40 +78,21 @@ function clearError() {
   document.getElementById("loginError").classList.remove("visible");
 }
 
-// ── Session duration modal ────────────────────────────────────────────────────
+// ── Session duration (applied silently from Settings preference) ──────────────
 const SESSION_OPTS = [
-  { key: "1d",  label: "1 Day",   ms: 1  * 24 * 60 * 60 * 1000 },
-  { key: "7d",  label: "7 Days",  ms: 7  * 24 * 60 * 60 * 1000 },
-  { key: "30d", label: "30 Days", ms: 30 * 24 * 60 * 60 * 1000 },
+  { key: "1d",  ms: 1  * 24 * 60 * 60 * 1000 },
+  { key: "7d",  ms: 7  * 24 * 60 * 60 * 1000 },
+  { key: "30d", ms: 30 * 24 * 60 * 60 * 1000 },
 ];
 
-function getDefaultDuration() {
-  const saved = JSON.parse(localStorage.getItem("agentEvaluationSettingsV1") || "{}");
-  return saved.sessionDuration || "7d";
+function applySessionAndRedirect(url) {
+  const saved  = JSON.parse(localStorage.getItem("agentEvaluationSettingsV1") || "{}");
+  const key    = saved.sessionDuration || "7d";
+  const opt    = SESSION_OPTS.find(o => o.key === key) || SESSION_OPTS[1];
+  localStorage.setItem("sessionExpiresAt", String(Date.now() + opt.ms));
+  window.location.href = url;
 }
 
-function showSessionModal(onConfirm) {
-  const defKey = getDefaultDuration();
-  document.getElementById("sessionModal").hidden = false;
-  document.querySelectorAll(".sess-opt").forEach(btn => {
-    btn.classList.toggle("sess-opt-active", btn.dataset.sess === defKey);
-  });
-  document.getElementById("sessionConfirmBtn").onclick = () => {
-    const active = document.querySelector(".sess-opt.sess-opt-active");
-    const key = active?.dataset.sess || "7d";
-    const opt = SESSION_OPTS.find(o => o.key === key) || SESSION_OPTS[1];
-    localStorage.setItem("sessionExpiresAt", String(Date.now() + opt.ms));
-    document.getElementById("sessionModal").hidden = true;
-    onConfirm();
-  };
-}
-
-document.querySelectorAll(".sess-opt").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".sess-opt").forEach(b => b.classList.remove("sess-opt-active"));
-    btn.classList.add("sess-opt-active");
-  });
-});
 
 // ── Set-password modal (first login) ─────────────────────────────────────────
 
@@ -142,7 +123,7 @@ document.getElementById("setPasswordBtn")?.addEventListener("click", async () =>
     const clearFn = window.functions.httpsCallable("clearMustSetPassword");
     await clearFn();
 
-    showSessionModal(() => { window.location.href = "pages/form.html"; });
+    applySessionAndRedirect("pages/form.html");
   } catch (e) {
     err.textContent = e.message || "Failed to set password.";
     err.hidden = false;
@@ -161,7 +142,7 @@ document.getElementById("loginForm").addEventListener("submit", async e => {
   try {
     await window.auth.signInWithEmailAndPassword(email, pass);
     setLoading(false);
-    showSessionModal(() => { window.location.href = "pages/form.html"; });
+    applySessionAndRedirect("pages/form.html");
   } catch (err) {
     const msgs = {
       "auth/user-not-found":     "No account found with this email.",

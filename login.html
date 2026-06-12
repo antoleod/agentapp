@@ -286,40 +286,6 @@
     </div>
   </div>
 
-  <!-- Session duration modal -->
-  <div id="sessionModal" class="sess-modal-backdrop" hidden>
-    <div class="sess-modal">
-      <div class="sess-modal-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-        </svg>
-      </div>
-      <div class="sess-modal-title">Stay signed in for how long?</div>
-      <div class="sess-modal-sub">You can change this anytime in Settings</div>
-      <div class="sess-opts">
-        <button type="button" class="sess-opt" data-sess="1d">
-          <span class="sess-opt-num">1</span>
-          <span class="sess-opt-unit">Day</span>
-        </button>
-        <button type="button" class="sess-opt sess-opt-active" data-sess="7d">
-          <span class="sess-opt-num">7</span>
-          <span class="sess-opt-unit">Days</span>
-          <span class="sess-opt-rec">Default</span>
-        </button>
-        <button type="button" class="sess-opt" data-sess="30d">
-          <span class="sess-opt-num">30</span>
-          <span class="sess-opt-unit">Days</span>
-        </button>
-      </div>
-      <button type="button" id="sessionConfirmBtn" class="sess-confirm-btn">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
-        Continue
-      </button>
-    </div>
-  </div>
-
   <!-- Firebase SDK — no defer: inline script below depends on these being ready -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
