@@ -140,7 +140,7 @@ function renderTable(data) {
                href="form.html?edit=${encodeURIComponent(item.ticketNumber)}">${t("db.edit")}</a>
             <button class="btn btn-ghost btn-sm" data-action="open" data-ticket="${ticket}">${t("db.open")}</button>
             <button class="btn btn-ghost btn-sm" data-action="report" data-ticket="${ticket}" title="Export PDF report">&#x1F4C4;</button>
-            <button class="btn btn-danger btn-sm" data-action="delete" data-ticket="${ticket}">${t("db.delete")}</button>
+            <button class="btn btn-danger btn-sm btn-icon" data-action="delete" data-ticket="${ticket}" title="Delete evaluation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;pointer-events:none"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
           </div>
         </td>
       </tr>`;
