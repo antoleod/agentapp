@@ -54,7 +54,7 @@ function buildSidebar(user) {
   sidebar.setAttribute("aria-label", "Main navigation");
   sidebar.innerHTML = `
     <div class="sidebar-brand">
-      <div class="sidebar-logo">AE</div>
+      <img class="sidebar-logo-img" src="../img/logo.svg" alt="Agent Evaluation" width="36" height="36" />
       <div>
         <h1>Agent Eval</h1>
         <p>ServiceNow Helper</p>
