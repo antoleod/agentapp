@@ -96,7 +96,7 @@
         <span id="loginErrorMsg"></span>
       </div>
 
-      <form id="loginForm" action="#" autocomplete="on">
+      <form id="loginForm" action="" method="post" autocomplete="on">
         <div class="login-field">
           <label for="loginEmail">Email address</label>
           <input id="loginEmail" name="email" type="email" autocomplete="username"
@@ -137,15 +137,15 @@
     </div>
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
+  <!-- Firebase SDK — no defer: inline script below depends on these being ready -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-  <script src="js/firebase-config.js" defer></script>
-  <script src="js/toast.js" defer></script>
-  <script src="js/core.js" defer></script>
-  <script src="js/i18n.js" defer></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/i18n.js"></script>
   <script>
     const auth = firebase.auth();
 
