@@ -102,27 +102,38 @@
   --sidebar-active: rgba(8,145,178,.3);
 }
 
-/* ── Forest theme ── */
-[data-theme="forest"] {
-  --primary:        #16a34a;
-  --primary-hover:  #15803d;
-  --primary-light:  #f0fdf4;
-  --primary-border: #bbf7d0;
-  --bg:             #f0fdf4;
-  --sidebar-bg:     #14532d;
-  --sidebar-active: rgba(22,163,74,.3);
+/* ── Sunset theme (dark premium, warm orange) ── */
+[data-theme="sunset"] {
+  --primary:        #f97316;
+  --primary-hover:  #ea580c;
+  --primary-light:  rgba(249,115,22,.15);
+  --primary-border: rgba(249,115,22,.35);
+  --bg:             #0a0a0a;
+  --panel:          #141414;
+  --border:         #242424;
+  --text:           #fafafa;
+  --text-secondary: #e5e5e5;
+  --muted:          #737373;
+  --success-light:  rgba(5,150,105,.18);
+  --success-border: rgba(5,150,105,.35);
+  --warning-light:  rgba(217,119,6,.18);
+  --warning-border: rgba(217,119,6,.35);
+  --danger-light:   rgba(220,38,38,.18);
+  --danger-border:  rgba(220,38,38,.35);
+  --shadow:         0 1px 3px rgba(0,0,0,.6), 0 1px 2px rgba(0,0,0,.5);
+  --shadow-md:      0 4px 6px rgba(0,0,0,.6), 0 2px 4px rgba(0,0,0,.5);
+  --sidebar-bg:     #0a0a0a;
+  --sidebar-active: rgba(249,115,22,.2);
+  --sidebar-border: rgba(255,255,255,.06);
 }
 
-/* ── Sunset theme ── */
-[data-theme="sunset"] {
-  --primary:        #ea580c;
-  --primary-hover:  #c2410c;
-  --primary-light:  #fff7ed;
-  --primary-border: #fed7aa;
-  --bg:             #fff7ed;
-  --sidebar-bg:     #431407;
-  --sidebar-active: rgba(234,88,12,.3);
-}
+[data-theme="sunset"] .criterion:hover { background: rgba(255,255,255,.04); }
+[data-theme="sunset"] .form-actions    { background: #141414; }
+[data-theme="sunset"] input,
+[data-theme="sunset"] select,
+[data-theme="sunset"] textarea         { background: #0a0a0a; color: var(--text); }
+[data-theme="sunset"] .login-card      { background: var(--panel); }
+[data-theme="sunset"] .sp-btn          { background: #0a0a0a; color: var(--muted); border-color: var(--border); }
 
 /* ── Violet theme ── */
 [data-theme="violet"] {

@@ -34,8 +34,7 @@ document.addEventListener("appReady", () => {
     { id: "light",    name: "Light",    sidebar: "#0f172a", primary: "#2563eb", bg: "#f1f5f9", panel: "#ffffff" },
     { id: "dark",     name: "Dark",     sidebar: "#0f172a", primary: "#2563eb", bg: "#0f172a", panel: "#1e293b" },
     { id: "ocean",    name: "Ocean",    sidebar: "#0c2340", primary: "#0891b2", bg: "#f0f9ff", panel: "#ffffff" },
-    { id: "forest",   name: "Forest",   sidebar: "#14532d", primary: "#16a34a", bg: "#f0fdf4", panel: "#ffffff" },
-    { id: "sunset",   name: "Sunset",   sidebar: "#431407", primary: "#ea580c", bg: "#fff7ed", panel: "#ffffff" },
+    { id: "sunset",   name: "Sunset",   sidebar: "#0a0a0a", primary: "#f97316", bg: "#0a0a0a", panel: "#141414" },
     { id: "violet",   name: "Violet",   sidebar: "#3b0764", primary: "#7c3aed", bg: "#faf5ff", panel: "#ffffff" },
     { id: "midnight", name: "Midnight", sidebar: "#020617", primary: "#6366f1", bg: "#020617", panel: "#0f172a" },
   ];
