@@ -33,16 +33,36 @@
               </svg>
               <input id="searchInput" class="search-input" data-i18n-ph="db.search_ph" placeholder="Search ticket, agent, LSA…" />
             </div>
-            <button id="exportPdfBtn" class="btn btn-secondary" title="Export selected rows as PDF (or all if none selected)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/><polyline points="9 9 10 9"/></svg>
-              <span id="exportPdfLabel">Export PDF</span>
-            </button>
-            <button id="exportJsonBtn" class="btn btn-secondary" data-i18n="db.export_json">Export JSON</button>
-            <button id="exportCsvBtn" class="btn btn-secondary" data-i18n="db.export_csv">Export CSV</button>
-            <label class="btn btn-secondary" id="importJsonBtn" style="cursor:pointer">
-              <span data-i18n="db.import_json">Import JSON</span>
-              <input id="importJsonInput" type="file" accept=".json" hidden />
-            </label>
+
+            <!-- Export dropdown -->
+            <div class="dropdown" id="exportDropdown">
+              <button class="btn btn-secondary dropdown-toggle" id="exportDropdownBtn" aria-haspopup="true" aria-expanded="false">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:11px;height:11px;margin-left:2px"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="dropdown-menu" id="exportDropdownMenu" hidden>
+                <button class="dropdown-item" id="exportPdfBtn" title="Export selected rows as PDF (or all if none selected)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/><polyline points="9 9 10 9"/></svg>
+                  <span id="exportPdfLabel">Export PDF</span>
+                </button>
+                <button class="dropdown-item" id="exportJsonBtn" data-i18n="db.export_json">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  Export JSON
+                </button>
+                <button class="dropdown-item" id="exportCsvBtn" data-i18n="db.export_csv">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M9 17l3 3 3-3"/><path d="M12 12v8"/><path d="M20.88 18.09A5 5 0 0018 9h-1.26A8 8 0 103 16.29"/></svg>
+                  Export CSV
+                </button>
+                <div class="dropdown-divider"></div>
+                <label class="dropdown-item" id="importJsonBtn" style="cursor:pointer">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <span data-i18n="db.import_json">Import JSON</span>
+                  <input id="importJsonInput" type="file" accept=".json" hidden />
+                </label>
+              </div>
+            </div>
+
             <button id="auditLogBtn" class="btn btn-secondary">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px">
                 <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
@@ -154,7 +174,7 @@
           </div>
           <div>
             <label style="font-size:11px;font-weight:600;display:block;margin-bottom:3px;color:var(--muted)">Agent / Ticket</label>
-            <input type="text" id="auditSearch" placeholder="Search…" style="width:140px">
+            <input type="text" id="auditSearch" placeholder="Search…" style="width:100%">
           </div>
         </div>
         <div id="auditEntriesList" style="max-height:420px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r-md);background:var(--bg)">

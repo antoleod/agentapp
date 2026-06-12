@@ -12,7 +12,7 @@ body {
 
 /* ── Left panel — branding ── */
 .login-left {
-  flex: 0 0 460px;
+  flex: 0 0 clamp(380px, 30%, 520px);
   background: linear-gradient(160deg, #0f172a 0%, #1e1b4b 60%, #0f172a 100%);
   display: flex;
   flex-direction: column;

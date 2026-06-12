@@ -463,6 +463,26 @@ function bindEvents() {
     toast("CSV export downloaded.", "success");
   });
 
+  // Export dropdown toggle
+  const exportDropdownBtn  = document.getElementById("exportDropdownBtn");
+  const exportDropdownMenu = document.getElementById("exportDropdownMenu");
+  if (exportDropdownBtn && exportDropdownMenu) {
+    exportDropdownBtn.addEventListener("click", e => {
+      e.stopPropagation();
+      const open = !exportDropdownMenu.hidden;
+      exportDropdownMenu.hidden = open;
+      exportDropdownBtn.setAttribute("aria-expanded", String(!open));
+    });
+    exportDropdownMenu.addEventListener("click", () => {
+      exportDropdownMenu.hidden = true;
+      exportDropdownBtn.setAttribute("aria-expanded", "false");
+    });
+    document.addEventListener("click", () => {
+      exportDropdownMenu.hidden = true;
+      exportDropdownBtn.setAttribute("aria-expanded", "false");
+    });
+  }
+
   // Delete All — open math confirm modal
   document.getElementById("deleteAllBtn").addEventListener("click", () => {
     if (!allData.length) { toast("Nothing to delete.", "warning"); return; }
