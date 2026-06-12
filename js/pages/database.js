@@ -5,18 +5,31 @@ let _auditAllEntries = []; // full audit log loaded into viewer
 document.addEventListener("appReady", async () => {
   if (getSettings().compactTable) document.querySelector(".table-wrap table")?.setAttribute("data-compact", "");
 
-  setTableLoading(true);
-  try {
-    allData = await getData();
+  // Show cached data instantly, then refresh from Firestore in background
+  const cached = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  if (cached.length) {
+    allData = cached;
     renderTable(allData);
-  } catch (err) {
-    toast("Failed to load data: " + err.message, "error");
-  } finally {
-    setTableLoading(false);
+  } else {
+    setTableLoading(true);
   }
+
   bindEvents();
   bindImportPreview();
   bindAuditModal();
+
+  // Background refresh
+  try {
+    const fresh = await getData();
+    if (JSON.stringify(fresh) !== JSON.stringify(allData)) {
+      allData = fresh;
+      renderTable(allData);
+    }
+  } catch (err) {
+    if (!cached.length) toast("Failed to load data: " + err.message, "error");
+  } finally {
+    setTableLoading(false);
+  }
 });
 
 function setTableLoading(on) {

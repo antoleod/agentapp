@@ -1,12 +1,21 @@
 let _reportData = [];
 
 document.addEventListener("appReady", async () => {
+  // Show cached data instantly, then refresh from Firestore in background
+  const cached = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  if (cached.length) {
+    _reportData = cached;
+    renderReports(cached);
+  }
+
   try {
     const data = await getData();
-    _reportData = data;
-    renderReports(data);
+    if (JSON.stringify(data) !== JSON.stringify(_reportData)) {
+      _reportData = data;
+      renderReports(data);
+    }
   } catch (err) {
-    toast("Failed to load reports: " + err.message, "error");
+    if (!cached.length) toast("Failed to load reports: " + err.message, "error");
   }
 
   document.getElementById("refreshBtn").addEventListener("click", async () => {
