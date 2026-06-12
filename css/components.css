@@ -729,4 +729,31 @@ table[data-compact] th { padding: 6px 12px; font-size: 12.5px; }
   .card-header { padding: 14px 16px; }
   .form-section { padding: 16px; }
   .form-actions { padding: 14px 16px; }
+  .settings-grid { grid-template-columns: 1fr !important; }
+  .settings-col-right { order: unset !important; }
+}
+
+/* ── Settings responsive grid ── */
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* Left column cards flow naturally (default) */
+/* Right column cards are pushed to column 2 */
+.settings-col-right {
+  grid-column: 2;
+}
+
+/* Full-width cards span both columns */
+.settings-span {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 960px) {
+  .settings-grid { grid-template-columns: 1fr; }
+  .settings-col-right { grid-column: 1; }
+  .settings-span { grid-column: 1; }
 }
