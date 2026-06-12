@@ -337,7 +337,8 @@ function bindForm() {
 
     try {
       await setUserRole(email, displayName || null, role);
-      toast(`Added ${email} as ${role}.`, "success");
+      await sendInviteEmail(email);
+      toast(`Invitation sent to ${email}.`, "success");
       form.reset();
       document.getElementById("inviteRole").value = "evaluator";
       await refreshUsers();
@@ -351,6 +352,18 @@ function bindForm() {
 }
 
 // ── Search ────────────────────────────────────────────────────────────────────
+
+// ── Invitation email via Email Link ───────────────────────────────────────────
+
+async function sendInviteEmail(email) {
+  const actionCodeSettings = {
+    url: window.location.origin + "/login.html",
+    handleCodeInApp: true,
+  };
+  await window.auth.sendSignInLinkToEmail(email, actionCodeSettings);
+  // Store email so login.html can complete the sign-in if opened on same device
+  localStorage.setItem("inviteEmailForSignIn", email);
+}
 
 function bindSearch() {
   document.getElementById("userSearch").addEventListener("input", () => {

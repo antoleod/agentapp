@@ -1,11 +1,45 @@
+// ── Email Link (invite) sign-in ───────────────────────────────────────────────
+(async () => {
+  if (!window.auth.isSignInWithEmailLink(window.location.href)) return;
+
+  let email = localStorage.getItem("inviteEmailForSignIn");
+  if (!email) {
+    email = window.prompt("Please enter your email address to complete sign-in:");
+    if (!email) return;
+  }
+
+  try {
+    await window.auth.signInWithEmailLink(email, window.location.href);
+    localStorage.removeItem("inviteEmailForSignIn");
+    // Clean the URL so refreshing doesn't re-trigger
+    history.replaceState(null, "", window.location.pathname);
+    // After sign-in, onAuthStateChanged fires — set-password check happens there
+  } catch (err) {
+    showError("Invitation link is invalid or expired. Please contact an admin.");
+  }
+})();
+
 // Already signed in — check session expiry first
-window.auth.onAuthStateChanged(user => {
+window.auth.onAuthStateChanged(async user => {
   if (!user) return;
   const expiry = parseInt(localStorage.getItem("sessionExpiresAt") || "0", 10);
   if (expiry && Date.now() > expiry) {
     window.auth.signOut();
     return;
   }
+
+  // Check if this user must set a password on first login
+  if (user.email) {
+    try {
+      const key  = user.email.toLowerCase().replace(/[@.]/g, "_");
+      const snap = await window.db.collection("roles").doc(key).get();
+      if (snap.exists && snap.data().mustSetPassword) {
+        showSetPasswordModal(user);
+        return;
+      }
+    } catch (_) { /* proceed normally if check fails */ }
+  }
+
   window.location.href = "pages/form.html";
 });
 
@@ -61,6 +95,44 @@ document.querySelectorAll(".sess-opt").forEach(btn => {
     document.querySelectorAll(".sess-opt").forEach(b => b.classList.remove("sess-opt-active"));
     btn.classList.add("sess-opt-active");
   });
+});
+
+// ── Set-password modal (first login) ─────────────────────────────────────────
+
+function showSetPasswordModal(user) {
+  document.getElementById("loginForm").hidden        = true;
+  document.getElementById("recoveryPanel").hidden    = true;
+  document.getElementById("setPasswordPanel").hidden = false;
+}
+
+document.getElementById("setPasswordBtn")?.addEventListener("click", async () => {
+  const pw1 = document.getElementById("setPass1").value;
+  const pw2 = document.getElementById("setPass2").value;
+  const err = document.getElementById("setPassError");
+
+  err.hidden = true;
+  if (pw1.length < 8) { err.textContent = "Password must be at least 8 characters."; err.hidden = false; return; }
+  if (pw1 !== pw2)    { err.textContent = "Passwords do not match.";                 err.hidden = false; return; }
+
+  const btn = document.getElementById("setPasswordBtn");
+  btn.disabled = true;
+  btn.textContent = "Saving…";
+
+  try {
+    const user = window.auth.currentUser;
+    await user.updatePassword(pw1);
+
+    // Clear the mustSetPassword flag
+    const key = user.email.toLowerCase().replace(/[@.]/g, "_");
+    await window.db.collection("roles").doc(key).update({ mustSetPassword: false });
+
+    showSessionModal(() => { window.location.href = "pages/form.html"; });
+  } catch (e) {
+    err.textContent = e.message || "Failed to set password.";
+    err.hidden = false;
+    btn.disabled = false;
+    btn.textContent = "Set Password";
+  }
 });
 
 document.getElementById("loginForm").addEventListener("submit", async e => {

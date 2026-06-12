@@ -192,6 +192,47 @@
         </div>
       </div>
 
+      <!-- Set password panel (first login via invite link) -->
+      <div id="setPasswordPanel" hidden>
+        <div class="recovery-header">
+          <div class="recovery-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+          </div>
+          <div>
+            <div class="recovery-title">Set your password</div>
+            <div class="recovery-sub">Choose a password to secure your account</div>
+          </div>
+        </div>
+        <div id="setPassError" class="login-error" role="alert" hidden style="margin-bottom:12px"></div>
+        <div class="login-field">
+          <label for="setPass1">New password</label>
+          <div class="login-input-wrap">
+            <svg class="login-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            <input id="setPass1" type="password" placeholder="Min. 8 characters" autocomplete="new-password" />
+          </div>
+        </div>
+        <div class="login-field">
+          <label for="setPass2">Confirm password</label>
+          <div class="login-input-wrap">
+            <svg class="login-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            <input id="setPass2" type="password" placeholder="Repeat password" autocomplete="new-password" />
+          </div>
+        </div>
+        <button type="button" id="setPasswordBtn" class="login-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Set Password
+        </button>
+      </div>
+
       <div class="login-divider">or</div>
 
       <button type="button" id="guestBtn" class="guest-btn">

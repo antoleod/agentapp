@@ -376,6 +376,7 @@ async function setUserRole(email, displayName, role) {
     role,
     addedAt: new Date().toISOString(),
     addedBy: user ? (user.uid || user.email || "unknown") : "unknown",
+    mustSetPassword: true,
   });
 }
 
