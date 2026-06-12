@@ -1,6 +1,6 @@
 document.addEventListener("appReady", () => {
   const s = getSettings();
-  document.getElementById("serviceNowInstance").value = s.serviceNowInstance || "";
+  document.getElementById("serviceNowInstance").value = s.serviceNowInstance || "europarl.service-now.com";
   document.getElementById("defaultEvaluator").value   = s.defaultEvaluator   || "";
   document.getElementById("loginEmail").value         = s.loginEmail         || "";
 

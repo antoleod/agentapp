@@ -228,11 +228,8 @@ function escapeHtml(str) {
 
 function openServiceNow(ticket) {
   if (!ticket) return;
-  const instance = getSettings().serviceNowInstance;
-  if (!instance) {
-    toast("Configure your ServiceNow instance URL in Settings first.", "warning");
-    return;
-  }
+  const instance = getSettings().serviceNowInstance || "europarl.service-now.com";
+
   const tableMap  = { INC: "incident", RITM: "sc_req_item", REQ: "sc_request", SCTASK: "sc_task" };
   const table     = Object.entries(tableMap).find(([k]) => ticket.startsWith(k))?.[1] ?? "task";
   const query     = `${table}.do?sysparm_query=number=${encodeURIComponent(ticket)}`;
