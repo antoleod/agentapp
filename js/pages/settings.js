@@ -157,10 +157,65 @@ document.addEventListener("appReady", () => {
     toast(t("set.save") + " ✓", "success");
   });
 
+  // ── Database View ─────────────────────────────────────────────────────────
+  document.getElementById("dbDefaultSort").value       = s.dbDefaultSort    || "date_desc";
+  document.getElementById("dbRowsPerPage").value       = s.dbRowsPerPage !== undefined ? String(s.dbRowsPerPage) : "50";
+  document.getElementById("dbShowKpi").checked         = s.dbShowKpi !== false;
+  document.getElementById("dbHighlightBreaches").checked = s.dbHighlightBreaches !== false;
+
+  ["dbDefaultSort","dbRowsPerPage"].forEach(id => {
+    document.getElementById(id).addEventListener("change", e => {
+      saveSettings({ ...getSettings(), [id]: id === "dbRowsPerPage" ? Number(e.target.value) : e.target.value });
+      toast(t("set.save") + " ✓", "success");
+    });
+  });
+  ["dbShowKpi","dbHighlightBreaches"].forEach(id => {
+    document.getElementById(id).addEventListener("change", e => {
+      saveSettings({ ...getSettings(), [id]: e.target.checked });
+      toast(t("set.save") + " ✓", "success");
+    });
+  });
+
+  // ── Form Behavior ─────────────────────────────────────────────────────────
+  document.getElementById("formAutoOpenSN").checked      = !!s.formAutoOpenSN;
+  document.getElementById("formClearAfterSave").checked  = !!s.formClearAfterSave;
+  document.getElementById("formShowScoreHints").checked  = s.formShowScoreHints !== false;
+
+  ["formAutoOpenSN","formClearAfterSave","formShowScoreHints"].forEach(id => {
+    document.getElementById(id).addEventListener("change", e => {
+      saveSettings({ ...getSettings(), [id]: e.target.checked });
+      toast(t("set.save") + " ✓", "success");
+    });
+  });
+
+  // ── Export Defaults ───────────────────────────────────────────────────────
+  document.getElementById("exportDefaultFormat").value    = s.exportDefaultFormat || "csv";
+  document.getElementById("slaThreshold").value           = s.slaThreshold !== undefined ? s.slaThreshold : 100;
+  document.getElementById("exportIncludeComments").checked = s.exportIncludeComments !== false;
+
+  document.getElementById("exportDefaultFormat").addEventListener("change", e => {
+    saveSettings({ ...getSettings(), exportDefaultFormat: e.target.value });
+    toast(t("set.save") + " ✓", "success");
+  });
+  document.getElementById("slaThreshold").addEventListener("change", e => {
+    saveSettings({ ...getSettings(), slaThreshold: Number(e.target.value) });
+    toast(t("set.save") + " ✓", "success");
+  });
+  document.getElementById("exportIncludeComments").addEventListener("change", e => {
+    saveSettings({ ...getSettings(), exportIncludeComments: e.target.checked });
+    toast(t("set.save") + " ✓", "success");
+  });
+
   // ── Data Behavior ────────────────────────────────────────────────────────
   document.getElementById("confirmDeleteSingle").checked = s.confirmDeleteSingle !== false;
   document.getElementById("confirmDeleteSingle").addEventListener("change", e => {
     saveSettings({ ...getSettings(), confirmDeleteSingle: e.target.checked });
+    toast(t("set.save") + " ✓", "success");
+  });
+
+  document.getElementById("autoSaveDraft").checked = !!s.autoSaveDraft;
+  document.getElementById("autoSaveDraft").addEventListener("change", e => {
+    saveSettings({ ...getSettings(), autoSaveDraft: e.target.checked });
     toast(t("set.save") + " ✓", "success");
   });
 

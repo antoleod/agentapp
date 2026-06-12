@@ -209,6 +209,112 @@
             </div>
           </div>
 
+          <!-- Database View -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 style="font-size:15px">Database View</h3>
+                <p style="font-size:12px;color:var(--muted);margin-top:3px">Control how the evaluation table looks</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Default Sort</label>
+                  <select id="dbDefaultSort">
+                    <option value="date_desc">Date — newest first</option>
+                    <option value="date_asc">Date — oldest first</option>
+                    <option value="score_desc">Score — highest first</option>
+                    <option value="score_asc">Score — lowest first</option>
+                    <option value="agent_az">Agent — A → Z</option>
+                    <option value="ticket_asc">Ticket number</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Rows Per Page</label>
+                  <select id="dbRowsPerPage">
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="0">All</option>
+                  </select>
+                </div>
+                <div class="form-group full" style="padding-top:4px">
+                  <label class="settings-switch">
+                    <input type="checkbox" id="dbShowKpi" checked>
+                    <span class="switch-track"><span class="switch-thumb"></span></span>
+                    <span>Show individual KPI columns (AT, PC, KB…)</span>
+                  </label>
+                </div>
+                <div class="form-group full" style="padding-top:4px">
+                  <label class="settings-switch">
+                    <input type="checkbox" id="dbHighlightBreaches" checked>
+                    <span class="switch-track"><span class="switch-thumb"></span></span>
+                    <span>Highlight SLA breach rows</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Behavior -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 style="font-size:15px">Form Behavior</h3>
+                <p style="font-size:12px;color:var(--muted);margin-top:3px">Actions triggered automatically when using the evaluation form</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <label class="settings-switch">
+                  <input type="checkbox" id="formAutoOpenSN">
+                  <span class="switch-track"><span class="switch-thumb"></span></span>
+                  <span>Auto-open ServiceNow ticket after saving</span>
+                </label>
+                <label class="settings-switch">
+                  <input type="checkbox" id="formClearAfterSave">
+                  <span class="switch-track"><span class="switch-thumb"></span></span>
+                  <span>Clear form after saving an evaluation</span>
+                </label>
+                <label class="settings-switch">
+                  <input type="checkbox" id="formShowScoreHints" checked>
+                  <span class="switch-track"><span class="switch-thumb"></span></span>
+                  <span>Show score hint text below each criterion</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Export Defaults -->
+          <div class="card">
+            <div class="card-header">
+              <h3 style="font-size:15px">Export Defaults</h3>
+            </div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Default Export Format</label>
+                  <select id="exportDefaultFormat">
+                    <option value="csv">CSV</option>
+                    <option value="json">JSON</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>SLA Breach Highlight Threshold (%)</label>
+                  <input type="number" id="slaThreshold" min="0" max="500" placeholder="100" style="width:100%" />
+                </div>
+                <div class="form-group full" style="padding-top:4px">
+                  <label class="settings-switch">
+                    <input type="checkbox" id="exportIncludeComments" checked>
+                    <span class="switch-track"><span class="switch-thumb"></span></span>
+                    <span>Include comments column in CSV exports</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Data Behavior -->
           <div class="card">
             <div class="card-header">
@@ -220,6 +326,11 @@
                   <input type="checkbox" id="confirmDeleteSingle" checked>
                   <span class="switch-track"><span class="switch-thumb"></span></span>
                   <span data-i18n="set.confirm_delete">Ask for confirmation before deleting a record</span>
+                </label>
+                <label class="settings-switch">
+                  <input type="checkbox" id="autoSaveDraft">
+                  <span class="switch-track"><span class="switch-thumb"></span></span>
+                  <span>Auto-save form draft to browser (restored on next visit)</span>
                 </label>
               </div>
             </div>

@@ -51,7 +51,47 @@ function slaBadge(val) {
     : `<span class="badge badge-success">✓ No</span>`;
 }
 
+const KPI_FIELDS = [
+  { id: "assetTracking",      label: "Asset Tracking" },
+  { id: "planningCompliance", label: "Planning Compliance" },
+  { id: "kbCompliance",       label: "KB Compliance" },
+  { id: "teamSpirit",         label: "Team Spirit" },
+  { id: "dressCode",          label: "Dress Code" },
+  { id: "customerOriented",   label: "Customer Oriented" },
+];
+
+function sortData(data) {
+  const sort = getSettings().dbDefaultSort || "date_desc";
+  const d = [...data];
+  if (sort === "date_desc")  return d.sort((a,b) => (b.evaluationDate||"").localeCompare(a.evaluationDate||""));
+  if (sort === "date_asc")   return d.sort((a,b) => (a.evaluationDate||"").localeCompare(b.evaluationDate||""));
+  if (sort === "score_desc") return d.sort((a,b) => calculateAverage(b) - calculateAverage(a));
+  if (sort === "score_asc")  return d.sort((a,b) => calculateAverage(a) - calculateAverage(b));
+  if (sort === "agent_az")   return d.sort((a,b) => (a.agentName||"").localeCompare(b.agentName||""));
+  if (sort === "ticket_asc") return d.sort((a,b) => (a.ticketNumber||"").localeCompare(b.ticketNumber||""));
+  return d;
+}
+
+function paginateData(data) {
+  const perPage = getSettings().dbRowsPerPage !== undefined ? Number(getSettings().dbRowsPerPage) : 50;
+  if (!perPage) return data;
+  return data.slice(0, perPage);
+}
+
 function renderTable(data) {
+  const s    = getSettings();
+  const showKpi        = s.dbShowKpi !== false;
+  const highlightBreaches = s.dbHighlightBreaches !== false;
+  const slaThreshold   = s.slaThreshold !== undefined ? Number(s.slaThreshold) : 100;
+
+  const sorted   = sortData(data);
+  const paginated = paginateData(sorted);
+
+  // Update KPI header visibility
+  document.querySelectorAll(".kpi-col, .kpi-cell").forEach(el => {
+    el.style.display = showKpi ? "" : "none";
+  });
+
   const body = document.getElementById("databaseBody");
   if (!data.length) {
     body.innerHTML = `
@@ -65,26 +105,21 @@ function renderTable(data) {
       </td></tr>`;
     return;
   }
-  const KPI_FIELDS = [
-    { id: "assetTracking",      label: "Asset Tracking" },
-    { id: "planningCompliance", label: "Planning Compliance" },
-    { id: "kbCompliance",       label: "KB Compliance" },
-    { id: "teamSpirit",         label: "Team Spirit" },
-    { id: "dressCode",          label: "Dress Code" },
-    { id: "customerOriented",   label: "Customer Oriented" },
-  ];
 
-  body.innerHTML = data.map(item => {
+  body.innerHTML = paginated.map(item => {
     const avg    = calculateAverage(item);
     const ticket = escapeHtml(item.ticketNumber);
+    const isBreach = item.slaBreach === "Yes";
+    const rowClass = highlightBreaches && isBreach ? " class=\"row-breach\"" : "";
     const kpiCells = KPI_FIELDS.map(({ id, label }) => {
       const val = item[id];
-      if (!val && val !== 0) return `<td class="kpi-cell kpi-empty" title="${label}">—</td>`;
+      const display = showKpi ? "" : " style=\"display:none\"";
+      if (!val && val !== 0) return `<td class="kpi-cell kpi-empty" title="${label}"${display}>—</td>`;
       const cls = val >= 4 ? "kpi-high" : val >= 3 ? "kpi-mid" : "kpi-low";
-      return `<td class="kpi-cell ${cls}" title="${label}: ${val}">${val}</td>`;
+      return `<td class="kpi-cell ${cls}" title="${label}: ${val}"${display}>${val}</td>`;
     }).join("");
     return `
-      <tr>
+      <tr${rowClass}>
         <td><strong>${ticket}</strong></td>
         <td>${escapeHtml(item.agentName)}</td>
         <td>${escapeHtml(formatDisplayDate(item.evaluationDate))}</td>

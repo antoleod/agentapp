@@ -143,7 +143,7 @@ function buildCriterionHtml(id, label, hint) {
     <div class="criterion" id="criterion-${id}">
       <div class="criterion-label">
         <span>${escapeHtml(label)}</span>
-        <span class="criterion-hint">${escapeHtml(hint)}</span>
+        <span class="criterion-hint" style="${getSettings().formShowScoreHints === false ? 'display:none' : ''}">${escapeHtml(hint)}</span>
       </div>
       <div class="score-picker" data-field="${id}" data-value="3">
         <button type="button" class="sp-btn" data-v="1">1</button>
@@ -403,8 +403,15 @@ async function handleSave(e) {
     toast("Evaluation saved successfully.", "success");
     _editCreatedAt = null;
     _editPrevData  = null;
-    clearForm();
-    document.getElementById("ticketNumber").focus();
+
+    const fs = getSettings();
+    if (fs.formClearAfterSave) {
+      clearForm();
+      document.getElementById("ticketNumber").focus();
+    }
+    if (fs.formAutoOpenSN && item.ticketNumber) {
+      openServiceNow(item.ticketNumber);
+    }
   } catch (err) {
     toast("Failed to save: " + err.message, "error");
   } finally {

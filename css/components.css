@@ -215,6 +215,8 @@ textarea { resize: vertical; }
 .kpi-low   { color: var(--danger);  }
 .kpi-empty { color: var(--muted); font-weight: 400; }
 
+tr.row-breach td:first-child { border-left: 3px solid var(--danger); }
+
 /* ── Table ── */
 .table-wrap { overflow-x: auto; }
 
