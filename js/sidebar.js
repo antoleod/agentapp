@@ -139,7 +139,14 @@ if (sessionStorage.getItem("guestSession")) {
   hideLoading();
   setTimeout(() => document.dispatchEvent(new Event("appReady")), 0);
 } else {
+  let _authResolved = false;
+  const _authTimeout = setTimeout(() => {
+    if (!_authResolved) window.location.href = "../login.html";
+  }, 10000);
+
   window.auth.onAuthStateChanged(user => {
+    _authResolved = true;
+    clearTimeout(_authTimeout);
     if (_sidebarBuilt) return;
     if (!user) {
       window.location.href = "../login.html";
