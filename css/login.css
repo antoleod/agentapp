@@ -12,7 +12,7 @@ body {
 
 /* ── Left panel — branding ── */
 .login-left {
-  flex: 0 0 420px;
+  flex: 0 0 460px;
   background: linear-gradient(160deg, #0f172a 0%, #1e1b4b 60%, #0f172a 100%);
   display: flex;
   flex-direction: column;
@@ -55,11 +55,11 @@ body {
 
 /* ── Logo mark ── */
 .login-logo-mark {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   flex-shrink: 0;
-  border-radius: 13px;
-  box-shadow: 0 4px 20px rgba(99,102,241,.45);
+  border-radius: 14px;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 8px 24px rgba(79,70,229,.5);
 }
 
 .login-brand-text h1 {
