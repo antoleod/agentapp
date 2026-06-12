@@ -320,7 +320,7 @@ function showAuditPanel(data, filled) {
   if (!document.getElementById("agentName").value.trim()) remaining.push("Agent Name");
   if (!document.getElementById("evaluationDate").value)   remaining.push("Evaluation Date");
   if (!data.slaBreach)                                    remaining.push("SLA Breach");
-  const allScoresDefault = scoreFields.every(id => {
+  const allScoresDefault = getAllScoreFields().every(id => {
     const v = document.getElementById(id)?.value;
     return !v || v === "3";
   });

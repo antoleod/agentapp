@@ -147,12 +147,8 @@
   <script src="js/core.js"></script>
   <script src="js/i18n.js"></script>
   <script>
-    const auth = firebase.auth();
-
-    // loginEmail pre-fill removed — email is no longer persisted to localStorage
-
-    // Already signed in — skip login
-    auth.onAuthStateChanged(user => {
+    // Already signed in — skip login (use window.auth set by firebase-config.js)
+    window.auth.onAuthStateChanged(user => {
       if (user) window.location.href = "pages/form.html";
     });
 
@@ -183,7 +179,7 @@
       clearError();
       setLoading(true);
       try {
-        await auth.signInWithEmailAndPassword(email, pass);
+        await window.auth.signInWithEmailAndPassword(email, pass);
         window.location.href = "pages/form.html";
       } catch (err) {
         const msgs = {
