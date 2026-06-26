@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://apis.google.com 'sha256-vvt4KWwuNr51XfE5m+hzeNEGhiOfZzG97ccfqGsPwvE='; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; frame-src https://agentapp-8ea1c.firebaseapp.com;" />
+  <title>Bookmarklet – Agent Eval</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://apis.google.com" crossorigin />
+  <link rel="dns-prefetch" href="https://firestore.googleapis.com" />
+  <link rel="stylesheet" href="assets/bookmarklet.css?v=mquq0dfh">
+</head>
+<body>
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="shell">
+    <div class="app">
+      <main class="page">
+        <div class="topbar">
+          <div>
+            <h2>Bookmarklet</h2>
+            <p class="page-subtitle">Install the script in your browser to export ServiceNow tickets</p>
+          </div>
+        </div>
+
+        <!-- Step 1: Drag -->
+        <div class="bm-card">
+          <div class="bm-step-badge">1</div>
+          <div class="bm-card-body">
+            <h3>Drag the button to your bookmarks bar</h3>
+            <p>Drag the link below to your browser's bookmarks bar. Make sure the bar is visible (<kbd>Ctrl+Shift+B</kbd> on Chrome/Edge).</p>
+
+            <div class="bm-drag-zone">
+              <div class="bm-drag-hint">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                Drag to the bookmarks bar
+              </div>
+              <a id="bookmarkletLink" class="bm-button" href="#" title="Export Ticket – Agent Eval">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export Ticket
+              </a>
+              <div class="bm-drag-hint">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                &nbsp;
+              </div>
+            </div>
+
+            <p class="bm-note">If you can't drag it, click "Copy bookmarklet code" and create a bookmark manually by pasting the code as the URL.</p>
+            <button class="btn btn-secondary" id="copyCodeBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copy bookmarklet code
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Use -->
+        <div class="bm-card">
+          <div class="bm-step-badge">2</div>
+          <div class="bm-card-body">
+            <h3>Use it in ServiceNow</h3>
+            <p>Open any ticket in ServiceNow and click the <strong>Export Ticket</strong> bookmark you just saved.</p>
+            <ol class="bm-steps-list">
+              <li>Navigate to the ticket in ServiceNow (INC, RITM, SCTASK…)</li>
+              <li>Click <strong>Export Ticket</strong> in your bookmarks bar</li>
+              <li>A blue <strong>"Export Ticket"</strong> button appears on the page</li>
+              <li>Click that button — the JSON is copied to the clipboard</li>
+              <li>Go to <a href="form.html">Form</a> in Agent Eval and paste the JSON</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Step 3: Paste -->
+        <div class="bm-card">
+          <div class="bm-step-badge">3</div>
+          <div class="bm-card-body">
+            <h3>Paste in Agent Eval</h3>
+            <p>On the <a href="form.html">Form</a> page, use the <strong>"Paste ServiceNow"</strong> button or paste directly into the import field. The form fills in automatically.</p>
+
+            <div class="bm-data-preview">
+              <div class="bm-data-header">Example of exported data</div>
+              <pre class="bm-data-code">{
+  "number": "INC0435166",
+  "shortDescription": "Cannot access shared drive",
+  "assignedTo": "John Smith",
+  "assignmentGroup": "ITEC-SUP PS",
+  "state": "In Progress",
+  "slaBreach": "No",
+  "slaPercentage": 72.3,
+  "slaName": "ITEC-SUP PS - Medium Priority Incident"
+}</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Troubleshooting -->
+        <div class="bm-card bm-card-muted">
+          <div class="bm-card-body">
+            <h3>Troubleshooting</h3>
+            <div class="bm-faq">
+              <details>
+                <summary>The "Export Ticket" button doesn't appear in ServiceNow</summary>
+                <p>Make sure you're inside an open ticket. The script needs <code>g_form</code> to be available on the page. It also works with ServiceNow's classic view.</p>
+              </details>
+              <details>
+                <summary>slaPercentage shows as null</summary>
+                <p>Expand the "SLA" / "Related Lists" section on the ticket before clicking Export Ticket. ServiceNow loads SLAs lazily.</p>
+              </details>
+              <details>
+                <summary>Error: "g_form not available"</summary>
+                <p>This message appears if you click the bookmark outside a ticket (e.g. on the incident list). Open a specific ticket and try again.</p>
+              </details>
+              <details>
+                <summary>I can't drag the bookmark (Safari / Firefox)</summary>
+                <p>Click "Copy bookmarklet code", then create a new bookmark manually and paste the code as the bookmark URL.</p>
+              </details>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <script src="assets/bookmarklet.js?v=mquq0dfh"></script>
+</body>
+</html>
